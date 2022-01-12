@@ -1,6 +1,4 @@
-package frc.robot.subsystem;
-
-import java.util.function.Consumer;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -21,6 +19,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@Deprecated
 public class MDrivetrain extends SubsystemBase {
 
     private TalonSRX flMotor = new TalonSRX(0);

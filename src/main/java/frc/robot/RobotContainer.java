@@ -10,9 +10,20 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
-import frc.robot.subsystem.MDrivetrain;
+import frc.robot.subsystems.DiffDrivetrain;
+import frc.robot.subsystems.MDrivetrain;
 
 public class RobotContainer {
+
+        DiffDrivetrain m_drivetrain;
+
+        public RobotContainer () {
+                m_drivetrain = new DiffDrivetrain();
+        }
+
+        public Command getAutonomousCommand() {
+                return null;
+        }
 
     // This is for drivetrain, but there is a holonomicDrive stuff, which allows us
     // to use our mecanum stuff during auton
@@ -38,24 +49,25 @@ public class RobotContainer {
         return command;
     }
 
-    */
-
+    
     private MDrivetrain mDrive = new MDrivetrain();
-
+    
     public Command getAutonomousCommand() {
+            
+            TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(2), Units.feetToMeters(2));
+            config.setKinematics(mDrive.getKinematics());
+            Trajectory trajectory = TrajectoryGenerator
+            .generateTrajectory(Arrays.asList(new Pose2d(), new Pose2d(1.0, 0, new Rotation2d())), config);
+            
+            MecanumControllerCommand cmd = new MecanumControllerCommand(trajectory, mDrive::getPose, mDrive.getFeedforward(),
+            mDrive.getKinematics(), mDrive.getXController(), mDrive.getYController(), mDrive.getThetaController(), 5.0,
+            mDrive.getFlPIDController(), mDrive.getRlPIDController(), mDrive.getFrPIDController(),
+            mDrive.getRrPIDController(), mDrive::getWheelSpeeds,
+            mDrive::setMotorOutput, mDrive);
+            
+            return cmd;
+            
+        }
+        */
 
-        TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(2), Units.feetToMeters(2));
-        config.setKinematics(mDrive.getKinematics());
-        Trajectory trajectory = TrajectoryGenerator
-                .generateTrajectory(Arrays.asList(new Pose2d(), new Pose2d(1.0, 0, new Rotation2d())), config);
-
-        MecanumControllerCommand cmd = new MecanumControllerCommand(trajectory, mDrive::getPose, mDrive.getFeedforward(),
-                mDrive.getKinematics(), mDrive.getXController(), mDrive.getYController(), mDrive.getThetaController(), 5.0,
-                mDrive.getFlPIDController(), mDrive.getRlPIDController(), mDrive.getFrPIDController(),
-                mDrive.getRrPIDController(), mDrive::getWheelSpeeds,
-                mDrive::setMotorOutput, mDrive);
-
-        return cmd;
-
-    }
 }

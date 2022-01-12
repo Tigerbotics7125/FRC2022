@@ -8,62 +8,59 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.motorcontrol.PWMTalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
-	private RobotContainer container;
-	private MecanumDrive robotDrive;
-	private Joystick joystick;
+	public RobotState m_state;
+	private RobotContainer m_robotContainer;
+	private Command m_autonomousCommand;
 
-	private PigeonIMU pigeon;
-	double[] gyro = new double[3];
-	double[] accel = new double[3];
+	public static enum RobotState {
+		DISABLED, AUTO, TELEOP, TEST
+	}
 
 	@Override
 	public void robotInit() {
-		container = new RobotContainer();
-
-		PWMTalonSRX frontLeftMotor = new PWMTalonSRX(0);
-		PWMTalonSRX frontRightMotor = new PWMTalonSRX(2);
-		PWMTalonSRX rearLeftMotor = new PWMTalonSRX(1);
-		PWMTalonSRX rearRightMotor = new PWMTalonSRX(3);
-
-		robotDrive = new MecanumDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
-		joystick = new Joystick(0);
-
-		pigeon = new PigeonIMU(new TalonSRX(4)); // because pigeon is connected to can through the Talons ribbon cable.
-		pigeon.setFusedHeadingToCompass(); // compass is more accurate when not near any mag interference.
-
+		m_state = RobotState.DISABLED;
+		m_robotContainer = new RobotContainer();
 	}
 
 	@Override
 	public void robotPeriodic() {
-		pigeon.getRawGyro(gyro);
-		pigeon.getAccelerometerAngles(accel);
-	}
-
-	@Override
-	public void autonomousInit() {
-		container.getAutonomousCommand().schedule();
-		pigeon.setFusedHeading(0.0);
-	}
-
-	@Override
-	public void autonomousPeriodic() {
 		CommandScheduler.getInstance().run();
 	}
 
 	@Override
+	public void autonomousInit() {
+		m_state = RobotState.AUTO;
+		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+		if (m_autonomousCommand != null) {
+			m_autonomousCommand.schedule();
+		}
+	}
+
+	@Override
+	public void autonomousPeriodic() {
+	}
+
+	@Override
 	public void teleopInit() {
+		m_state = RobotState.TELEOP;
+		// Stops autonomous driving once teleop starts.
+		if (m_autonomousCommand != null) {
+			m_autonomousCommand.cancel();
+		}
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		robotDrive.driveCartesian(joystick.getX(), joystick.getY(), joystick.getZ(), gyro[2]);
 	}
 
 	@Override
 	public void simulationInit() {
+		m_state = RobotState.TEST;
 	}
 
 	@Override
@@ -73,12 +70,12 @@ public class Robot extends TimedRobot {
 	/**
 	 * 
 	 * LEAVE DISABLED METHODS ALONE
-	 * only overriden to stop the default override me method.
+	 * only overridden to stop the default override me message.
 	 * 
 	 */
-
 	@Override
 	public void disabledInit() {
+		m_state = RobotState.DISABLED;
 		// DONT PUT STUFF HERE
 	}
 

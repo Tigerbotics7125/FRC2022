@@ -1,4 +1,4 @@
-package frc.robot.subsystem;
+package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -14,16 +14,15 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drivetrain extends SubsystemBase {
-  TalonSRX leftMaster = new TalonSRX(0);
-  TalonSRX rightMaster = new TalonSRX(2);
+import static frc.robot.Contants.*;
 
-  TalonSRX leftSlave = new TalonSRX(1);
-  TalonSRX rightSlave = new TalonSRX(3);
+public class DiffDrivetrain extends SubsystemBase {
+  TalonSRX left = new TalonSRX(1);
+  TalonSRX right = new TalonSRX(2);
 
-  PigeonIMU pigeon = new PigeonIMU(0);
+  PigeonIMU pigeon = new PigeonIMU(50);
 
-  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(23));
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(kWheelBaseWidthMeters);
   DifferentialDriveOdometry odomentry = new DifferentialDriveOdometry(getHeading());
 
   // TODO: run frc-characterization tools to find the values for our robot.
@@ -35,17 +34,11 @@ public class Drivetrain extends SubsystemBase {
   PIDController leftPIDController = new PIDController(9.95, 0, 0);
   PIDController rightPIDController = new PIDController(9.95, 0, 0);
 
-
   Pose2d pose;
 
-  public Drivetrain() {
-
-    leftSlave.follow(leftMaster);
-    rightSlave.follow(rightMaster);
-
-    leftMaster.setInverted(false);
-    rightMaster.setInverted(true);
-
+  public DiffDrivetrain() {
+    left.setInverted(false);
+    right.setInverted(true);
   }
 
   public Rotation2d getHeading() {
@@ -82,19 +75,19 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void setOutput(double leftVoltage, double rightVoltage) {
-    leftMaster.set(ControlMode.PercentOutput,  leftVoltage / 12);
-    rightMaster.set(ControlMode.PercentOutput, rightVoltage / 12);
+    left.set(ControlMode.PercentOutput,  leftVoltage / 12);
+    right.set(ControlMode.PercentOutput, rightVoltage / 12);
   }
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
-    return new DifferentialDriveWheelSpeeds(leftMaster.getSensorCollection().getPulseWidthVelocity(),
-        rightMaster.getSensorCollection().getPulseWidthVelocity());
+    return new DifferentialDriveWheelSpeeds(left.getSensorCollection().getPulseWidthVelocity(),
+        right.getSensorCollection().getPulseWidthVelocity()); // TODO: update, this is slow, set sensor then get.
   }
 
   @Override
   public void periodic() {
     // TODO: fix with encoders, this feels wrong.
-    pose = odomentry.update(getHeading(), leftMaster.getSensorCollection().getPulseWidthPosition(),
-        rightMaster.getSensorCollection().getPulseWidthPosition());
+    pose = odomentry.update(getHeading(), left.getSensorCollection().getPulseWidthPosition(),
+        right.getSensorCollection().getPulseWidthPosition()); // TODO: again update, this is slow, set sensor the get.
   }
 }
