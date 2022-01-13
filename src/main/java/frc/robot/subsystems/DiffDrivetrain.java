@@ -7,12 +7,10 @@ import static frc.robot.Constants.kWheelBaseWidthMeters;
 import com.ctre.phoenix.sensors.BasePigeonSimCollection;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,16 +20,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class DiffDrivetrain extends SubsystemBase {
@@ -44,7 +41,7 @@ public class DiffDrivetrain extends SubsystemBase {
   PigeonIMU m_pigeon = new PigeonIMU(50);
 
   DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(kWheelBaseWidthMeters);
-  DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(getHeading());
+  DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d());
 
   // TODO: run sysid tools to find the values for our robot.
   // 42:00 - https://www.youtube.com/watch?v=wqJ4tY0u6IQ
@@ -66,6 +63,8 @@ public class DiffDrivetrain extends SubsystemBase {
   EncoderSim m_leftEncoderSim = new EncoderSim(m_leftEncoderFake);
   EncoderSim m_rightEncoderSim = new EncoderSim(m_rightEncoderFake);
   BasePigeonSimCollection m_pigeonSim = new BasePigeonSimCollection(m_pigeon, true);
+  NetworkTableEntry m_xEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("X");
+  NetworkTableEntry m_yEntry = NetworkTableInstance.getDefault().getTable("troubleshooting").getEntry("Y");
 
   public DiffDrivetrain() {
     m_left.setInverted(false);
@@ -82,6 +81,7 @@ public class DiffDrivetrain extends SubsystemBase {
     m_rightEncoderSim.setDistance(m_driveSim.getRightPositionMeters());
     m_rightEncoderSim.setRate(m_driveSim.getRightVelocityMetersPerSecond());
     m_pigeonSim.setRawHeading(-m_driveSim.getHeading().getDegrees());
+
   }
 
   public Rotation2d getHeading() {
@@ -119,8 +119,8 @@ public class DiffDrivetrain extends SubsystemBase {
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
     if (Robot.isReal()) {
-      return new DifferentialDriveWheelSpeeds(m_left.getEncoder().getVelocity(),
-          m_right.getEncoder().getVelocity());
+      return new DifferentialDriveWheelSpeeds(m_leftEncoder.getVelocity(),
+          m_rightEncoder.getVelocity());
     } else {
       return new DifferentialDriveWheelSpeeds(m_leftEncoderFake.getRate(), m_rightEncoderFake.getRate());
     }
@@ -129,13 +129,20 @@ public class DiffDrivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     if (Robot.isReal()) {
-      m_odometry.update(getHeading(), m_left.getEncoder().getPosition(),
-          m_right.getEncoder().getPosition());
+      m_odometry.update(getHeading(), m_leftEncoder.getPosition(),
+          m_rightEncoder.getPosition());
     } else {
       m_odometry.update(getHeading(), m_leftEncoderFake.getDistance(), m_rightEncoderFake.getDistance());
     }
 
-    Robot.kField.setRobotPose(m_odometry.getPoseMeters());
+    var translation = m_odometry.getPoseMeters().getTranslation();
+    m_xEntry.setNumber(translation.getX());
+    m_yEntry.setNumber(translation.getY());
 
+    Robot.kField.setRobotPose(m_odometry.getPoseMeters());
+  }
+
+  public void restartOdometry(Pose2d initialPose) {
+    m_odometry = new DifferentialDriveOdometry(initialPose.getRotation(), initialPose);
   }
 }

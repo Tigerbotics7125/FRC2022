@@ -1,14 +1,7 @@
 package frc.robot;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.kAutoTrajs;
 import frc.robot.commands.auto.BallToHpThenLayup;
 import frc.robot.subsystems.DiffDrivetrain;
 
@@ -16,12 +9,18 @@ public class RobotContainer {
 
 	DiffDrivetrain m_drivetrain;
 
+
 	public RobotContainer() {
 		m_drivetrain = new DiffDrivetrain();
 	}
 
-	public Command getAutonomousCommand() {
-		return new BallToHpThenLayup(m_drivetrain);
+	public SequentialCommandGroup getAutonomousCommand(kAutoTrajs auto) {
+		switch (auto) {
+			case BALLTOHPTHENLAYUP:
+				return new BallToHpThenLayup(m_drivetrain);
+			default:
+				return null;
+		}
 	}
 
 	// This is for drivetrain, but there is a holonomicDrive stuff, which allows us

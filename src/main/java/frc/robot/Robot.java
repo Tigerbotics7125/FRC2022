@@ -6,20 +6,30 @@ import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.kAutoTrajs;
+
 
 public class Robot extends TimedRobot {
 	public static Field2d kField;
+	public static kAutoTrajs kSelectedAutoTrajs;
 	private RobotContainer m_robotContainer;
-	private Command m_autonomousCommand;
+	private SendableChooser<kAutoTrajs> m_autoChooser = new SendableChooser<kAutoTrajs>();
+
 
 	@Override
 	public void robotInit() {
 		m_robotContainer = new RobotContainer();
 		kField = new Field2d();
 		SmartDashboard.putData("field", kField);
+
+		// auto chooser
+		//m_autoChooser.setDefaultOption("Default", kAutoTrajs.DEFAULT);
+		m_autoChooser.setDefaultOption("ball to hp then layup", kAutoTrajs.BALLTOHPTHENLAYUP);
+		SmartDashboard.putData(m_autoChooser);
 	}
 
 	@Override
@@ -31,10 +41,11 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 		// Stops all previously running commands.
 		CommandScheduler.getInstance().cancelAll();
-		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+		kSelectedAutoTrajs = m_autoChooser.getSelected();
+		SequentialCommandGroup autoCommand = m_robotContainer.getAutonomousCommand(m_autoChooser.getSelected());
 
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.schedule();
+		if (autoCommand != null) {
+			autoCommand.schedule();
 		}
 	}
 
