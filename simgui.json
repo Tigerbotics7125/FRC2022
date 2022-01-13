@@ -1,0 +1,55 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [2]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DiffDrivetrain": "Subsystem",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/field": {
+        "Robot": {
+          "arrowColor": [
+            0.0,
+            112.49998474121094,
+            255.0,
+            255.0
+          ],
+          "color": [
+            1.0,
+            0.0,
+            0.0,
+            255.0
+          ],
+          "style": "Box/Image"
+        },
+        "bottom": 900,
+        "height": 8.229599952697754,
+        "image": "/Users/jmorris/Code/FRC/2022FRC-RapidReact/PathWeaver/rapidreact/2022-field.png",
+        "left": 74,
+        "right": 1774,
+        "top": 50,
+        "width": 16.459199905395508,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  }
+}

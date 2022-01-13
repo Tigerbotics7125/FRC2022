@@ -1,9 +1,20 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
+import static frc.robot.Constants.kLeftDeviceId;
+import static frc.robot.Constants.kRightDeviceId;
+import static frc.robot.Constants.kWheelBaseWidthMeters;
 
+import com.ctre.phoenix.sensors.BasePigeonSimCollection;
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder.Type;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxRelativeEncoder;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,83 +22,120 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.Contants.*;
+import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class DiffDrivetrain extends SubsystemBase {
-  TalonSRX left = new TalonSRX(1);
-  TalonSRX right = new TalonSRX(2);
+  public CANSparkMax m_left = new CANSparkMax(kLeftDeviceId, MotorType.kBrushless);
+  public CANSparkMax m_right = new CANSparkMax(kRightDeviceId, MotorType.kBrushless);
 
-  PigeonIMU pigeon = new PigeonIMU(50);
+  RelativeEncoder m_leftEncoder = m_left.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 42);
+  RelativeEncoder m_rightEncoder = m_right.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 42);
 
-  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(kWheelBaseWidthMeters);
-  DifferentialDriveOdometry odomentry = new DifferentialDriveOdometry(getHeading());
+  PigeonIMU m_pigeon = new PigeonIMU(50);
 
-  // TODO: run frc-characterization tools to find the values for our robot.
+  DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(kWheelBaseWidthMeters);
+  DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(getHeading());
+
+  // TODO: run sysid tools to find the values for our robot.
   // 42:00 - https://www.youtube.com/watch?v=wqJ4tY0u6IQ
-  SimpleMotorFeedforward feedForward = new SimpleMotorFeedforward(0.268, 1.89, .243);
+  SimpleMotorFeedforward m_feedForward = new SimpleMotorFeedforward(0.268, 1.89, .243);
 
-  // TODO: also run characterization for this too.
-  // 47:00
-  PIDController leftPIDController = new PIDController(9.95, 0, 0);
-  PIDController rightPIDController = new PIDController(9.95, 0, 0);
+  // TODO: also run characterization for this too; setup in rev hardware stuff.
+  SparkMaxPIDController m_leftSMPID = m_left.getPIDController();
+  SparkMaxPIDController m_rightSMPID = m_right.getPIDController();
+  PIDController m_leftPIDController = new PIDController(m_leftSMPID.getP(), m_leftSMPID.getI(), m_leftSMPID.getD());
+  PIDController m_rightPIDController = new PIDController(m_rightSMPID.getP(), m_rightSMPID.getI(), m_rightSMPID.getD());
 
-  Pose2d pose;
+  // Simulation
+  DifferentialDrivetrainSim m_driveSim = DifferentialDrivetrainSim.createKitbotSim(KitbotMotor.kSingleNEOPerSide,
+      KitbotGearing.k10p71,
+      KitbotWheelSize.kSixInch, VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+
+  Encoder m_leftEncoderFake = new Encoder(0, 1, false);
+  Encoder m_rightEncoderFake = new Encoder(2, 3, false);
+  EncoderSim m_leftEncoderSim = new EncoderSim(m_leftEncoderFake);
+  EncoderSim m_rightEncoderSim = new EncoderSim(m_rightEncoderFake);
+  BasePigeonSimCollection m_pigeonSim = new BasePigeonSimCollection(m_pigeon, true);
 
   public DiffDrivetrain() {
-    left.setInverted(false);
-    right.setInverted(true);
+    m_left.setInverted(false);
+    m_right.setInverted(true);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    m_driveSim.setInputs(m_left.getAppliedOutput(), m_right.getAppliedOutput());
+    m_driveSim.update(0.02);
+
+    m_leftEncoderSim.setDistance(m_driveSim.getLeftPositionMeters());
+    m_leftEncoderSim.setRate(m_driveSim.getLeftVelocityMetersPerSecond());
+    m_rightEncoderSim.setDistance(m_driveSim.getRightPositionMeters());
+    m_rightEncoderSim.setRate(m_driveSim.getRightVelocityMetersPerSecond());
+    m_pigeonSim.setRawHeading(-m_driveSim.getHeading().getDegrees());
   }
 
   public Rotation2d getHeading() {
-
-    // double[3] gyro;
-    // pigeon.getRawGyro(gyro);
-    // return Rotation2d.fromDegreens(gyro[2])
-
     /**
      * Gyroscopes in frc return positive values as you turn clockwise acording to
      * the unit circle this is backwards, thus we need to flip our gyro numbers.
      */
-    return Rotation2d.fromDegrees(-pigeon.getFusedHeading());
+    return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
   }
 
   public SimpleMotorFeedforward getFeedForward() {
-    return feedForward;
+    return m_feedForward;
   }
 
   public PIDController getLeftPIDController() {
-    return leftPIDController;
+    return m_leftPIDController;
   }
 
   public PIDController getRightPIDController() {
-    return rightPIDController;
+    return m_rightPIDController;
   }
 
   public DifferentialDriveKinematics getKinematics() {
-    return kinematics;
+    return m_kinematics;
   }
 
   public Pose2d getPose() {
-    return pose;
+    return m_odometry.getPoseMeters();
   }
 
   public void setOutput(double leftVoltage, double rightVoltage) {
-    left.set(ControlMode.PercentOutput,  leftVoltage / 12);
-    right.set(ControlMode.PercentOutput, rightVoltage / 12);
+    m_left.setVoltage(leftVoltage / 12);
+    m_right.setVoltage(rightVoltage / 12);
   }
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
-    return new DifferentialDriveWheelSpeeds(left.getSensorCollection().getPulseWidthVelocity(),
-        right.getSensorCollection().getPulseWidthVelocity()); // TODO: update, this is slow, set sensor then get.
+    if (Robot.isReal()) {
+      return new DifferentialDriveWheelSpeeds(m_left.getEncoder().getVelocity(),
+          m_right.getEncoder().getVelocity());
+    } else {
+      return new DifferentialDriveWheelSpeeds(m_leftEncoderFake.getRate(), m_rightEncoderFake.getRate());
+    }
   }
 
   @Override
   public void periodic() {
-    // TODO: fix with encoders, this feels wrong.
-    pose = odomentry.update(getHeading(), left.getSensorCollection().getPulseWidthPosition(),
-        right.getSensorCollection().getPulseWidthPosition()); // TODO: again update, this is slow, set sensor the get.
+    if (Robot.isReal()) {
+      m_odometry.update(getHeading(), m_left.getEncoder().getPosition(),
+          m_right.getEncoder().getPosition());
+    } else {
+      m_odometry.update(getHeading(), m_leftEncoderFake.getDistance(), m_rightEncoderFake.getDistance());
+    }
+
+    Robot.kField.setRobotPose(m_odometry.getPoseMeters());
+
   }
 }
