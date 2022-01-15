@@ -6,22 +6,12 @@
           "open": true
         }
       },
-      "1": {
-        "header": {
-          "open": true
-        }
-      },
       "window": {
         "visible": true
       }
     },
     "Other Devices": {
       "SPARK MAX [1]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [2]": {
         "header": {
           "open": true
         }
@@ -32,6 +22,11 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/DiffDrivetrain": "Subsystem",
+      "/LiveWindow/DifferentialDrivetrain": "Subsystem",
+      "/LiveWindow/Ungrouped/ADXRS450_Gyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/AnalogGyro[0]": "Gyro",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/DifferentialDrive[2]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
@@ -40,6 +35,14 @@
     },
     "windows": {
       "/SmartDashboard/field": {
+        "Auto 0 : [Ledu.wpi.first.math.trajectory.Trajectory;@430b108": {
+          "arrows": false,
+          "style": "Line"
+        },
+        "Auto 1 : [Ledu.wpi.first.math.trajectory.Trajectory;@430b108": {
+          "arrows": false,
+          "style": "Line"
+        },
         "Robot": {
           "arrowColor": [
             0.0,
@@ -57,7 +60,7 @@
         },
         "bottom": 900,
         "height": 8.229599952697754,
-        "image": "/Users/jmorris/Code/FRC/2022FRC-RapidReact/PathWeaver/rapidreact/2022-field.png",
+        "image": "A:\\Documents\\code\\FRC\\2022FRC-Imported\\PathWeaver\\rapidreact\\2022-field.png",
         "left": 74,
         "right": 1774,
         "top": 50,
@@ -69,13 +72,16 @@
     }
   },
   "NetworkTables": {
-    "SmartDashboard": {
-      "SendableChooser[0]": {
+    "LiveWindow": {
+      "DifferentialDrivetrain": {
         "open": true
       },
-      "open": true
-    },
-    "troubleshooting": {
+      "Ungrouped": {
+        "ADXRS450_Gyro[0]": {
+          "open": true
+        },
+        "open": true
+      },
       "open": true
     }
   }
