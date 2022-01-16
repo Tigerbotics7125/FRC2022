@@ -12,7 +12,10 @@ public class Constants {
 
   // drive
   public static final double kWheelBaseWidthMeters = Units.inchesToMeters(23);
-  public static final double kWheelDiameter = Units.inchesToMeters(6);
+  public static final double kWheelDiameterMeters = Units.inchesToMeters(6);
+  public static final double kDrivetrainGearRatio = 10.71;
+  public static final double kRPMToMPSConversionFactor = 1.0 / (kDrivetrainGearRatio * Math.PI * kWheelDiameterMeters) / 60.0;
+  public static final double kDistancePerPulse = 1.0 / (42 / kDrivetrainGearRatio * (Math.PI * kWheelDiameterMeters));
   public static final int kLeftDeviceId = 1;
   public static final int kRightDeviceId = 2;
 

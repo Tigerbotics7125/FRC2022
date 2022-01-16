@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAutoTrajs;
 import frc.robot.commands.auto.BallToHpThenLayup;
@@ -11,6 +12,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     m_drivetrain = new DifferentialDrivetrain();
+
+    SmartDashboard.putData("Drivetrain", m_drivetrain);
   }
 
   public SequentialCommandGroup getAutonomousCommand(kAutoTrajs auto) {

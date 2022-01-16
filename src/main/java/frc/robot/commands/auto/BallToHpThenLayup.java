@@ -15,11 +15,11 @@ public class BallToHpThenLayup extends SequentialCommandGroup {
   public BallToHpThenLayup(DifferentialDrivetrain drivetrain) {
 
     m_drivetrain = drivetrain;
-    addRequirements(m_drivetrain);
+    //addRequirements(m_drivetrain);
 
     for (int i = 0; i < kAuto.kTrajs.length; i++) {
       Robot.m_field
-          .getObject("Auto " + i + " : " + ((Object) kAuto.kTrajs).toString())
+          .getObject("Auto " + i)
           .setTrajectory(kAuto.kTrajs[i]);
 
       addCommands(
@@ -39,6 +39,8 @@ public class BallToHpThenLayup extends SequentialCommandGroup {
 
   @Override
   public void initialize() {
+    super.initialize(); // super important about 2 hours worth of debugging unfortunatly
+    
     m_drivetrain.restartOdometry(kAuto.kTrajs[0].getInitialPose());
   }
 }

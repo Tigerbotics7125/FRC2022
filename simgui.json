@@ -6,6 +6,11 @@
           "open": true
         }
       },
+      "1": {
+        "header": {
+          "open": true
+        }
+      },
       "window": {
         "visible": true
       }
@@ -30,12 +35,27 @@
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Drive": "Command",
+      "/SmartDashboard/Drivetrain": "Subsystem",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/field": "Field2d"
     },
     "windows": {
+      "/SmartDashboard/Drivetrain": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/field": {
+        "Auto 0": {
+          "arrows": false,
+          "style": "Line"
+        },
         "Auto 0 : [Ledu.wpi.first.math.trajectory.Trajectory;@430b108": {
+          "arrows": false,
+          "style": "Line"
+        },
+        "Auto 1": {
           "arrows": false,
           "style": "Line"
         },

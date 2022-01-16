@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Gamepads;
 import frc.robot.subsystems.DifferentialDrivetrain;
@@ -13,6 +14,8 @@ public class Drive extends CommandBase {
   public Drive(DifferentialDrivetrain drivetrain) {
     addRequirements(drivetrain);
     m_drivetrain = drivetrain;
+
+    SmartDashboard.putData("Drive", this);
   }
 
   @Override
