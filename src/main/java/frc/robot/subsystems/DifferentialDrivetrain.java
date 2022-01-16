@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.kLeftDeviceId;
 import static frc.robot.Constants.kRightDeviceId;
 import static frc.robot.Constants.kWheelBaseWidthMeters;
+import static frc.robot.Constants.kWheelDiameter;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -39,9 +41,9 @@ public class DifferentialDrivetrain extends SubsystemBase {
   CANSparkMax m_right = new CANSparkMax(kRightDeviceId, MotorType.kBrushless);
 
   RelativeEncoder m_leftEncoder =
-      m_left.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 42);
+      m_left.getEncoder();
   RelativeEncoder m_rightEncoder =
-      m_right.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 42);
+      m_right.getEncoder();
 
   PigeonIMU m_pigeon = new PigeonIMU(50);
 
@@ -99,10 +101,14 @@ public class DifferentialDrivetrain extends SubsystemBase {
   public DifferentialDrivetrain() {
     m_left.setInverted(false);
     m_right.setInverted(true);
+    m_leftEncoder.setPositionConversionFactor(42 / 10.71 * (Math.PI * Units.inchesToMeters(6)));
+    m_rightEncoder.setPositionConversionFactor(42 / 10.71 * (Math.PI * Units.inchesToMeters(6)));
 
     if (!Robot.isReal()) {
       REVPhysicsSim.getInstance().addSparkMax(m_left, DCMotor.getNEO(1));
       REVPhysicsSim.getInstance().addSparkMax(m_right, DCMotor.getNEO(1));
+      m_leftEncoderDummy.setDistancePerPulse(42 / 10.71 * (Math.PI * Units.inchesToMeters(6)));
+      m_rightEncoderDummy.setDistancePerPulse(42 / 10.71 * (Math.PI * Units.inchesToMeters(6)));
     }
 
     setDefaultCommand(new Drive(this));
@@ -112,15 +118,16 @@ public class DifferentialDrivetrain extends SubsystemBase {
   public void simulationPeriodic() {
     REVPhysicsSim.getInstance().run();
     m_driveSim.setInputs(m_left.getAppliedOutput(), m_right.getAppliedOutput());
+    
+    m_driveSim.update(0.02);
 
-    m_leftEncoderSim.setDistance(m_left.getEncoder().getPosition());
-    m_rightEncoderSim.setDistance(m_right.getEncoder().getPosition());
-    m_leftEncoderSim.setRate(m_left.getEncoder().getVelocity());
-    m_rightEncoderSim.setRate(m_right.getEncoder().getVelocity());
-
+    m_leftEncoderSim.setDistance(m_driveSim.getLeftPositionMeters());
+    m_rightEncoderSim.setDistance(m_driveSim.getLeftVelocityMetersPerSecond());
+    m_leftEncoderSim.setRate(m_driveSim.getRightPositionMeters());
+    m_rightEncoderSim.setRate(m_driveSim.getRightVelocityMetersPerSecond());
     m_gyroSim.setAngle(-m_driveSim.getHeading().getDegrees());
 
-    m_driveSim.update(0.02);
+
   }
 
   public Rotation2d getHeading() {
@@ -156,8 +163,8 @@ public class DifferentialDrivetrain extends SubsystemBase {
   }
 
   public void setOutput(double leftVoltage, double rightVoltage) {
-    m_left.setVoltage(leftVoltage / 12);
-    m_right.setVoltage(rightVoltage / 12);
+    m_left.setVoltage(leftVoltage);
+    m_right.setVoltage(rightVoltage);
   }
 
   public DifferentialDriveWheelSpeeds getSpeeds() {

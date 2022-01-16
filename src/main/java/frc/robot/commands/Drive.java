@@ -22,8 +22,8 @@ public class Drive extends CommandBase {
   public void execute() {
     WheelSpeeds ws =
         DifferentialDrive.arcadeDriveIK(
-            Gamepads.getDriveJoystick().getY(), Gamepads.getDriveJoystick().getX() * 2, true);
-    m_drivetrain.setOutput(ws.left, ws.right);
+            Gamepads.getDriveJoystick().getY(), Gamepads.getDriveJoystick().getX(), true);
+    m_drivetrain.setOutput(ws.left * 12.0, ws.right * 12.0);
   }
 
   // Keep command always active.
