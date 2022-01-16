@@ -28,42 +28,40 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    
+
     // Ensure the controller(s) are always configured / connected
     Gamepads.configure();
   }
-  
+
   @Override
   public void autonomousInit() {
     // Stops all previously running commands.
     CommandScheduler.getInstance().cancelAll();
     m_selectedAutoTrajs = m_autoChooser.getSelected();
     SequentialCommandGroup autoCommand =
-    m_container.getAutonomousCommand(m_autoChooser.getSelected());
-    
+        m_container.getAutonomousCommand(m_autoChooser.getSelected());
+
     if (autoCommand != null) {
       autoCommand.schedule();
     }
   }
-  
+
   @Override
   public void autonomousPeriodic() {
     CommandScheduler.getInstance().run();
-    
   }
-  
+
   @Override
   public void teleopInit() {
     // Stops all previously running commands.
     CommandScheduler.getInstance().cancelAll();
   }
-  
+
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-
   }
-  
+
   @Override
   public void simulationInit() {}
 

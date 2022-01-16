@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.kDistancePerPulse;
 import static frc.robot.Constants.kLeftDeviceId;
+import static frc.robot.Constants.kRPMToMPSConversionFactor;
 import static frc.robot.Constants.kRightDeviceId;
 import static frc.robot.Constants.kWheelBaseWidthMeters;
-import static frc.robot.Constants.kWheelDiameterMeters;
-import static frc.robot.Constants.kDrivetrainGearRatio;
-import static frc.robot.Constants.kRPMToMPSConversionFactor;
-import static frc.robot.Constants.kDistancePerPulse;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -14,7 +12,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -24,8 +21,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
@@ -56,15 +51,18 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
   SparkMaxPIDController m_leftSMPID = m_left.getPIDController();
   SparkMaxPIDController m_rightSMPID = m_right.getPIDController();
-  PIDController m_leftPIDController = new PIDController(m_leftSMPID.getP(), m_leftSMPID.getI(), m_leftSMPID.getD());
-  PIDController m_rightPIDController = new PIDController(m_rightSMPID.getP(), m_rightSMPID.getI(), m_rightSMPID.getD());
+  PIDController m_leftPIDController =
+      new PIDController(m_leftSMPID.getP(), m_leftSMPID.getI(), m_leftSMPID.getD());
+  PIDController m_rightPIDController =
+      new PIDController(m_rightSMPID.getP(), m_rightSMPID.getI(), m_rightSMPID.getD());
 
   // Simulation
-  DifferentialDrivetrainSim m_driveSim = DifferentialDrivetrainSim.createKitbotSim(
-      KitbotMotor.kSingleNEOPerSide,
-      KitbotGearing.k10p71,
-      KitbotWheelSize.kSixInch,
-      VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+  DifferentialDrivetrainSim m_driveSim =
+      DifferentialDrivetrainSim.createKitbotSim(
+          KitbotMotor.kSingleNEOPerSide,
+          KitbotGearing.k10p71,
+          KitbotWheelSize.kSixInch,
+          VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
   Encoder m_leftEncoderDummy = new Encoder(0, 1);
   Encoder m_rightEncoderDummy = new Encoder(2, 3);
   ADXRS450_Gyro m_gyroDummy = new ADXRS450_Gyro();
@@ -92,19 +90,18 @@ public class DifferentialDrivetrain extends SubsystemBase {
     m_driveSim.update(0.02);
 
     m_leftEncoderSim.setDistance(wheelMetersToEncoderDistance(m_driveSim.getLeftPositionMeters()));
-    m_rightEncoderSim.setDistance(wheelMetersToEncoderDistance(m_driveSim.getRightPositionMeters()));
+    m_rightEncoderSim.setDistance(
+        wheelMetersToEncoderDistance(m_driveSim.getRightPositionMeters()));
 
     m_leftEncoderSim.setRate(wheelMPStoEncoderRPM(m_driveSim.getLeftVelocityMetersPerSecond()));
     m_rightEncoderSim.setRate(wheelMPStoEncoderRPM(m_driveSim.getRightVelocityMetersPerSecond()));
 
     m_gyroSim.setAngle(-m_driveSim.getHeading().getDegrees());
-
   }
 
   public Rotation2d getHeading() {
     /**
-     * Gyroscopes in frc return positive values as you turn clockwise acording to
-     * the unit circle
+     * Gyroscopes in frc return positive values as you turn clockwise acording to the unit circle
      * this is backwards, thus we need to flip our gyro numbers.
      */
     if (Robot.isReal()) {
@@ -170,7 +167,6 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     m_odometry.update(getHeading(), leftPositionMeters, rightPositionMeters);
 
-
     Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
@@ -193,5 +189,4 @@ public class DifferentialDrivetrain extends SubsystemBase {
   public double wheelMetersToEncoderDistance(double meters) {
     return ((double) meters) / kDistancePerPulse;
   }
-
 }
