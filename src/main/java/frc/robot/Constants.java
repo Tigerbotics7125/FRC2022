@@ -33,18 +33,27 @@ public class Constants {
         });
 
     public Trajectory[] kTrajs;
+    public Trajectory kFullTraj;
 
     private kAutoTrajs(Path[] trajPaths) {
       Trajectory[] trajs = new Trajectory[trajPaths.length];
+      Trajectory fullTraj = null;
       for (int i = 0; i < trajPaths.length; i++) {
         Path path = trajPaths[i];
         try {
           trajs[i] = (TrajectoryUtil.fromPathweaverJson(path));
+
+          if (fullTraj == null) {
+            fullTraj = trajs[i];
+          } else {
+            fullTraj = fullTraj.concatenate(trajs[i]);
+          }
         } catch (IOException e) {
           DriverStation.reportError("Failed to open path: " + path.toString(), e.getStackTrace());
         }
       }
       this.kTrajs = trajs;
+      this.kFullTraj = fullTraj;
     }
   }
 }
