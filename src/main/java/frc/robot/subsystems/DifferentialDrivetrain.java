@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
@@ -167,7 +168,10 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     m_odometry.update(getHeading(), leftPositionMeters, rightPositionMeters);
 
-    Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
+    // dont overide preview
+    if (!RobotState.isDisabled()) {
+      Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
+    }
   }
 
   public void restartOdometry(Pose2d initialPose) {

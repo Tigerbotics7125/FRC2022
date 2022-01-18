@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAutoTrajs;
-import frc.robot.Robot;
 import frc.robot.subsystems.DifferentialDrivetrain;
 
 public class BallToHpThenLayup extends SequentialCommandGroup {
@@ -18,7 +17,8 @@ public class BallToHpThenLayup extends SequentialCommandGroup {
     // addRequirements(m_drivetrain);
 
     for (int i = 0; i < kAuto.kTrajs.length; i++) {
-      Robot.m_field.getObject("Auto " + i).setTrajectory(kAuto.kTrajs[i]);
+      // should be fixed by adding preview in Robot
+      // Robot.m_field.getObject("Auto " + i).setTrajectory(kAuto.kTrajs[i]);
 
       addCommands(
           new RamseteCommand(
