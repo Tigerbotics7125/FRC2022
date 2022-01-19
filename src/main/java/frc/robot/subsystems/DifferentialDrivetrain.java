@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.kDistancePerPulse;
-import static frc.robot.Constants.kLeftDeviceId;
-import static frc.robot.Constants.kRPMToMPSConversionFactor;
-import static frc.robot.Constants.kRightDeviceId;
-import static frc.robot.Constants.kWheelBaseWidthMeters;
+import static frc.robot.Constants.kDDDistancePerPulse;
+import static frc.robot.Constants.kDDLeftDeviceId;
+import static frc.robot.Constants.kDDRPMToMPSConversionFactor;
+import static frc.robot.Constants.kDDRightDeviceId;
+import static frc.robot.Constants.kDDWheelBaseWidth;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -35,15 +35,15 @@ import frc.robot.Robot;
 import frc.robot.commands.Drive;
 
 public class DifferentialDrivetrain extends SubsystemBase {
-  CANSparkMax m_left = new CANSparkMax(kLeftDeviceId, MotorType.kBrushless);
-  CANSparkMax m_right = new CANSparkMax(kRightDeviceId, MotorType.kBrushless);
+  CANSparkMax m_left = new CANSparkMax(kDDLeftDeviceId, MotorType.kBrushless);
+  CANSparkMax m_right = new CANSparkMax(kDDRightDeviceId, MotorType.kBrushless);
 
   RelativeEncoder m_leftEncoder = m_left.getEncoder();
   RelativeEncoder m_rightEncoder = m_right.getEncoder();
 
   PigeonIMU m_pigeon = new PigeonIMU(50);
 
-  DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(kWheelBaseWidthMeters);
+  DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(kDDWheelBaseWidth);
   DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d());
 
   // TODO: run sysid tools to find the values for our robot.
@@ -179,18 +179,18 @@ public class DifferentialDrivetrain extends SubsystemBase {
   }
 
   public double encoderRPMToWheelMPS(double rpm) {
-    return ((double) rpm) * kRPMToMPSConversionFactor;
+    return ((double) rpm) * kDDRPMToMPSConversionFactor;
   }
 
   public double wheelMPStoEncoderRPM(double mps) {
-    return ((double) mps) / kRPMToMPSConversionFactor;
+    return ((double) mps) / kDDRPMToMPSConversionFactor;
   }
 
   public double encoderDistanceToWheelMeters(double distance) {
-    return ((double) distance) * kDistancePerPulse;
+    return ((double) distance) * kDDDistancePerPulse;
   }
 
   public double wheelMetersToEncoderDistance(double meters) {
-    return ((double) meters) / kDistancePerPulse;
+    return ((double) meters) / kDDDistancePerPulse;
   }
 }
