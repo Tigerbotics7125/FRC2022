@@ -1,27 +1,30 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAutoTrajs;
 import frc.robot.commands.auto.BallToHpThenLayup;
 import frc.robot.subsystems.DifferentialDrivetrain;
+import frc.robot.subsystems.MecanumDrivetrain;
 
 public class RobotContainer {
 
-  public DifferentialDrivetrain m_drivetrain;
+	public PowerDistribution m_pdp; // CAN id must be 0 for CTRE pdp, and 1 for REV pdh.
+	public DifferentialDrivetrain m_drivetrain;
+	public MecanumDrivetrain m_mecanumDrivetrain;
 
-  public RobotContainer() {
-    m_drivetrain = new DifferentialDrivetrain();
+	public RobotContainer() {
+		m_pdp = new PowerDistribution();
+		m_drivetrain = new DifferentialDrivetrain();
+		m_mecanumDrivetrain = new MecanumDrivetrain();
+	}
 
-    SmartDashboard.putData("Drivetrain", m_drivetrain);
-  }
-
-  public SequentialCommandGroup getAutonomousCommand(kAutoTrajs auto) {
-    switch (auto) {
-      case BALLTOHPTHENLAYUP:
-        return new BallToHpThenLayup(m_drivetrain);
-      default:
-        return null;
-    }
-  }
+	public SequentialCommandGroup getAutonomousCommand(kAutoTrajs auto) {
+		switch (auto) {
+			case BALLTOHPTHENLAYUP:
+				return new BallToHpThenLayup(m_drivetrain);
+			default:
+				return null;
+		}
+	}
 }
