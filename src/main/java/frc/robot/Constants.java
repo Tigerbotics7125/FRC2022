@@ -14,7 +14,7 @@ import java.nio.file.Path;
  * A class to contain all things that remain constant and should be easily changed, without breaking
  * other code.
  *
- * <p>All measurements should be in SI units.</p>
+ * <p>All measurements should be in SI units.
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
