@@ -2,10 +2,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.input.ThumbStick;
-import frc.robot.input.XboxGamepad;
+import frc.lib.input.ThumbStick;
+import frc.lib.input.XboxGamepad;
 
-// heavily inspired by spectrum3847's code, but modified to fit needs.
+/**
+ * Manages gamepads to control the robot.
+ *
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class Gamepads {
   public static XboxGamepad driver = new XboxGamepad(0, 0.15, 0.15);
   public static boolean driverConfigured = false;

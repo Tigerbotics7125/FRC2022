@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -11,6 +13,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAutoTrajs;
 
+/**
+ * The main robot class, runs all loops and main control
+ *
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class Robot extends TimedRobot {
   public static Field2d m_field;
   public static kAutoTrajs m_selectedAutoTrajs;
@@ -39,29 +46,29 @@ public class Robot extends TimedRobot {
     initPreGameTab();
     initAutoTab();
     initTeleopTab();
-    Shuffleboard.selectTab("Pre Game");
+    Shuffleboard.selectTab(kPreGameTabName);
   }
 
   private void initPreGameTab() {
-    m_preTab = Shuffleboard.getTab("Pre Game");
+    m_preTab = Shuffleboard.getTab(kPreGameTabName);
     m_preTab
         .add("Auto Select", m_autoChooser)
         .withWidget(BuiltInWidgets.kComboBoxChooser)
         .withSize(2, 1)
         .withPosition(0, 0);
-    m_preTab.add("Field", m_field).withSize(5, 3).withPosition(0, 2);
+    m_preTab.add("Field", m_field).withWidget("Field").withSize(5, 3).withPosition(0, 2);
   }
 
   private void initAutoTab() {
-    m_autoTab = Shuffleboard.getTab("Auto");
-    m_autoTab.add("Field", m_field).withSize(5, 3).withPosition(0, 2);
+    m_autoTab = Shuffleboard.getTab(kAutoTabName);
+    m_autoTab.add("Field", m_field).withWidget("Field").withSize(5, 3).withPosition(0, 2);
     // m_autoTab.add("Drivetrain",
     // m_container.m_drivetrain.drive).withWidget(BuiltInWidgets.kDifferentialDrive).withPosition(5,
     // 0);
   }
 
   private void initTeleopTab() {
-    m_teleopTab = Shuffleboard.getTab("Teleop");
+    m_teleopTab = Shuffleboard.getTab(kTeleopTabName);
   }
 
   @Override
@@ -78,7 +85,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    Shuffleboard.selectTab("Auto");
+    Shuffleboard.selectTab(kAutoTabName);
     // Stops all previously running commands.
     CommandScheduler.getInstance().cancelAll();
     m_selectedAutoTrajs = m_autoChooser.getSelected();
@@ -97,7 +104,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Shuffleboard.selectTab("Teleop");
+    Shuffleboard.selectTab(kTeleopTabName);
     // Stops all previously running commands.
     CommandScheduler.getInstance().cancelAll();
   }

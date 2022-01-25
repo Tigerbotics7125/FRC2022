@@ -1,11 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.kDDDistancePerPulse;
-import static frc.robot.Constants.kDDLeftDeviceId;
-import static frc.robot.Constants.kDDRPMToMPSConversionFactor;
-import static frc.robot.Constants.kDDRightDeviceId;
-import static frc.robot.Constants.kDDWheelBaseWidth;
-
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -23,7 +17,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
@@ -31,19 +24,26 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.commands.Drive;
 
+/**
+ * The differential drivetrain of the robot, able to be simulated and work in autonomous.
+ *
+ * @author 7125 Tigerbotics - Jeffrey Morris
+ */
 public class DifferentialDrivetrain extends SubsystemBase {
-  CANSparkMax m_left = new CANSparkMax(kDDLeftDeviceId, MotorType.kBrushless);
-  CANSparkMax m_right = new CANSparkMax(kDDRightDeviceId, MotorType.kBrushless);
+  CANSparkMax m_left = new CANSparkMax(Constants.kDDLeftDeviceId, MotorType.kBrushless);
+  CANSparkMax m_right = new CANSparkMax(Constants.kDDRightDeviceId, MotorType.kBrushless);
 
   RelativeEncoder m_leftEncoder = m_left.getEncoder();
   RelativeEncoder m_rightEncoder = m_right.getEncoder();
 
   PigeonIMU m_pigeon = new PigeonIMU(50);
 
-  DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(kDDWheelBaseWidth);
+  DifferentialDriveKinematics m_kinematics =
+      new DifferentialDriveKinematics(Constants.kDDWheelBaseWidth);
   DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d());
 
   // TODO: run sysid tools to find the values for our robot.
@@ -168,10 +168,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     m_odometry.update(getHeading(), leftPositionMeters, rightPositionMeters);
 
-    // dont overide preview
-    if (!RobotState.isDisabled()) {
-      Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
-    }
+    Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   public void restartOdometry(Pose2d initialPose) {
@@ -179,18 +176,18 @@ public class DifferentialDrivetrain extends SubsystemBase {
   }
 
   public double encoderRPMToWheelMPS(double rpm) {
-    return ((double) rpm) * kDDRPMToMPSConversionFactor;
+    return ((double) rpm) * Constants.kDDRPMToMPSConversionFactor;
   }
 
   public double wheelMPStoEncoderRPM(double mps) {
-    return ((double) mps) / kDDRPMToMPSConversionFactor;
+    return ((double) mps) / Constants.kDDRPMToMPSConversionFactor;
   }
 
   public double encoderDistanceToWheelMeters(double distance) {
-    return ((double) distance) * kDDDistancePerPulse;
+    return ((double) distance) * Constants.kDDDistancePerPulse;
   }
 
   public double wheelMetersToEncoderDistance(double meters) {
-    return ((double) meters) / kDDDistancePerPulse;
+    return ((double) meters) / Constants.kDDDistancePerPulse;
   }
 }

@@ -6,6 +6,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.kAutoTrajs;
 import frc.robot.subsystems.DifferentialDrivetrain;
 
+/**
+ * Takes a ball to the terminal then drops in low goal.
+ *
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class BallToHpThenLayup extends SequentialCommandGroup {
 
   DifferentialDrivetrain m_drivetrain;
