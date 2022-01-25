@@ -1,11 +1,11 @@
-// Created by Spectrum3847
-package frc.robot.input;
+package frc.lib.input;
 
 import edu.wpi.first.wpilibj.Joystick;
-import frc.robot.input.AxisButton.ThresholdType;
-import frc.robot.input.XboxGamepad.XboxAxis;
-import frc.robot.input.XboxGamepad.XboxDpad;
+import frc.lib.input.AxisButton.ThresholdType;
+import frc.lib.input.XboxGamepad.XboxAxis;
+import frc.lib.input.XboxGamepad.XboxDpad;
 
+/** @author Spectrum 3847 */
 public class Dpad {
   public final Joystick joy;
   public AxisButton Up;

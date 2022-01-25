@@ -1,6 +1,4 @@
-// Created by Spectrum3847
-// Based on Code from FRC# 2363
-package frc.robot.input.mapping;
+package frc.lib.input.mapping;
 
 /**
  * This class maps the value of a stick input to an exponential curve. It is a subclass of <code>

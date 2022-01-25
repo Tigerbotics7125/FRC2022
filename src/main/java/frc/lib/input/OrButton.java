@@ -1,8 +1,8 @@
-// Created by Spectrum3847
-package frc.robot.input;
+package frc.lib.input;
 
 import edu.wpi.first.wpilibj2.command.button.Button;
 
+/** @author Spectrum 3847 */
 public class OrButton extends Button {
 
   Button b1;

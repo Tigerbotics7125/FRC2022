@@ -1,9 +1,9 @@
-// Created by Spectrum3847
-package frc.robot.input;
+package frc.lib.input;
 
 import edu.wpi.first.wpilibj.Joystick;
-import frc.robot.input.AxisButton.ThresholdType;
+import frc.lib.input.AxisButton.ThresholdType;
 
+/** @Author Spectrum 3847 */
 public class XboxGamepad extends Joystick {
 
   public XboxGamepad(int port) {

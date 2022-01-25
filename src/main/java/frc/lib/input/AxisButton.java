@@ -1,12 +1,11 @@
-// Created by Spectrum3847
-
-package frc.robot.input;
+package frc.lib.input;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.input.XboxGamepad.XboxAxis;
+import frc.lib.input.XboxGamepad.XboxAxis;
 
+/** @author Spectrum 3847 */
 public class AxisButton extends Button {
   private final GenericHID joy;
   private final int axis;

@@ -1,11 +1,10 @@
-// Created by Spectrum3847
-
-package frc.robot.input;
+package frc.lib.input;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.input.XboxGamepad.XboxButton;
+import frc.lib.input.XboxGamepad.XboxButton;
 
+/** @author Spectrum 3847 */
 public class Button extends JoystickButton {
 
   public Button(GenericHID joystick, int buttonNumber) {

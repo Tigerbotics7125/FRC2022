@@ -1,6 +1,4 @@
-// Spectrum 3847
-// Based on Code from FRC# 2363
-package frc.robot.input.mapping;
+package frc.lib.input.mapping;
 
 /**
  * This class and its subclasses remap controller stick inputs according to specifics provided of

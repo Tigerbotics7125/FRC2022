@@ -1,11 +1,13 @@
-// Created by Spectrum3847
-package frc.robot.input;
+package frc.lib.input;
 
 import edu.wpi.first.wpilibj.Joystick;
-import frc.robot.input.XboxGamepad.XboxAxis;
-import frc.robot.input.mapping.ExpCurve;
+import frc.lib.input.XboxGamepad.XboxAxis;
+import frc.lib.input.mapping.ExpCurve;
 
-// Based on Code form Bob319 2017
+/**
+ * @author Spectrum 3847
+ * @author Bob 319
+ */
 public class ThumbStick {
   Joystick controller;
   XboxAxis xAxis;
