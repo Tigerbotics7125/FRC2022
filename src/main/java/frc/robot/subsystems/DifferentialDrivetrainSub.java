@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -24,26 +23,33 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.commands.Drive;
+import frc.robot.commands.DifferentialDrivetrainCom;
+import frc.robot.constants.Constants;
+import frc.robot.constants.DifferentialDrivetrainConstants;
 
 /**
  * The differential drivetrain of the robot, able to be simulated and work in autonomous.
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
-public class DifferentialDrivetrain extends SubsystemBase {
-  CANSparkMax m_left = new CANSparkMax(Constants.kDDLeftDeviceId, MotorType.kBrushless);
-  CANSparkMax m_right = new CANSparkMax(Constants.kDDRightDeviceId, MotorType.kBrushless);
+public class DifferentialDrivetrainSub extends SubsystemBase {
+  CANSparkMax m_left =
+      new CANSparkMax(
+          DifferentialDrivetrainConstants.kLeftDeviceId,
+          DifferentialDrivetrainConstants.kMotorType);
+  CANSparkMax m_right =
+      new CANSparkMax(
+          DifferentialDrivetrainConstants.kRightDeviceId,
+          DifferentialDrivetrainConstants.kMotorType);
 
   RelativeEncoder m_leftEncoder = m_left.getEncoder();
   RelativeEncoder m_rightEncoder = m_right.getEncoder();
 
-  PigeonIMU m_pigeon = new PigeonIMU(50);
+  PigeonIMU m_pigeon = new PigeonIMU(Constants.kPigeonId);
 
   DifferentialDriveKinematics m_kinematics =
-      new DifferentialDriveKinematics(Constants.kDDWheelBaseWidth);
+      new DifferentialDriveKinematics(DifferentialDrivetrainConstants.kWheelBaseWidth);
   DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(new Rotation2d());
 
   // TODO: run sysid tools to find the values for our robot.
@@ -71,7 +77,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
   EncoderSim m_rightEncoderSim = new EncoderSim(m_rightEncoderDummy);
   ADXRS450_GyroSim m_gyroSim = new ADXRS450_GyroSim(m_gyroDummy);
 
-  public DifferentialDrivetrain() {
+  public DifferentialDrivetrainSub() {
     m_left.setInverted(false);
     m_right.setInverted(true);
 
@@ -80,7 +86,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
       REVPhysicsSim.getInstance().addSparkMax(m_right, DCMotor.getNEO(1));
     }
 
-    setDefaultCommand(new Drive(this));
+    setDefaultCommand(new DifferentialDrivetrainCom(this));
   }
 
   @Override
@@ -168,7 +174,7 @@ public class DifferentialDrivetrain extends SubsystemBase {
 
     m_odometry.update(getHeading(), leftPositionMeters, rightPositionMeters);
 
-    Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
+    // Robot.m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
   public void restartOdometry(Pose2d initialPose) {
@@ -176,18 +182,18 @@ public class DifferentialDrivetrain extends SubsystemBase {
   }
 
   public double encoderRPMToWheelMPS(double rpm) {
-    return ((double) rpm) * Constants.kDDRPMToMPSConversionFactor;
+    return ((double) rpm) * DifferentialDrivetrainConstants.kRPMToMPSConversionFactor;
   }
 
   public double wheelMPStoEncoderRPM(double mps) {
-    return ((double) mps) / Constants.kDDRPMToMPSConversionFactor;
+    return ((double) mps) / DifferentialDrivetrainConstants.kRPMToMPSConversionFactor;
   }
 
   public double encoderDistanceToWheelMeters(double distance) {
-    return ((double) distance) * Constants.kDDDistancePerPulse;
+    return ((double) distance) * DifferentialDrivetrainConstants.kDistancePerPulse;
   }
 
   public double wheelMetersToEncoderDistance(double meters) {
-    return ((double) meters) / Constants.kDDDistancePerPulse;
+    return ((double) meters) / DifferentialDrivetrainConstants.kDistancePerPulse;
   }
 }
