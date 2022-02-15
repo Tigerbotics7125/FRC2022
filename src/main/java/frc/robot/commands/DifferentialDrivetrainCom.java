@@ -4,18 +4,18 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Gamepads;
-import frc.robot.subsystems.DifferentialDrivetrain;
+import frc.robot.subsystems.DifferentialDrivetrainSub;
 
 /**
  * Drives a DifferentialDrivetrain
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
-public class Drive extends CommandBase {
+public class DifferentialDrivetrainCom extends CommandBase {
 
-  DifferentialDrivetrain m_drivetrain;
+  DifferentialDrivetrainSub m_drivetrain;
 
-  public Drive(DifferentialDrivetrain drivetrain) {
+  public DifferentialDrivetrainCom(DifferentialDrivetrainSub drivetrain) {
     addRequirements(drivetrain);
     m_drivetrain = drivetrain;
   }
@@ -27,7 +27,7 @@ public class Drive extends CommandBase {
   public void execute() {
     WheelSpeeds ws =
         DifferentialDrive.arcadeDriveIK(
-            Gamepads.getDriveJoystick().getY(), Gamepads.getDriveJoystick().getX(), true);
+            Gamepads.getDiffDriveYJoystick().getY(), Gamepads.getDiffDriveXJoystick().getX(), true);
     m_drivetrain.setOutput(ws.left * 12.0, ws.right * 12.0);
   }
 
