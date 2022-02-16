@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -21,6 +22,7 @@ import frc.robot.DashboardManager;
 import frc.robot.DashboardManager.Tab;
 import frc.robot.Robot;
 import frc.robot.commands.MecanumDrivetrainCom;
+import frc.robot.commands.auto.HolonomicTestPath;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MecanumDrivetrainConstants;
 
@@ -65,6 +67,7 @@ public class MecanumDrivetrainSub extends SubsystemBase {
 
   // IMU, kinematics, and odometry
   static final PigeonIMU m_pigeon = new PigeonIMU(Constants.kPigeonId);
+  static final WPI_PigeonIMU m_simPigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
   static final MecanumDriveKinematics m_kinematics =
       new MecanumDriveKinematics(
@@ -72,6 +75,12 @@ public class MecanumDrivetrainSub extends SubsystemBase {
 
   static final MecanumDriveOdometry m_odometry =
       new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+
+  // Variables for dashboard
+  static double m_frontLeftVelocitySetpoint = 0;
+  static double m_rearLeftVelocitySetpoint = 0;
+  static double m_frontRightVelocitySetpoint = 0;
+  static double m_rearRightVelocitySetpoint = 0;
 
   public MecanumDrivetrainSub() {
     // invert right side because motors backwards.
@@ -99,9 +108,29 @@ public class MecanumDrivetrainSub extends SubsystemBase {
     m_rearRightEncoder.setPosition(0.0);
 
     // dashboard stuffz
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot X Vel", this::getXVelocity);
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Y Vel", this::getYVelocity);
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Rot Deg", this.getHeading()::getDegrees);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber(
+            "Robot X Vel", () -> m_kinematics.toChassisSpeeds(getSpeeds()).vxMetersPerSecond);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber(
+            "Robot Y Vel", () -> m_kinematics.toChassisSpeeds(getSpeeds()).vyMetersPerSecond);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber(
+            "Robot Theta Vel",
+            () -> m_kinematics.toChassisSpeeds(getSpeeds()).omegaRadiansPerSecond);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Rot Deg", () -> getHeading().getDegrees());
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot FL Vel", this::getFLVelocity);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot RL Vel", this::getRLVelocity);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot FR Vel", this::getFRVelocity);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot RR Vel", this::getRRVelocity);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber("Robot FL Vel Setpoint", this::getFLVelocitySetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber("Robot RL Vel Setpoint", this::getRLVelocitySetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber("Robot FR Vel Setpoint", this::getFRVelocitySetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name)
+        .addNumber("Robot RR Vel Setpoint", this::getRRVelocitySetpoint);
 
     if (Robot.isSimulation()) {
       REVPhysicsSim.getInstance().addSparkMax(m_frontLeft, DCMotor.getNEO(1));
@@ -114,26 +143,23 @@ public class MecanumDrivetrainSub extends SubsystemBase {
     setDefaultCommand(new MecanumDrivetrainCom(this));
   }
 
-  /**
-   * the heading but negative because of the unit circle vs gyro.
-   *
-   * @return the current heading of the robot
-   */
-  public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
+  /** general periodic updates. */
+  @Override
+  public void periodic() {
+    setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
+    m_odometry.update(getHeading(), getSpeeds());
+    DashboardManager.getField().setRobotPose(m_odometry.getPoseMeters());
   }
 
-  /** @returns the current position of the robot. */
-  public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+  /** update sparkmaxs during sim */
+  @Override
+  public void simulationPeriodic() {
+    REVPhysicsSim.getInstance().run();
   }
 
-  /** sets the drivetrain to move according to the input. */
-  public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-    m_frontLeftPID.setReference(speeds.frontLeftMetersPerSecond, ControlType.kVelocity);
-    m_rearLeftPID.setReference(speeds.rearLeftMetersPerSecond, ControlType.kVelocity);
-    m_frontRightPID.setReference(speeds.frontRightMetersPerSecond, ControlType.kVelocity);
-    m_rearRightPID.setReference(speeds.rearRightMetersPerSecond, ControlType.kSmartVelocity);
+  /** reset the odometry of the drivetrain */
+  public void resetOdometry(final Pose2d pose) {
+    m_odometry.resetPosition(pose, getHeading());
   }
 
   /** sets the drivetrain to move according to the input. */
@@ -148,6 +174,55 @@ public class MecanumDrivetrainSub extends SubsystemBase {
     setSpeeds(mecanumDriveWheelSpeeds);
   }
 
+  /** sets the drivetrain to move according to the input. */
+  public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
+    m_frontLeftVelocitySetpoint = speeds.frontLeftMetersPerSecond;
+    m_rearLeftVelocitySetpoint = speeds.rearLeftMetersPerSecond;
+    m_frontRightVelocitySetpoint = speeds.frontRightMetersPerSecond;
+    m_rearRightVelocitySetpoint = speeds.rearRightMetersPerSecond;
+
+    m_frontLeftPID.setReference(speeds.frontLeftMetersPerSecond, ControlType.kVelocity);
+    m_rearLeftPID.setReference(speeds.rearLeftMetersPerSecond, ControlType.kVelocity);
+    m_frontRightPID.setReference(speeds.frontRightMetersPerSecond, ControlType.kVelocity);
+    m_rearRightPID.setReference(speeds.rearRightMetersPerSecond, ControlType.kVelocity);
+  }
+
+  public void setSimHeading(double degrees) {
+    m_simPigeon.setFusedHeading(degrees);
+  }
+
+  public double getFLVelocity() {
+    return m_frontLeftEncoder.getVelocity();
+  }
+
+  public double getFLVelocitySetpoint() {
+    return m_frontLeftVelocitySetpoint;
+  }
+
+  public double getRLVelocity() {
+    return m_rearLeftEncoder.getVelocity();
+  }
+
+  public double getRLVelocitySetpoint() {
+    return m_rearLeftVelocitySetpoint;
+  }
+
+  public double getFRVelocity() {
+    return m_frontRightEncoder.getVelocity();
+  }
+
+  public double getFRVelocitySetpoint() {
+    return m_frontRightVelocitySetpoint;
+  }
+
+  public double getRRVelocity() {
+    return m_rearRightEncoder.getVelocity();
+  }
+
+  public double getRRVelocitySetpoint() {
+    return m_rearRightVelocitySetpoint;
+  }
+
   /** @returns the current velocity of the robot. */
   public MecanumDriveWheelSpeeds getSpeeds() {
     return new MecanumDriveWheelSpeeds(
@@ -157,31 +232,26 @@ public class MecanumDrivetrainSub extends SubsystemBase {
         m_rearRightEncoder.getVelocity());
   }
 
-  /** general periodic updates. */
-  @Override
-  public void periodic() {
-    m_odometry.update(getHeading(), getSpeeds());
-    DashboardManager.getField().setRobotPose(m_odometry.getPoseMeters());
-  }
-
-  public double getXVelocity() {
-    return m_kinematics.toChassisSpeeds(getSpeeds()).vxMetersPerSecond;
-  }
-
-  public double getYVelocity() {
-    return m_kinematics.toChassisSpeeds(getSpeeds()).vyMetersPerSecond;
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    REVPhysicsSim.getInstance().run();
-  }
-
+  /** @returns the drivetrains kinematics */
   public MecanumDriveKinematics getKinematics() {
     return m_kinematics;
   }
 
-  public void resetOdometry(final Pose2d pose) {
-    m_odometry.resetPosition(pose, getHeading());
+  /**
+   * the heading but negative because of the unit circle vs gyro.
+   *
+   * @return the current heading of the robot
+   */
+  public Rotation2d getHeading() {
+    if (Robot.isReal()) {
+      return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
+    } else {
+      return Rotation2d.fromDegrees(-m_simPigeon.getFusedHeading());
+    }
+  }
+
+  /** @returns the current position of the robot. */
+  public Pose2d getPose() {
+    return m_odometry.getPoseMeters();
   }
 }
