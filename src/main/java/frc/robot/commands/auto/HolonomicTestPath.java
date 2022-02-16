@@ -5,8 +5,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.lib.command.MecanumControllerCommand;
 import frc.lib.util.PreviewableCommand;
 import frc.robot.DashboardManager;
 import frc.robot.DashboardManager.Tab;
@@ -20,11 +20,11 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
   private static final HolonomicTestPath instance = new HolonomicTestPath();
 
   private MecanumDrivetrainSub m_drivetrain = RobotContainer.m_drivetrain;
-  private AutonomousTrajectory kAuto = AutonomousTrajectory.HOLONOMIC_TEST_PATH;
+  private AutonomousTrajectory kAuto = AutonomousTrajectory.HOLONOMIC_TEST_PATH_2;
 
   private PIDController m_xPID = new PIDController(1, 0, 0);
   private PIDController m_yPID = new PIDController(1, 0, 0);
-  private ProfiledPIDController m_thetaPID =
+  public ProfiledPIDController m_thetaPID =
       new ProfiledPIDController(1, 0, 0, new Constraints(6.28, 3.14));
 
   private Command m_mecConCom =
@@ -35,7 +35,7 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
           m_xPID,
           m_yPID,
           m_thetaPID,
-          m_drivetrain::getHeading,
+          /*m_drivetrain::getHeading,*/
           MecanumDrivetrainConstants.kMaxSpeed,
           m_drivetrain::setSpeeds,
           m_drivetrain);
@@ -43,10 +43,10 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
   private HolonomicTestPath() {
     DashboardManager.getField().getObject(this.getName()).setTrajectory(kAuto.kTrajs[0]);
 
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Target X Vel", m_xPID::getSetpoint);
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Target Y Vel", m_yPID::getSetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot X Vel Setpoint", m_xPID::getSetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Y Vel Setpoint", m_yPID::getSetpoint);
     Shuffleboard.getTab(Tab.AUTO.name)
-        .addNumber("Robot Target Rot Deg", () -> m_thetaPID.getSetpoint().position);
+        .addNumber("Robot Theta Vel Setpoint", () -> m_thetaPID.getSetpoint().velocity);
 
     addCommands(m_mecConCom);
   }
