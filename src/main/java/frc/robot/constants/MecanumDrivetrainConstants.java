@@ -19,10 +19,11 @@ public class MecanumDrivetrainConstants {
   public static final MotorType kMotorType = MotorType.kBrushless;
 
   // Offset in meters from center of robot (also imu)
-  public static final Translation2d kFrontLeftOffset = new Translation2d(1, 1); // TODO:
-  public static final Translation2d kRearLeftOffset = new Translation2d(-1, 1); // TODO:
-  public static final Translation2d kFrontRightOffset = new Translation2d(1, -1); // TODO:
-  public static final Translation2d kRearRightOffset = new Translation2d(-1, -1); // TODO:
+  
+  public static final Translation2d kFrontLeftOffset = new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(-10.857));
+  public static final Translation2d kRearLeftOffset = new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(-10.857));
+  public static final Translation2d kFrontRightOffset = new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(10.857));
+  public static final Translation2d kRearRightOffset = new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(10.857));
 
   // General constants
   public static final double kWheelDiameter = Units.inchesToMeters(6);
