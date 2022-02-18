@@ -40,11 +40,12 @@ public class Constants {
               .toPath()
               .resolve("pathplanner/generatedJSON/HolonomicTestPath.wpilib.json")
         }),
-    HOLONOMIC_TEST_PATH_2(new Path[] {
-      Filesystem.getDeployDirectory()
-          .toPath()
-          .resolve("pathplanner/generatedJSON/HolonomicTestPath2.wpilib.json")
-    });
+    HOLONOMIC_TEST_PATH_2(
+        new Path[] {
+          Filesystem.getDeployDirectory()
+              .toPath()
+              .resolve("pathplanner/generatedJSON/HolonomicTestPath2.wpilib.json")
+        });
 
     public Trajectory[] kTrajs;
     public Trajectory kFullTraj;
