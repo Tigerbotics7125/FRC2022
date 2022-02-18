@@ -1,8 +1,7 @@
 package frc.robot.commands.auto;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import static frc.robot.constants.MecanumDrivetrainConstants.*;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -22,19 +21,14 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
   private MecanumDrivetrainSub m_drivetrain = RobotContainer.m_drivetrain;
   private AutonomousTrajectory kAuto = AutonomousTrajectory.HOLONOMIC_TEST_PATH_2;
 
-  private PIDController m_xPID = new PIDController(1, 0, 0);
-  private PIDController m_yPID = new PIDController(1, 0, 0);
-  public ProfiledPIDController m_thetaPID =
-      new ProfiledPIDController(1, 0, 0, new Constraints(6.28, 3.14));
-
   private Command m_mecConCom =
       new MecanumControllerCommand(
           kAuto.kTrajs[0],
           m_drivetrain::getPose,
           m_drivetrain.getKinematics(),
-          m_xPID,
-          m_yPID,
-          m_thetaPID,
+          kXPID,
+          kYPID,
+          kThetaPID,
           /*m_drivetrain::getHeading,*/
           MecanumDrivetrainConstants.kMaxSpeed,
           m_drivetrain::setSpeeds,
@@ -43,10 +37,10 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
   private HolonomicTestPath() {
     DashboardManager.getField().getObject(this.getName()).setTrajectory(kAuto.kTrajs[0]);
 
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot X Vel Setpoint", m_xPID::getSetpoint);
-    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Y Vel Setpoint", m_yPID::getSetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot X Vel Setpoint", kXPID::getSetpoint);
+    Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Y Vel Setpoint", kYPID::getSetpoint);
     Shuffleboard.getTab(Tab.AUTO.name)
-        .addNumber("Robot Theta Vel Setpoint", () -> m_thetaPID.getSetpoint().velocity);
+        .addNumber("Robot Theta Vel Setpoint", () -> kThetaPID.getSetpoint().velocity);
 
     addCommands(m_mecConCom);
   }
