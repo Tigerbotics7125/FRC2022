@@ -1,7 +1,10 @@
 package frc.robot.constants;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 
 public class MecanumDrivetrainConstants {
@@ -19,11 +22,20 @@ public class MecanumDrivetrainConstants {
   public static final MotorType kMotorType = MotorType.kBrushless;
 
   // Offset in meters from center of robot (also imu)
-  
-  public static final Translation2d kFrontLeftOffset = new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(-10.857));
-  public static final Translation2d kRearLeftOffset = new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(-10.857));
-  public static final Translation2d kFrontRightOffset = new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(10.857));
-  public static final Translation2d kRearRightOffset = new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(10.857));
+  public static final Translation2d kFrontLeftOffset =
+      new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(-10.857));
+  public static final Translation2d kRearLeftOffset =
+      new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(-10.857));
+  public static final Translation2d kFrontRightOffset =
+      new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(10.857));
+  public static final Translation2d kRearRightOffset =
+      new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(10.857));
+
+  // PID Controllers for auto
+  public static final PIDController kXPID = new PIDController(1, 0, 0);
+  public static final PIDController kYPID = new PIDController(1, 0, 0);
+  public static final ProfiledPIDController kThetaPID =
+      new ProfiledPIDController(1, 0, 0, new Constraints(6.28, 3.14));
 
   // General constants
   public static final double kWheelDiameter = Units.inchesToMeters(6);
