@@ -72,12 +72,24 @@ public class DashboardManager {
         .withWidget(kField)
         .withSize(5, 3)
         .withPosition(0, 2);
+    m_tabs
+        .get(Tab.AUTO.name)
+        .add(RobotContainer.m_drivetrain.getDescription(), RobotContainer.m_drivetrain)
+        .withWidget(BuiltInWidgets.kMecanumDrive)
+        .withSize(3, 3)
+        .withPosition(0, 0);
 
     // TELEOP
     m_tabs
         .get(Tab.TELEOP.name)
         .add("Drive Sub", RobotContainer.m_drivetrain)
         .withSize(1, 1)
+        .withPosition(0, 0);
+    m_tabs
+        .get(Tab.TELEOP.name)
+        .add(RobotContainer.m_drivetrain.getDescription(), RobotContainer.m_drivetrain)
+        .withWidget(BuiltInWidgets.kMecanumDrive)
+        .withSize(3, 3)
         .withPosition(0, 0);
   }
 
