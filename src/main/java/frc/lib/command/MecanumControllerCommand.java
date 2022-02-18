@@ -6,9 +6,6 @@ package frc.lib.command;
 
 import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -23,6 +20,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A command that uses two PID controllers ({@link PIDController}) and a ProfiledPIDController
@@ -185,43 +184,43 @@ public class MecanumControllerCommand extends CommandBase {
    * @param requirements The subsystems to require.
    */
   /*
-  @SuppressWarnings("ParameterName")
-  public MecanumControllerCommand(
-      Trajectory trajectory,
-      Supplier<Pose2d> pose,
-      SimpleMotorFeedforward feedforward,
-      MecanumDriveKinematics kinematics,
-      PIDController xController,
-      PIDController yController,
-      ProfiledPIDController thetaController,
-      double maxWheelVelocityMetersPerSecond,
-      PIDController frontLeftController,
-      PIDController rearLeftController,
-      PIDController frontRightController,
-      PIDController rearRightController,
-      Supplier<MecanumDriveWheelSpeeds> currentWheelSpeeds,
-      Consumer<MecanumDriveMotorVoltages> outputDriveVoltages,
-      Subsystem... requirements) {
-    this(
-        trajectory,
-        pose,
-        feedforward,
-        kinematics,
-        xController,
-        yController,
-        thetaController,
-        () ->
-            trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation(),
-        maxWheelVelocityMetersPerSecond,
-        frontLeftController,
-        rearLeftController,
-        frontRightController,
-        rearRightController,
-        currentWheelSpeeds,
-        outputDriveVoltages,
-        requirements);
-  }
-*/
+    @SuppressWarnings("ParameterName")
+    public MecanumControllerCommand(
+        Trajectory trajectory,
+        Supplier<Pose2d> pose,
+        SimpleMotorFeedforward feedforward,
+        MecanumDriveKinematics kinematics,
+        PIDController xController,
+        PIDController yController,
+        ProfiledPIDController thetaController,
+        double maxWheelVelocityMetersPerSecond,
+        PIDController frontLeftController,
+        PIDController rearLeftController,
+        PIDController frontRightController,
+        PIDController rearRightController,
+        Supplier<MecanumDriveWheelSpeeds> currentWheelSpeeds,
+        Consumer<MecanumDriveMotorVoltages> outputDriveVoltages,
+        Subsystem... requirements) {
+      this(
+          trajectory,
+          pose,
+          feedforward,
+          kinematics,
+          xController,
+          yController,
+          thetaController,
+          () ->
+              trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation(),
+          maxWheelVelocityMetersPerSecond,
+          frontLeftController,
+          rearLeftController,
+          frontRightController,
+          rearRightController,
+          currentWheelSpeeds,
+          outputDriveVoltages,
+          requirements);
+    }
+  */
 
   /**
    * Constructs a new MecanumControllerCommand that when executed will follow the provided
@@ -365,7 +364,7 @@ public class MecanumControllerCommand extends CommandBase {
     var desiredState = m_trajectory.sample(curTime);
 
     var targetChassisSpeeds =
-        m_controller.calculate(m_pose.get(), desiredState, m_desiredRotation.get());
+        m_controller.calculate(m_pose.get(), desiredState, desiredState.poseMeters.getRotation());
     var targetWheelSpeeds = m_kinematics.toWheelSpeeds(targetChassisSpeeds);
 
     targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);
