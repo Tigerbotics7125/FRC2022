@@ -13,8 +13,9 @@ public class ArmConstants {
   public static final double kAVoltSecondSquaredPerRad = 0.0; // acceleration gain // TODO:
 
   public static final double kP = 0.0; // proportional // TODO:
-  public static final double kI = 0.0; // integral // TODO:
   public static final double kD = 0.0; // derivative // TODO:
+  public static final double kI = 0.0; // integral // TODO:
+  public static final double kFF = 0; // feedforward // TODO:
 
   public static final double kMaxAccelerationRadPerSecSquared = 0.0; // TODO:
   public static final double kArmOffsetRads = 0.0; // TODO:
