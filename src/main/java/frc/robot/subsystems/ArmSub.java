@@ -29,13 +29,11 @@ public class ArmSub extends TrapezoidProfileSubsystem {
     m_pidController.setP(ArmConstants.kP);
     m_pidController.setI(ArmConstants.kI);
     m_pidController.setD(ArmConstants.kD);
+    m_pidController.setFF(ArmConstants.kFF);
   }
 
   @Override
   public void useState(TrapezoidProfile.State setpoint) {
-    // Add the feedforward to the PID output to get the motor output
-    m_pidController.setFF(m_feedforward.calculate(setpoint.position, setpoint.velocity));
-
     m_pidController.setReference(setpoint.position, CANSparkMax.ControlType.kPosition);
   }
 }
