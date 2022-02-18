@@ -4,10 +4,10 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,13 +16,13 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
 import frc.robot.DashboardManager.Tab;
 import frc.robot.Robot;
 import frc.robot.commands.MecanumDrivetrainCom;
-import frc.robot.commands.auto.HolonomicTestPath;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MecanumDrivetrainConstants;
 
@@ -31,7 +31,7 @@ import frc.robot.constants.MecanumDrivetrainConstants;
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
-public class MecanumDrivetrainSub extends SubsystemBase {
+public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
 
   // local constants to reduce clutter
   static final double kMaxSpeed = MecanumDrivetrainConstants.kMaxSpeed;
@@ -40,7 +40,8 @@ public class MecanumDrivetrainSub extends SubsystemBase {
   static final int kRearLeftId = MecanumDrivetrainConstants.kRearLeftId;
   static final int kFrontRightId = MecanumDrivetrainConstants.kFrontRightId;
   static final int kRearRightId = MecanumDrivetrainConstants.kRearRightId;
-  static final MotorType kMotorType = MecanumDrivetrainConstants.kMotorType;
+  static final com.revrobotics.CANSparkMaxLowLevel.MotorType kMotorType =
+      MecanumDrivetrainConstants.kMotorType;
   static final Translation2d kFrontLeftOffset = MecanumDrivetrainConstants.kFrontLeftOffset;
   static final Translation2d kRearLeftOffset = MecanumDrivetrainConstants.kRearLeftOffset;
   static final Translation2d kFrontRightOffset = MecanumDrivetrainConstants.kFrontRightOffset;
@@ -83,6 +84,8 @@ public class MecanumDrivetrainSub extends SubsystemBase {
   static double m_rearRightVelocitySetpoint = 0;
 
   public MecanumDrivetrainSub() {
+    super(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight);
+
     // invert right side because motors backwards.
     m_frontLeft.setInverted(false);
     m_rearLeft.setInverted(false);
@@ -146,7 +149,7 @@ public class MecanumDrivetrainSub extends SubsystemBase {
   /** general periodic updates. */
   @Override
   public void periodic() {
-    setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
+    // setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
     m_odometry.update(getHeading(), getSpeeds());
     DashboardManager.getField().setRobotPose(m_odometry.getPoseMeters());
   }
@@ -163,13 +166,16 @@ public class MecanumDrivetrainSub extends SubsystemBase {
   }
 
   /** sets the drivetrain to move according to the input. */
-  public void drive(
-      final double xSpeed, final double ySpeed, final double rot, final boolean fieldRelative) {
+  @Override
+  public void driveCartesian(
+      final double xJoystick, final double yJoystick, final double zJoystick) {
+    double xSpeed = MathUtil.clamp(xJoystick, -1.0, 1.0) * MecanumDrivetrainConstants.kMaxSpeed;
+    double ySpeed = MathUtil.clamp(yJoystick, -1.0, 1.0) * MecanumDrivetrainConstants.kMaxSpeed;
+    double zSpeed =
+        MathUtil.clamp(zJoystick, -1.0, 1.0) * MecanumDrivetrainConstants.kMaxAngularSpeed;
     final MecanumDriveWheelSpeeds mecanumDriveWheelSpeeds =
         m_kinematics.toWheelSpeeds(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading())
-                : new ChassisSpeeds(xSpeed, ySpeed, rot));
+            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, zSpeed, getHeading()));
     mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
     setSpeeds(mecanumDriveWheelSpeeds);
   }
