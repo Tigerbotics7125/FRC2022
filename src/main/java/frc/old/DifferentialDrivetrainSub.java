@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.old;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -24,9 +24,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSiz
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.commands.DifferentialDrivetrainCom;
 import frc.robot.constants.Constants;
-import frc.robot.constants.DifferentialDrivetrainConstants;
 
 /**
  * The differential drivetrain of the robot, able to be simulated and work in autonomous.
