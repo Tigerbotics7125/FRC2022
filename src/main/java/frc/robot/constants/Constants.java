@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) 2022, Tigerbotics' team members and all other contributors.
+ * Open source software; you can modify and/or share this software.
+ */
 package frc.robot.constants;
 
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -17,58 +21,61 @@ import java.nio.file.Path;
  */
 public class Constants {
 
-  // World Constants
+    // World Constants
 
-  // Misc
-  public static final int kPowerDistributionPanelId = 0;
-  public static final int kPigeonId = 50;
+    // Misc
+    public static final int kPowerDistributionPanelId = 0;
+    public static final int kPigeonId = 50;
 
-  // Autonomous Trajectories & File Paths
-  public enum AutonomousTrajectory {
-    DEFAULT(
-        new Path[] {
-          Filesystem.getDeployDirectory().toPath().resolve("paths/exitTarmac.wpilib.json")
-        }),
-    BALLTOHPTHENLAYUP(
-        new Path[] {
-          Filesystem.getDeployDirectory().toPath().resolve("paths/BallToHP.wpilib.json"),
-          Filesystem.getDeployDirectory().toPath().resolve("paths/terminalToHub.wpilib.json")
-        }),
-    HOLONOMIC_TEST_PATH(
-        new Path[] {
-          Filesystem.getDeployDirectory()
-              .toPath()
-              .resolve("pathplanner/generatedJSON/HolonomicTestPath.wpilib.json")
-        }),
-    HOLONOMIC_TEST_PATH_2(
-        new Path[] {
-          Filesystem.getDeployDirectory()
-              .toPath()
-              .resolve("pathplanner/generatedJSON/HolonomicTestPath2.wpilib.json")
-        });
+    // Autonomous Trajectories & File Paths
+    public enum AutonomousTrajectory {
+        DEFAULT(
+                new Path[] {
+                    Filesystem.getDeployDirectory().toPath().resolve("paths/exitTarmac.wpilib.json")
+                }),
+        BALLTOHPTHENLAYUP(
+                new Path[] {
+                    Filesystem.getDeployDirectory().toPath().resolve("paths/BallToHP.wpilib.json"),
+                    Filesystem.getDeployDirectory()
+                            .toPath()
+                            .resolve("paths/terminalToHub.wpilib.json")
+                }),
+        HOLONOMIC_TEST_PATH(
+                new Path[] {
+                    Filesystem.getDeployDirectory()
+                            .toPath()
+                            .resolve("pathplanner/generatedJSON/HolonomicTestPath.wpilib.json")
+                }),
+        HOLONOMIC_TEST_PATH_2(
+                new Path[] {
+                    Filesystem.getDeployDirectory()
+                            .toPath()
+                            .resolve("pathplanner/generatedJSON/HolonomicTestPath2.wpilib.json")
+                });
 
-    public Trajectory[] kTrajs;
-    public Trajectory kFullTraj;
+        public Trajectory[] kTrajs;
+        public Trajectory kFullTraj;
 
-    private AutonomousTrajectory(Path[] trajPaths) {
-      Trajectory[] trajs = new Trajectory[trajPaths.length];
-      Trajectory fullTraj = null;
-      for (int i = 0; i < trajPaths.length; i++) {
-        Path path = trajPaths[i];
-        try {
-          trajs[i] = (TrajectoryUtil.fromPathweaverJson(path));
+        private AutonomousTrajectory(Path[] trajPaths) {
+            Trajectory[] trajs = new Trajectory[trajPaths.length];
+            Trajectory fullTraj = null;
+            for (int i = 0; i < trajPaths.length; i++) {
+                Path path = trajPaths[i];
+                try {
+                    trajs[i] = (TrajectoryUtil.fromPathweaverJson(path));
 
-          if (fullTraj == null) {
-            fullTraj = trajs[i];
-          } else {
-            fullTraj = fullTraj.concatenate(trajs[i]);
-          }
-        } catch (IOException e) {
-          DriverStation.reportError("Failed to open path: " + path.toString(), e.getStackTrace());
+                    if (fullTraj == null) {
+                        fullTraj = trajs[i];
+                    } else {
+                        fullTraj = fullTraj.concatenate(trajs[i]);
+                    }
+                } catch (IOException e) {
+                    DriverStation.reportError(
+                            "Failed to open path: " + path.toString(), e.getStackTrace());
+                }
+            }
+            this.kTrajs = trajs;
+            this.kFullTraj = fullTraj;
         }
-      }
-      this.kTrajs = trajs;
-      this.kFullTraj = fullTraj;
     }
-  }
 }
