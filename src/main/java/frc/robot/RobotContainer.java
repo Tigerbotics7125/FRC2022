@@ -23,8 +23,8 @@ public class RobotContainer {
 
     public RobotContainer() {}
 
-    public SequentialCommandGroup getAutonomousCommand(AutonomousTrajectory auto) {
-        switch (auto) {
+    public SequentialCommandGroup getAutonomousCommand() {
+        switch ((AutonomousTrajectory) DashboardManager.kAutoChooser.getSelected()) {
             case HOLONOMIC_TEST_PATH:
                 return HolonomicTestPath.getInstance();
             default:

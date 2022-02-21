@@ -26,9 +26,9 @@ public class Robot extends TimedRobot {
         // auto chooser
         // temporary default until we have an actual default.
         // m_autoChooser.setDefaultOption("Default", kAutoTrajs.DEFAULT);
-        DashboardManager.getAutoChooser()
+        DashboardManager.kAutoChooser
                 .setDefaultOption("ball to hp then layup", AutonomousTrajectory.BALLTOHPTHENLAYUP);
-        DashboardManager.getAutoChooser()
+        DashboardManager.kAutoChooser
                 .addOption("HoloTest", AutonomousTrajectory.HOLONOMIC_TEST_PATH);
         DashboardManager.initTabs();
         DashboardManager.showTab(Tab.PRE_GAME);
@@ -42,13 +42,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        DashboardManager.showTab(Tab.AUTO);
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
+
         SequentialCommandGroup autoCommand =
-                m_container.getAutonomousCommand(DashboardManager.getAutoChooser().getSelected());
+                m_container.getAutonomousCommand();
         if (autoCommand != null) {
             RobotContainer.m_drivetrain.resetOdometry(
-                    DashboardManager.getAutoChooser()
+                    DashboardManager.kAutoChooser
                             .getSelected()
                             .kTrajs[0]
                             .getInitialPose()); // sets odometry to initial pose.
@@ -81,10 +83,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        DashboardManager.showTab(Tab.PRE_GAME);
         CommandScheduler.getInstance().cancelAll();
         Gamepads.resetConfig();
     }
-
+    
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        DashboardManager.showTab(Tab.PRE_GAME);
+    }
 }

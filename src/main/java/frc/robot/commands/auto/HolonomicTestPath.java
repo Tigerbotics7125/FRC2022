@@ -6,9 +6,12 @@ package frc.robot.commands.auto;
 
 import static frc.robot.constants.MecanumDrivetrainConstants.*;
 
+import java.util.Set;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.lib.command.MecanumControllerCommand;
 import frc.lib.util.PreviewableCommand;
 import frc.robot.DashboardManager;
@@ -39,7 +42,7 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
                     m_drivetrain);
 
     private HolonomicTestPath() {
-        DashboardManager.getField().getObject(this.getName()).setTrajectory(kAuto.kTrajs[0]);
+        DashboardManager.kField.getObject(this.getName()).setTrajectory(kAuto.kTrajs[0]);
 
         Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot X Vel Setpoint", kXPID::getSetpoint);
         Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Y Vel Setpoint", kYPID::getSetpoint);
@@ -47,6 +50,12 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
                 .addNumber("Robot Theta Vel Setpoint", () -> kThetaPID.getSetpoint().velocity);
 
         addCommands(m_mecConCom);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        m_drivetrain.stopMotor();
     }
 
     @Override

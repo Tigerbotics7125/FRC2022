@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.Constants.AutonomousTrajectory;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +18,8 @@ public class DashboardManager {
 
     private static final Map<String, ShuffleboardTab> kTabs = new HashMap<>();
 
-    private static final Field2d kField = new Field2d();
-    private static final SendableChooser<AutonomousTrajectory> kAutoChooser =
+    public static final Field2d kField = new Field2d();
+    public static final SendableChooser<AutonomousTrajectory> kAutoChooser =
             new SendableChooser<AutonomousTrajectory>();
 
     private static final String kFieldWidget =
@@ -58,12 +59,15 @@ public class DashboardManager {
                 .withWidget(BuiltInWidgets.kComboBoxChooser)
                 .withSize(3, 1)
                 .withPosition(0, 0);
+        SmartDashboard.putData("Autonomous Selection", kAutoChooser);
+
         kTabs.get(Tab.PRE_GAME.name)
                 .add("Field", kField)
                 .withWidget(kFieldWidget)
                 .withSize(5, 3)
                 .withPosition(0, 2);
-        // #endregion
+        SmartDashboard.putData("Field", kField);
+                // #endregion
 
         // #region AUTO
         kTabs.get(Tab.AUTO.name)
@@ -89,13 +93,5 @@ public class DashboardManager {
                 .withSize(3, 3)
                 .withPosition(0, 0);
         // #endregion
-    }
-
-    public static Field2d getField() {
-        return kField;
-    }
-
-    public static SendableChooser<AutonomousTrajectory> getAutoChooser() {
-        return kAutoChooser;
     }
 }
