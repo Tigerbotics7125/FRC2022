@@ -67,7 +67,7 @@ public class DashboardManager {
                 .withSize(5, 3)
                 .withPosition(0, 2);
         SmartDashboard.putData("Field", kField);
-                // #endregion
+        // #endregion
 
         // #region AUTO
         kTabs.get(Tab.AUTO.name)

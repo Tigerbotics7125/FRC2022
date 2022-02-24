@@ -7,9 +7,10 @@ package frc.robot.constants;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 public class ArmConstants {
-    
+
     public static final int kId = 5;
-    public static final CANSparkMaxLowLevel.MotorType kMotorType = CANSparkMaxLowLevel.MotorType.kBrushed;
+    public static final CANSparkMaxLowLevel.MotorType kMotorType =
+            CANSparkMaxLowLevel.MotorType.kBrushed;
 
     public static final double kSVolts = 0.0; // static gain // TODO:
     public static final double kGVolts = 0.0; // gravity gain // TODO:

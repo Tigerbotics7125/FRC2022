@@ -13,10 +13,8 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
@@ -27,7 +25,6 @@ import frc.robot.DashboardManager;
 import frc.robot.Robot;
 import frc.robot.commands.MecanumDrivetrainCom;
 import frc.robot.constants.Constants;
-import frc.robot.constants.MecanumDrivetrainConstants;
 
 /**
  * The mecanum drivetrain of the robot, able to be simulated and work inf autonomous.

@@ -12,19 +12,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * A class to contain all things that remain constant and should be easily
- * changed, without breaking
+ * A class to contain all things that remain constant and should be easily changed, without breaking
  * other code.
  *
- * <p>
- * All measurements should be in SI units.
+ * <p>All measurements should be in SI units.
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class Constants {
 
     // Misc
-    
+
     // multiple CAN devices can share, basically as long as they are different types
     // of products / manufactorers, read wpi CAN docs.
     public static final int kPowerDistributionPanelId = 0;
@@ -34,26 +32,26 @@ public class Constants {
     public enum AutonomousTrajectory {
         DEFAULT(
                 new Path[] {
-                        Filesystem.getDeployDirectory().toPath().resolve("paths/exitTarmac.wpilib.json")
+                    Filesystem.getDeployDirectory().toPath().resolve("paths/exitTarmac.wpilib.json")
                 }),
         BALLTOHPTHENLAYUP(
                 new Path[] {
-                        Filesystem.getDeployDirectory().toPath().resolve("paths/BallToHP.wpilib.json"),
-                        Filesystem.getDeployDirectory()
-                                .toPath()
-                                .resolve("paths/terminalToHub.wpilib.json")
+                    Filesystem.getDeployDirectory().toPath().resolve("paths/BallToHP.wpilib.json"),
+                    Filesystem.getDeployDirectory()
+                            .toPath()
+                            .resolve("paths/terminalToHub.wpilib.json")
                 }),
         HOLONOMIC_TEST_PATH(
                 new Path[] {
-                        Filesystem.getDeployDirectory()
-                                .toPath()
-                                .resolve("pathplanner/generatedJSON/HolonomicTestPath.wpilib.json")
+                    Filesystem.getDeployDirectory()
+                            .toPath()
+                            .resolve("pathplanner/generatedJSON/HolonomicTestPath.wpilib.json")
                 }),
         HOLONOMIC_TEST_PATH_2(
                 new Path[] {
-                        Filesystem.getDeployDirectory()
-                                .toPath()
-                                .resolve("pathplanner/generatedJSON/HolonomicTestPath2.wpilib.json")
+                    Filesystem.getDeployDirectory()
+                            .toPath()
+                            .resolve("pathplanner/generatedJSON/HolonomicTestPath2.wpilib.json")
                 });
 
         public Trajectory[] kTrajs;
