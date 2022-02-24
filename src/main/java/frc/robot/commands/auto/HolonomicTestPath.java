@@ -25,7 +25,7 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Preview
 
     private static final HolonomicTestPath instance = new HolonomicTestPath();
 
-    private MecanumDrivetrainSub m_drivetrain = RobotContainer.m_drivetrain;
+    private MecanumDrivetrainSub m_drivetrain = RobotContainer.kDrivetrain;
     private AutonomousTrajectory kAuto = AutonomousTrajectory.HOLONOMIC_TEST_PATH_2;
 
     private Command m_mecConCom =

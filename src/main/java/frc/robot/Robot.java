@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
         SequentialCommandGroup autoCommand =
                 m_container.getAutonomousCommand();
         if (autoCommand != null) {
-            RobotContainer.m_drivetrain.resetOdometry(
+            RobotContainer.kDrivetrain.resetOdometry(
                     DashboardManager.kAutoChooser
                             .getSelected()
                             .kTrajs[0]

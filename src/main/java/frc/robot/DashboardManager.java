@@ -76,7 +76,7 @@ public class DashboardManager {
                 .withSize(5, 3)
                 .withPosition(0, 2);
         kTabs.get(Tab.AUTO.name)
-                .add(RobotContainer.m_drivetrain.getDescription(), RobotContainer.m_drivetrain)
+                .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
                 .withWidget(BuiltInWidgets.kMecanumDrive)
                 .withSize(3, 3)
                 .withPosition(0, 0);
@@ -84,11 +84,11 @@ public class DashboardManager {
 
         // #region TELEOP
         kTabs.get(Tab.TELEOP.name)
-                .add("Drive Sub", RobotContainer.m_drivetrain)
+                .add("Drive Sub", RobotContainer.kDrivetrain)
                 .withSize(1, 1)
                 .withPosition(0, 0);
         kTabs.get(Tab.TELEOP.name)
-                .add(RobotContainer.m_drivetrain.getDescription(), RobotContainer.m_drivetrain)
+                .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
                 .withWidget(BuiltInWidgets.kMecanumDrive)
                 .withSize(3, 3)
                 .withPosition(0, 0);
