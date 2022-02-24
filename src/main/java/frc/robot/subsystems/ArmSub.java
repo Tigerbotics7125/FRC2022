@@ -4,41 +4,23 @@
  */
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import static frc.robot.constants.ArmConstants.*;
+
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileSubsystem;
-import frc.robot.constants.ArmConstants;
 
-public class ArmSub extends TrapezoidProfileSubsystem {
-    CANSparkMax m_motor = new CANSparkMax(ArmConstants.kArmId, ArmConstants.kArmMotorType);
+public class ArmSub implements Subsystem {
 
-    SparkMaxPIDController m_pidController = m_motor.getPIDController();
+    static final CANSparkMax m_arm = new CANSparkMax(kId, kMotorType);
 
-    ArmFeedforward m_feedforward =
-            new ArmFeedforward(
-                    ArmConstants.kSVolts,
-                    ArmConstants.kGVolts,
-                    ArmConstants.kVVoltSecondPerRad,
-                    ArmConstants.kAVoltSecondSquaredPerRad);
+    public ArmSub() {}
 
-    public ArmSub() {
-        super(
-                new Constraints(
-                        ArmConstants.kMaxVelocityRadPerSecond,
-                        ArmConstants.kMaxAccelerationRadPerSecSquared),
-                ArmConstants.kArmOffsetRads);
-
-        m_pidController.setP(ArmConstants.kP);
-        m_pidController.setI(ArmConstants.kI);
-        m_pidController.setD(ArmConstants.kD);
-        m_pidController.setFF(ArmConstants.kFF);
+    public void setArmUp() {
+        // set arm to up position
     }
 
-    @Override
-    public void useState(TrapezoidProfile.State setpoint) {
-        m_pidController.setReference(setpoint.position, CANSparkMax.ControlType.kPosition);
+    public void setArmDown() {
+        // set arm to down position
     }
+
 }
