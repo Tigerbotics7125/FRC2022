@@ -9,7 +9,7 @@ import frc.robot.Gamepads;
 import frc.robot.subsystems.MecanumDrivetrainSub;
 
 /**
- * Drives a Mecanum
+ * Drives a Mecanum Drivetrain
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
