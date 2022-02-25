@@ -6,9 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.lib.command.AutonomousCommand;
 import frc.robot.DashboardManager.Tab;
-import frc.robot.constants.Constants.AutonomousTrajectory;
+import frc.robot.commands.auto.HolonomicTestPath;
 
 /**
  * The main robot class, runs all loops and main control
@@ -24,12 +24,9 @@ public class Robot extends TimedRobot {
         m_container = new RobotContainer();
 
         // auto chooser
-        // temporary default until we have an actual default.
-        // m_autoChooser.setDefaultOption("Default", kAutoTrajs.DEFAULT);
-        DashboardManager.kAutoChooser.setDefaultOption(
-                "ball to hp then layup", AutonomousTrajectory.BALLTOHPTHENLAYUP);
-        DashboardManager.kAutoChooser.addOption(
-                "HoloTest", AutonomousTrajectory.HOLONOMIC_TEST_PATH);
+        DashboardManager.kAutoChooser.setDefaultOption("No Auto", null);
+        DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
+
         DashboardManager.initTabs();
         DashboardManager.showTab(Tab.PRE_GAME);
     }
@@ -46,12 +43,12 @@ public class Robot extends TimedRobot {
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
 
-        SequentialCommandGroup autoCommand = m_container.getAutonomousCommand();
+        AutonomousCommand autoCommand =
+                (AutonomousCommand) DashboardManager.kAutoChooser.getSelected();
         if (autoCommand != null) {
             RobotContainer.kDrivetrain.resetOdometry(
                     DashboardManager.kAutoChooser
                             .getSelected()
-                            .kTrajs[0]
                             .getInitialPose()); // sets odometry to initial pose.
             autoCommand.schedule();
         }

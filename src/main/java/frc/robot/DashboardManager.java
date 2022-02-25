@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.constants.Constants.AutonomousTrajectory;
+import frc.lib.command.AutonomousCommand;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +19,8 @@ public class DashboardManager {
     private static final Map<String, ShuffleboardTab> kTabs = new HashMap<>();
 
     public static final Field2d kField = new Field2d();
-    public static final SendableChooser<AutonomousTrajectory> kAutoChooser =
-            new SendableChooser<AutonomousTrajectory>();
+    public static final SendableChooser<AutonomousCommand> kAutoChooser =
+            new SendableChooser<AutonomousCommand>();
 
     private static final String kFieldWidget =
             "Field"; // because BuiltInWidgets doesnt contain it yet.

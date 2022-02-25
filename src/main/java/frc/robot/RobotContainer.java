@@ -6,9 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.auto.HolonomicTestPath;
-import frc.robot.constants.Constants.AutonomousTrajectory;
 import frc.robot.subsystems.MecanumDrivetrainSub;
 
 /**
@@ -23,13 +20,4 @@ public class RobotContainer {
     // public static final ArmSub kArm = new ArmSub();
     // public static final IntakeSub kIntake = new IntakeSub();
 
-    public SequentialCommandGroup getAutonomousCommand() {
-        switch ((AutonomousTrajectory) DashboardManager.kAutoChooser.getSelected()) {
-            case HOLONOMIC_TEST_PATH:
-                return HolonomicTestPath.getInstance();
-            default:
-                // no command, return null to not schedule a command.
-                return null;
-        }
-    }
 }
