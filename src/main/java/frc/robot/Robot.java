@@ -35,6 +35,8 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         // Ensure the controller(s) are always configured / connected
         Gamepads.configure();
+        // Update the dashboard
+        DashboardManager.update();
     }
 
     @Override
