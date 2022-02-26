@@ -2,12 +2,12 @@
  * Copyright (C) 2022, Tigerbotics' team members and all other contributors.
  * Open source software; you can modify and/or share this software.
  */
-package frc.lib.input;
+package frc.tigerlib.input;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.lib.input.XboxGamepad.XboxAxis;
+import frc.tigerlib.input.XboxGamepad.XboxAxis;
 
 /** @author Spectrum 3847 */
 public class AxisButton extends Button {

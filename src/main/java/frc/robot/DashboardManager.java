@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.lib.command.AutonomousCommand;
+import frc.tigerlib.command.AutonomousCommand;
+
 import java.util.HashMap;
 import java.util.Map;
 
