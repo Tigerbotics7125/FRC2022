@@ -94,4 +94,8 @@ public class DashboardManager {
                 .withPosition(0, 0);
         // #endregion
     }
+
+    public static void update() {
+        kField.setRobotPose(RobotContainer.kDrivetrain.getPose());
+    }
 }
