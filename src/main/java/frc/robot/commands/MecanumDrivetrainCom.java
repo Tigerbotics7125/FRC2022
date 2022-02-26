@@ -28,9 +28,9 @@ public class MecanumDrivetrainCom extends CommandBase {
     @Override
     public void execute() {
         m_drivetrain.driveCartesian(
-                -Gamepads.getMecaDriveXJoystick().getX(),
-                -Gamepads.getMecaDriveYJoystick().getY(),
-                Gamepads.getMecaDriveZJoystick().getZ());
+                -Gamepads.m_driverFlightJs.getX(),
+                -Gamepads.m_driverFlightJs.getY(),
+                Gamepads.m_driverFlightJs.getZ());
     }
 
     // Keep command always active.
