@@ -6,7 +6,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Gamepads;
+import frc.robot.constants.MecanumDrivetrainConstants;
 import frc.robot.subsystems.MecanumDrivetrainSub;
+import frc.tigerlib.Util;
 
 /**
  * Drives a Mecanum Drivetrain
@@ -27,10 +29,20 @@ public class MecanumDrivetrainCom extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrain.driveCartesian(
-                -Gamepads.m_driverFlightJs.getX(),
-                -Gamepads.m_driverFlightJs.getY(),
-                Gamepads.m_driverFlightJs.getZ());
+        m_drivetrain.drive(
+                Util.joystickDeadbandSensitivity(
+                        -Gamepads.m_driverFlightJs.getX(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)),
+                Util.joystickDeadbandSensitivity(
+                        -Gamepads.m_driverFlightJs.getY(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)),
+                Util.joystickDeadbandSensitivity(
+                        -Gamepads.m_driverFlightJs.getZ(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)),
+                false);
     }
 
     // Keep command always active.
