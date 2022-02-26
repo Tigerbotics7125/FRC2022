@@ -23,7 +23,7 @@ public class MecanumDrivetrainConstants {
     public static final double kMaxWheelSpeed =
             kMaxAngularWheelSpeed * (kWheelDiameter / 2); // max wheel speed in m/s
     public static final double kDeadband =
-            0.05; // fixes joystick range to [-1, -kDeadband)(0.0)(kDeadband, 1]
+            0.2; // fixes joystick range to [-1, -kDeadband)(0.0)(kDeadband, 1]
 
     // CAN IDs
     public static final int kFrontLeftId = 1;
