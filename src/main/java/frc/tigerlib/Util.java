@@ -7,7 +7,7 @@ package frc.tigerlib;
 public class Util {
 
     /**
-     * Multiplies a value by an exponent, preserving sign.
+     * Multiplies a x by an exponent, preserving sign.
      *
      * @param x input
      * @param exp exponent
@@ -37,20 +37,15 @@ public class Util {
     }
 
     /**
-     * Clamps a value to a range such that [min, max]
+     * Returns x clamped between low and high boundaries.
      *
-     * @param x input
-     * @param min
-     * @param max
+     * @param x Value to clamp.
+     * @param low The lower boundary to which to clamp x.
+     * @param high The higher boundary to which to clamp x.
+     * @return
      */
-    public static double clamp(double x, double min, double max) {
-        if (x < min) {
-            return min;
-        } else if (x > max) {
-            return max;
-        } else {
-            return x;
-        }
+    public static double clamp(double x, double low, double high) {
+        return Math.max(low, Math.min(x, high));
     }
 
     /**
@@ -87,7 +82,7 @@ public class Util {
         x = deadband(x, d);
 
         if (x < 0) {
-            return -Math.pow(x, s);
+            return -Math.pow(Math.abs(x), s);
         } else {
             return Math.pow(x, s);
         }
@@ -98,5 +93,20 @@ public class Util {
         joystick = deadbandSensitivy(joystick, d, s);
         joystick = clamp(joystick, -1, 1);
         return joystick;
+    }
+
+    /**
+     * Changes the scale of a value from one range to another.
+     *
+     * @param x
+     * @param origMin
+     * @param originMax
+     * @param newMin
+     * @param newMax
+     * @return
+     */
+    public static double scaleInput(
+            double x, double origMin, double originMax, double newMin, double newMax) {
+        return (x - origMin) * (newMax - newMin) / (originMax - origMin) + newMin;
     }
 }
