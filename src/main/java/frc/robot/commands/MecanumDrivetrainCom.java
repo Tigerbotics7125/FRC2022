@@ -29,20 +29,19 @@ public class MecanumDrivetrainCom extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrain.drive(
-                Util.joystickDeadbandSensitivity(
-                        -Gamepads.m_driverFlightJs.getX(),
-                        MecanumDrivetrainConstants.kDeadband,
-                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)),
+        m_drivetrain.driveCartesian(
                 Util.joystickDeadbandSensitivity(
                         -Gamepads.m_driverFlightJs.getY(),
                         MecanumDrivetrainConstants.kDeadband,
                         Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)),
                 Util.joystickDeadbandSensitivity(
-                        -Gamepads.m_driverFlightJs.getZ(),
+                        Gamepads.m_driverFlightJs.getX(),
                         MecanumDrivetrainConstants.kDeadband,
                         Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)),
-                false);
+                Util.joystickDeadbandSensitivity(
+                        Gamepads.m_driverFlightJs.getZ(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)));
     }
 
     // Keep command always active.
