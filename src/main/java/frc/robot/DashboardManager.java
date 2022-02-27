@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.MecanumDrivetrainConstants;
+import frc.tigerlib.Util;
 import frc.tigerlib.command.AutonomousCommand;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,5 +99,25 @@ public class DashboardManager {
 
     public static void update() {
         kField.setRobotPose(RobotContainer.kDrivetrain.getPose());
+        SmartDashboard.putNumber("Heading", RobotContainer.kDrivetrain.getHeading().getDegrees());
+        SmartDashboard.putNumber(
+                "xController",
+                Util.joystickDeadbandSensitivity(
+                        -Gamepads.m_driverFlightJs.getX(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)));
+        SmartDashboard.putNumber(
+                "yController",
+                Util.joystickDeadbandSensitivity(
+                        -Gamepads.m_driverFlightJs.getY(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)));
+        SmartDashboard.putNumber(
+                "zController",
+                Util.joystickDeadbandSensitivity(
+                        -Gamepads.m_driverFlightJs.getZ(),
+                        MecanumDrivetrainConstants.kDeadband,
+                        Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)));
+        SmartDashboard.putNumber("Sensitivity", Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5));
     }
 }
