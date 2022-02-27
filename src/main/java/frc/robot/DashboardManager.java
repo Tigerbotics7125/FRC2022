@@ -118,6 +118,8 @@ public class DashboardManager {
                         -Gamepads.m_driverFlightJs.getZ(),
                         MecanumDrivetrainConstants.kDeadband,
                         Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5)));
-        SmartDashboard.putNumber("Sensitivity", Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5));
+        SmartDashboard.putNumber(
+                "Sensitivity",
+                Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5));
     }
 }
