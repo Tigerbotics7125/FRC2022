@@ -4,7 +4,6 @@
  */
 package frc.robot.subsystems;
 
-import static frc.robot.constants.MecanumDrivetrainConstants.kDeadband;
 import static frc.robot.constants.MecanumDrivetrainConstants.kDistancePerPulse;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
@@ -84,8 +83,8 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
 
         // invert right side because motors backwards.
         m_frontLeft.setInverted(false);
-        m_rearLeft.setInverted(true);
-        m_frontRight.setInverted(false);
+        m_rearLeft.setInverted(false);
+        m_frontRight.setInverted(true);
         m_rearRight.setInverted(true);
 
         // changes encoder distance from encoder ticks to meters
