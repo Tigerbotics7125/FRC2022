@@ -4,6 +4,10 @@
  */
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -13,8 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.MecanumDrivetrainConstants;
 import frc.tigerlib.Util;
 import frc.tigerlib.command.AutonomousCommand;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DashboardManager {
 
@@ -46,11 +48,16 @@ public class DashboardManager {
     }
 
     /** Creates new tabs for each Tab enum value. */
-    public static void initTabs() {
+    public static void init() {
         for (Tab t : Tab.values()) {
             kTabs.put(t.name, Shuffleboard.getTab(t.name));
         }
         initTabWidgets();
+        initCameras();
+    }
+
+    /** Sets up cameras */
+    public static void initCameras() {
     }
 
     /** Adds widgets to each Tab */
