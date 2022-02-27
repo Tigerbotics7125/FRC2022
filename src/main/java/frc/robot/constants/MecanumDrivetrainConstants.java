@@ -16,7 +16,7 @@ public class MecanumDrivetrainConstants {
     public static final double kWheelDiameter = Units.inchesToMeters(6);
     public static final double kGearRatio = 10.71;
 
-    public static final double kMaxSpeed = 3.0; // 3 m/s
+    public static final double kMaxSpeed = 1; // m/s
     public static final double kMaxAngularSpeed = Math.PI; // 1 rad/s
     public static final double kMaxAngularWheelSpeed =
             kMaxSpeed / (kWheelDiameter / 2); // max wheel speed in rad/s
