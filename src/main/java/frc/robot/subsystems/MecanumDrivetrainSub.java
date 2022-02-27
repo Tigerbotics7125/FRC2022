@@ -70,13 +70,11 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         super(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight); // super constructor
         // set max output so we can go faster / dont go too fast, a bit oxymoronic.
         setMaxOutput(kMaxSpeed);
-        // set controller deadband so we dont go jerkey jerkey and break our precious robot.
-        setDeadband(kDeadband);
 
         // invert right side because motors backwards.
         m_frontLeft.setInverted(false);
-        m_rearLeft.setInverted(false);
-        m_frontRight.setInverted(true);
+        m_rearLeft.setInverted(true);
+        m_frontRight.setInverted(false);
         m_rearRight.setInverted(true);
 
         // changes encoder distance from encoder ticks to meters
