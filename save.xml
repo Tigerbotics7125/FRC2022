@@ -1,17 +1,63 @@
 <xml version="1.0">
-  <dashboard>
-    <static-widget
-      class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
-      <location x="420" y="28" />
-      <width>296</width>
-      <height>190</height>
-      <property name="Camera Choice" value="" />
-    </static-widget>
-    <static-widget
-      class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
-      <location x="1" y="0" />
-    </static-widget>
-  </dashboard>
-  <live-window>
-  </live-window>
+<dashboard>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="420" y="28"/>
+		<width>296</width>
+		<height>190</height>
+		<property name="Camera Choice" value=""/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
+		<location x="1" y="0"/>
+	</static-widget>
+	<widget field="Compass" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="365"/>
+	</widget>
+	<widget field="Z Rotation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="344"/>
+	</widget>
+	<widget field="Y Rotation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="323"/>
+	</widget>
+	<widget field="X Rotation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="302"/>
+	</widget>
+	<widget field="Z Acceleration" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="281"/>
+	</widget>
+	<widget field="Y Acceleration" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="260"/>
+	</widget>
+	<widget field="X Acceleration" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="239"/>
+	</widget>
+	<widget field="Roll" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="218"/>
+	</widget>
+	<widget field="Pitch" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="197"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="220" y="3"/>
+		<width>678</width>
+		<height>465</height>
+		<property name="Camera Choice" value="USB Camera 0"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="867" y="-52"/>
+		<width>484</width>
+		<height>470</height>
+		<property name="Degrees Rotation" value="180"/>
+		<property name="Camera Choice" value="USB Camera 1"/>
+	</static-widget>
+	<widget field="Auto choices" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="14" y="42"/>
+	</widget>
+	<widget field="Autonomous Selection" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="73" y="1"/>
+	</widget>
+</dashboard>
+<live-window>
+</live-window>
+	<hidden field="Field"/>
+	<hidden field="Yaw"/>
 </xml>
