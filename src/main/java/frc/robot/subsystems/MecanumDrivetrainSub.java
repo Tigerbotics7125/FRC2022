@@ -23,6 +23,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,7 +35,6 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
 import frc.robot.Robot;
-import frc.robot.commands.MecanumDrivetrainCom;
 import frc.robot.constants.Constants;
 
 /**
@@ -113,8 +113,6 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
             REVPhysicsSim.getInstance().addSparkMax(m_rearRight, DCMotor.getNEO(1));
         }
 
-        // sets drive command when not in auto
-        setDefaultCommand(new MecanumDrivetrainCom(this));
     }
 
     /** general periodic updates. */
