@@ -4,9 +4,17 @@
  */
 package frc.robot;
 
+import static frc.robot.constants.MecanumDrivetrainConstants.kDeadband;
+import static frc.robot.constants.MecanumDrivetrainConstants.kIsUsingThrottle;
+import static frc.robot.constants.MecanumDrivetrainConstants.kSensitivity;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.DriveWithTurning;
+import frc.robot.commands.DriveWithoutTurning;
+import frc.tigerlib.Util;
 
 /**
  * Manages gamepads to control the robot.
@@ -49,5 +57,31 @@ public class Gamepads {
     public static void driverFlightBindings() {
         // Driver button Controls
 
+        // when thumb is held, will only strafe, if released, will turn and strafe.
+        new Button(() -> m_driverFlightJs.getRawButton(1 /* thumb button */))
+                .whenReleased(new DriveWithoutTurning(RobotContainer.kDrivetrain))
+                .whenHeld(new DriveWithTurning(RobotContainer.kDrivetrain));
     }
+
+    public static double getRobotXSpeed() {
+        return Util.joystickDeadbandSensitivity(
+                m_driverFlightJs.getX(),
+                kDeadband,
+                kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
+    }
+
+    public static double getRobotYSpeed() {
+        return Util.joystickDeadbandSensitivity(
+                -m_driverFlightJs.getY(),
+                kDeadband,
+                kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
+    }
+
+    public static double getRobotZSpeed() {
+        return Util.joystickDeadbandSensitivity(
+                m_driverFlightJs.getZ(),
+                kDeadband,
+                kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
+    }
+
 }
