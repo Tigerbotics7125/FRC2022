@@ -14,11 +14,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.lib.command.AutonomousCommand;
 import frc.robot.DashboardManager.Tab;
 import frc.robot.RobotContainer;
 import frc.robot.constants.AutonomousTrajectories;
 import frc.robot.subsystems.MecanumDrivetrainSub;
+import frc.tigerlib.command.AutonomousCommand;
 
 public class HolonomicTestPath extends SequentialCommandGroup implements AutonomousCommand {
 

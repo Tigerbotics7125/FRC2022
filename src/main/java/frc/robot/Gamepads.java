@@ -50,16 +50,4 @@ public class Gamepads {
         // Driver button Controls
 
     }
-
-    public static Joystick getMecaDriveYJoystick() {
-        return m_driverFlightJs;
-    }
-
-    public static Joystick getMecaDriveXJoystick() {
-        return m_driverFlightJs;
-    }
-
-    public static Joystick getMecaDriveZJoystick() {
-        return m_driverFlightJs;
-    }
 }

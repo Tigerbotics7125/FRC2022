@@ -4,9 +4,20 @@
  */
 package frc.robot.subsystems;
 
-import static frc.robot.constants.MecanumDrivetrainConstants.*;
+import static frc.robot.constants.MecanumDrivetrainConstants.kDeadband;
+import static frc.robot.constants.MecanumDrivetrainConstants.kDistancePerPulse;
+import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
+import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
+import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightId;
+import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightOffset;
+import static frc.robot.constants.MecanumDrivetrainConstants.kMaxSpeed;
+import static frc.robot.constants.MecanumDrivetrainConstants.kMotorType;
+import static frc.robot.constants.MecanumDrivetrainConstants.kRPMtoMPSConversionFactor;
+import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
+import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftOffset;
+import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightId;
+import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightOffset;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -15,6 +26,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
@@ -50,8 +62,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     static final RelativeEncoder m_rearRightEncoder = m_rearRight.getEncoder();
 
     // IMU, kinematics, and odometry
-    static final PigeonIMU m_pigeon = new PigeonIMU(Constants.kPigeonId);
-    static final WPI_PigeonIMU m_simPigeon = new WPI_PigeonIMU(Constants.kPigeonId);
+    static final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
     static final MecanumDriveKinematics m_kinematics =
             new MecanumDriveKinematics(
@@ -94,6 +105,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_rearLeftEncoder.setPosition(0.0);
         m_frontRightEncoder.setPosition(0.0);
         m_rearRightEncoder.setPosition(0.0);
+        m_pigeon.setFusedHeading(0.0);
 
         if (Robot.isSimulation()) {
             REVPhysicsSim.getInstance().addSparkMax(m_frontLeft, DCMotor.getNEO(1));
@@ -140,8 +152,24 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         feed();
     }
 
-    public void setSimHeading(double degrees) {
-        m_simPigeon.setFusedHeading(degrees);
+    /**
+     * Method to drive the robot using joystick info.
+     *
+     * @param xSpeed Speed of the robot in the x direction (forward).
+     * @param ySpeed Speed of the robot in the y direction (sideways).
+     * @param rot Angular rate of the robot.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the field.
+     */
+    @SuppressWarnings("ParameterName")
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        MecanumDriveWheelSpeeds speeds =
+                m_kinematics.toWheelSpeeds(
+                        fieldRelative
+                                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                        xSpeed, ySpeed, rot, m_pigeon.getRotation2d())
+                                : new ChassisSpeeds(xSpeed, ySpeed, rot));
+        speeds.desaturate(kMaxSpeed);
+        setSpeeds(speeds);
     }
 
     /** @returns the current velocity of the robot. */
@@ -164,11 +192,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
      * @return the current heading of the robot
      */
     public Rotation2d getHeading() {
-        if (Robot.isReal()) {
-            return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
-        } else {
-            return Rotation2d.fromDegrees(-m_simPigeon.getFusedHeading());
-        }
+        return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
     }
 
     /** @returns the current position of the robot. */
