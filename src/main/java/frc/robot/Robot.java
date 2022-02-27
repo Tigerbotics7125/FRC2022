@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
         DashboardManager.kAutoChooser.setDefaultOption("No Auto", null);
         DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
 
-        DashboardManager.initTabs();
+        DashboardManager.init();
         DashboardManager.showTab(Tab.PRE_GAME);
     }
 
