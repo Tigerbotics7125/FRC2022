@@ -12,48 +12,47 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 
 public class MecanumDrivetrainConstants {
-    // General constants
-    public static final double kWheelDiameter = Units.inchesToMeters(6);
-    public static final double kGearRatio = 10.71;
+	public static final boolean kIsFieldOriented = false;
+	public static final boolean kIsUsingThrottle = true;
+	// General constants
+	public static final double kWheelDiameter = Units.inchesToMeters(6);
+	public static final double kGearRatio = 10.71;
 
-    public static final double kMaxSpeed = 1; // m/s
-    public static final double kMaxAngularSpeed = Math.PI; // 1 rad/s
-    public static final double kMaxAngularWheelSpeed =
-            kMaxSpeed / (kWheelDiameter / 2); // max wheel speed in rad/s
-    public static final double kMaxWheelSpeed =
-            kMaxAngularWheelSpeed * (kWheelDiameter / 2); // max wheel speed in m/s
-    public static final double kDeadband =
-            0.2; // fixes joystick range to [-1, -kDeadband)(0.0)(kDeadband, 1]
+	public static final double kMaxSpeed = .75; // m/s
+	public static final double kMaxAngularSpeed = Math.PI; // 1 rad/s
+	public static final double kMaxAngularWheelSpeed = kMaxSpeed / (kWheelDiameter / 2); // max wheel speed in rad/s
+	public static final double kMaxWheelSpeed = kMaxAngularWheelSpeed * (kWheelDiameter / 2); // max wheel speed in
+																								// m/s
+	public static final double kDeadband = 0.2; // fixes joystick range to [-1, -kDeadband)(0.0)(kDeadband, 1]
+	public static final double kSensitivity = 3;
 
-    // CAN IDs
-    public static final int kFrontLeftId = 1;
-    public static final int kRearLeftId = 2;
-    public static final int kFrontRightId = 3;
-    public static final int kRearRightId = 4;
+	// CAN IDs
+	public static final int kFrontLeftId = 1;
+	public static final int kRearLeftId = 2;
+	public static final int kFrontRightId = 3;
+	public static final int kRearRightId = 4;
 
-    // The motor type used for the drive motors
-    public static final CANSparkMaxLowLevel.MotorType kMotorType =
-            CANSparkMaxLowLevel.MotorType.kBrushless;
+	// The motor type used for the drive motors
+	public static final CANSparkMaxLowLevel.MotorType kMotorType = CANSparkMaxLowLevel.MotorType.kBrushless;
 
-    // Offset in meters from center of robot (also imu)
-    public static final Translation2d kFrontLeftOffset =
-            new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(-10.857));
-    public static final Translation2d kRearLeftOffset =
-            new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(-10.857));
-    public static final Translation2d kFrontRightOffset =
-            new Translation2d(Units.inchesToMeters(10.18), Units.inchesToMeters(10.857));
-    public static final Translation2d kRearRightOffset =
-            new Translation2d(Units.inchesToMeters(-10.18), Units.inchesToMeters(10.857));
+	// Offset in meters from center of robot (also imu)
+	public static final Translation2d kFrontLeftOffset = new Translation2d(Units.inchesToMeters(10.18),
+			Units.inchesToMeters(-10.857));
+	public static final Translation2d kRearLeftOffset = new Translation2d(Units.inchesToMeters(-10.18),
+			Units.inchesToMeters(-10.857));
+	public static final Translation2d kFrontRightOffset = new Translation2d(Units.inchesToMeters(10.18),
+			Units.inchesToMeters(10.857));
+	public static final Translation2d kRearRightOffset = new Translation2d(Units.inchesToMeters(-10.18),
+			Units.inchesToMeters(10.857));
 
-    // PID Controllers for auto
-    public static final PIDController kXPID = new PIDController(1, 0, 0);
-    public static final PIDController kYPID = new PIDController(1, 0, 0);
-    public static final ProfiledPIDController kThetaPID =
-            new ProfiledPIDController(1, 0, 0, new Constraints(6.28, 3.14));
+	// PID Controllers for auto
+	public static final PIDController kXPID = new PIDController(1, 0, 0);
+	public static final PIDController kYPID = new PIDController(1, 0, 0);
+	public static final ProfiledPIDController kThetaPID = new ProfiledPIDController(1, 0, 0,
+			new Constraints(6.28, 3.14));
 
-    // Conversion factors used for encoder ticks to various units.
-    public static final double kRPMtoMPSConversionFactor =
-            1.0 / (kGearRatio * (Math.PI * kWheelDiameter));
-    public static final double kDistancePerPulse =
-            1.0 / (42.0 /* Hall Effects CPR */ / kGearRatio * (Math.PI * kWheelDiameter));
+	// Conversion factors used for encoder ticks to various units.
+	public static final double kRPMtoMPSConversionFactor = 1.0 / (kGearRatio * (Math.PI * kWheelDiameter));
+	public static final double kDistancePerPulse = 1.0
+			/ (42.0 /* Hall Effects CPR */ / kGearRatio * (Math.PI * kWheelDiameter));
 }
