@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.DriveWithTurning;
-import frc.robot.commands.DriveWithoutTurning;
 import frc.tigerlib.Util;
 
 /**
@@ -56,11 +54,11 @@ public class Gamepads {
 
     public static void driverFlightBindings() {
         // Driver button Controls
-
-        // when thumb is held, will only strafe, if released, will turn and strafe.
-        new Button(() -> m_driverFlightJs.getRawButton(1 /* thumb button */))
-                .whenReleased(new DriveWithoutTurning(RobotContainer.kDrivetrain))
-                .whenHeld(new DriveWithTurning(RobotContainer.kDrivetrain));
+        
+        // when trigger is held, field oriented is enabled, disabled otherwise
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1)).whenPressed(() -> RobotContainer.kDrivetrain.setFieldOriented(true)).whenReleased(() -> RobotContainer.kDrivetrain.setFieldOriented(false));
+        // when thumb button is held, turning is enabled, disabled otherwise
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2)).whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true)).whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
     }
 
     public static double getRobotXSpeed() {
