@@ -68,14 +68,12 @@ public class DashboardManager {
                 .withWidget(BuiltInWidgets.kComboBoxChooser)
                 .withSize(3, 1)
                 .withPosition(0, 0);
-        SmartDashboard.putData("Autonomous Selection", kAutoChooser);
-
-        kTabs.get(Tab.PRE_GAME.name)
+                
+                kTabs.get(Tab.PRE_GAME.name)
                 .add("Field", kField)
                 .withWidget(kFieldWidget)
                 .withSize(5, 3)
                 .withPosition(0, 2);
-        SmartDashboard.putData("Field", kField);
         // #endregion
 
         // #region AUTO
@@ -84,27 +82,27 @@ public class DashboardManager {
                 .withWidget(kFieldWidget)
                 .withSize(5, 3)
                 .withPosition(0, 2);
-        kTabs.get(Tab.AUTO.name)
+                kTabs.get(Tab.AUTO.name)
                 .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
                 .withWidget(BuiltInWidgets.kMecanumDrive)
                 .withSize(3, 3)
                 .withPosition(0, 0);
-        // #endregion
+                // #endregion
 
-        // #region TELEOP
-        kTabs.get(Tab.TELEOP.name)
+                // #region TELEOP
+                kTabs.get(Tab.TELEOP.name)
                 .add("Drive Sub", RobotContainer.kDrivetrain)
                 .withSize(1, 1)
                 .withPosition(0, 0);
         kTabs.get(Tab.TELEOP.name)
-                .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
-                .withWidget(BuiltInWidgets.kMecanumDrive)
-                .withSize(3, 3)
-                .withPosition(0, 0);
+        .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
+        .withWidget(BuiltInWidgets.kMecanumDrive)
+        .withSize(3, 3)
+        .withPosition(0, 0);
         // #endregion
-    }
+}
 
-    public static void update() {
+public static void update() {
         kField.setRobotPose(RobotContainer.kDrivetrain.getPose());
         SmartDashboard.putNumber("Heading", RobotContainer.kDrivetrain.getHeading().getDegrees());
         SmartDashboard.putNumber(
@@ -128,5 +126,9 @@ public class DashboardManager {
         SmartDashboard.putNumber(
                 "Sensitivity",
                 Util.scaleInput(Gamepads.m_driverFlightJs.getThrottle(), -1, 1, 1, 5));
+        SmartDashboard.putData("AutoChooser", kAutoChooser);
+        SmartDashboard.putString("Chosen Auto Command", kAutoChooser.getSelected().getName());
+        SmartDashboard.putBoolean("Turning", RobotContainer.kDrivetrain.getTurning());
+        SmartDashboard.putBoolean("Field Oriented", RobotContainer.kDrivetrain.getFieldOriented());
     }
 }
