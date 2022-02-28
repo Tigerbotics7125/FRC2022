@@ -34,11 +34,14 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
+import frc.robot.Gamepads;
 import frc.robot.Robot;
+import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
 
 /**
- * The mecanum drivetrain of the robot, able to be simulated and work inf autonomous.
+ * The mecanum drivetrain of the robot, able to be simulated and work inf
+ * autonomous.
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
@@ -63,12 +66,14 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     // IMU, kinematics, and odometry
     static final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
-    static final MecanumDriveKinematics m_kinematics =
-            new MecanumDriveKinematics(
-                    kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
+    static final MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
+            kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
 
-    static final MecanumDriveOdometry m_odometry =
-            new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+    static final MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+
+    // Variables for turning
+    static boolean m_turning = false;
+    static boolean m_fieldOriented = false;
 
     // Variables for dashboard
     static double m_frontLeftVelocitySetpoint = 0;
@@ -80,6 +85,8 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         super(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight); // super constructor
         // set max output so we can go faster / dont go too fast, a bit oxymoronic.
         setMaxOutput(kMaxSpeed);
+        // set default command so we actually drive.
+        setDefaultCommand(new Drive(this));
 
         // invert right side because motors backwards.
         m_frontLeft.setInverted(false);
@@ -113,6 +120,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
             REVPhysicsSim.getInstance().addSparkMax(m_rearRight, DCMotor.getNEO(1));
         }
 
+
     }
 
     /** general periodic updates. */
@@ -134,6 +142,16 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_odometry.resetPosition(pose, getHeading());
     }
 
+    /** enables or disables turning */
+    public void setTurning(boolean turning) {
+        m_turning = turning;
+    }
+
+    /** enables or disables field oriented driving */
+    public void setFieldOriented(boolean fieldOriented) {
+        m_fieldOriented = fieldOriented;
+    }
+
     /** sets the drivetrain to move according to the input. */
     public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
         m_frontLeftVelocitySetpoint = speeds.frontLeftMetersPerSecond;
@@ -152,21 +170,28 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     /**
      * Method to drive the robot using joystick info.
      *
-     * @param xSpeed Speed of the robot in the x direction (forward).
-     * @param ySpeed Speed of the robot in the y direction (sideways).
-     * @param rot Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the field.
+     * @param xSpeed        Speed of the robot in the x direction (forward).
+     * @param ySpeed        Speed of the robot in the y direction (sideways).
+     * @param rot           Angular rate of the robot.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the
+     *                      field.
      */
     @SuppressWarnings("ParameterName")
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        MecanumDriveWheelSpeeds speeds =
-                m_kinematics.toWheelSpeeds(
-                        fieldRelative
-                                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        xSpeed, ySpeed, rot, m_pigeon.getRotation2d())
-                                : new ChassisSpeeds(xSpeed, ySpeed, rot));
+        MecanumDriveWheelSpeeds speeds = m_kinematics.toWheelSpeeds(
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                xSpeed, ySpeed, rot, m_pigeon.getRotation2d())
+                        : new ChassisSpeeds(xSpeed, ySpeed, rot));
         speeds.desaturate(kMaxSpeed);
         setSpeeds(speeds);
+    }
+
+    public void drive() {
+        double xSpeed = Gamepads.getRobotXSpeed();
+        double ySpeed = Gamepads.getRobotYSpeed();
+        double zSpeed = Gamepads.getRobotZSpeed();
+        super.driveCartesian(ySpeed, xSpeed, m_turning ? zSpeed : 0.0, m_fieldOriented ? getHeading().getDegrees() : 0.0);
     }
 
     /** @returns the current velocity of the robot. */
@@ -176,6 +201,14 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
                 m_rearLeftEncoder.getVelocity(),
                 m_frontRightEncoder.getVelocity(),
                 m_rearRightEncoder.getVelocity());
+    }
+
+    public boolean getTurning() {
+        return m_turning;
+    }
+
+    public boolean getFieldOriented() {
+        return m_fieldOriented;
     }
 
     /** @returns the drivetrains kinematics */
