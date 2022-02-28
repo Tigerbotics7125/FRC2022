@@ -5,10 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Gamepads;
-import static frc.robot.constants.MecanumDrivetrainConstants.kIsFieldOriented;
 import frc.robot.subsystems.MecanumDrivetrainSub;
-import frc.tigerlib.Util;
 
 /**
  * Drives a Mecanum Drivetrain
@@ -29,7 +26,7 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrain.drive();
+        m_drivetrain.drive(); // all is handled in subsystem, just need to call it.
     }
 
     // Keep command always active.

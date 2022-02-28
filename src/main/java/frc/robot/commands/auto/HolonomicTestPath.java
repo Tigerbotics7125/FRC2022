@@ -10,11 +10,12 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kXPID;
 import static frc.robot.constants.MecanumDrivetrainConstants.kYPID;
 
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
+
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.DashboardManager.Tab;
 import frc.robot.RobotContainer;
 import frc.robot.constants.AutonomousTrajectories;
 import frc.robot.subsystems.MecanumDrivetrainSub;
@@ -37,13 +38,13 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Autonom
                     m_drivetrain);
 
     public HolonomicTestPath() {
-
-        Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot X Vel Setpoint", kXPID::getSetpoint);
-        Shuffleboard.getTab(Tab.AUTO.name).addNumber("Robot Y Vel Setpoint", kYPID::getSetpoint);
-        Shuffleboard.getTab(Tab.AUTO.name)
-                .addNumber("Robot Theta Vel Setpoint", () -> kThetaPID.getSetpoint().velocity);
-
-        addCommands(m_mecConCom);
+        addCommands(
+            new InstantCommand(() -> { 
+                m_drivetrain.setHeading(getInitialPose().getRotation());
+                m_drivetrain.resetOdometry(getInitialPose());
+            }),
+            m_mecConCom,
+            new InstantCommand(() -> m_drivetrain.setSpeeds(new MecanumDriveWheelSpeeds(0, 0, 0, 0))));
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package frc.robot.subsystems;
 
+import static frc.robot.constants.MecanumDrivetrainConstants.kA;
 import static frc.robot.constants.MecanumDrivetrainConstants.kDistancePerPulse;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
@@ -16,6 +17,10 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightOffset;
+import static frc.robot.constants.MecanumDrivetrainConstants.kS;
+import static frc.robot.constants.MecanumDrivetrainConstants.kV;
+
+import java.time.Instant;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -24,9 +29,9 @@ import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
@@ -71,7 +76,13 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
 
     static final MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
 
-    // Variables for turning
+    // feedforward
+    SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(
+            kS, kV, kA);
+    static double lastVelocity = 0;
+    static Instant lastTime = Instant.now();
+
+    // variables for this buttons to control
     static boolean m_turning = false;
     static boolean m_fieldOriented = false;
 
@@ -120,7 +131,6 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
             REVPhysicsSim.getInstance().addSparkMax(m_rearRight, DCMotor.getNEO(1));
         }
 
-
     }
 
     /** general periodic updates. */
@@ -152,6 +162,12 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_fieldOriented = fieldOriented;
     }
 
+    /** sets the heading of the robot */
+    public void setHeading(Rotation2d heading) {
+        m_pigeon.setFusedHeading(heading.getDegrees());
+        resetOdometry(getPose());
+    }
+
     /** sets the drivetrain to move according to the input. */
     public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
         m_frontLeftVelocitySetpoint = speeds.frontLeftMetersPerSecond;
@@ -159,6 +175,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_frontRightVelocitySetpoint = speeds.frontRightMetersPerSecond;
         m_rearRightVelocitySetpoint = speeds.rearRightMetersPerSecond;
 
+        // using meters per second as we set a conversion factor in constructor.
         m_frontLeftPID.setReference(speeds.frontLeftMetersPerSecond, ControlType.kVelocity);
         m_rearLeftPID.setReference(speeds.rearLeftMetersPerSecond, ControlType.kVelocity);
         m_frontRightPID.setReference(speeds.frontRightMetersPerSecond, ControlType.kVelocity);
@@ -167,31 +184,19 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         feed();
     }
 
-    /**
-     * Method to drive the robot using joystick info.
-     *
-     * @param xSpeed        Speed of the robot in the x direction (forward).
-     * @param ySpeed        Speed of the robot in the y direction (sideways).
-     * @param rot           Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the
-     *                      field.
-     */
-    @SuppressWarnings("ParameterName")
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        MecanumDriveWheelSpeeds speeds = m_kinematics.toWheelSpeeds(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                xSpeed, ySpeed, rot, m_pigeon.getRotation2d())
-                        : new ChassisSpeeds(xSpeed, ySpeed, rot));
-        speeds.desaturate(kMaxSpeed);
-        setSpeeds(speeds);
-    }
-
     public void drive() {
-        double xSpeed = Gamepads.getRobotXSpeed();
-        double ySpeed = Gamepads.getRobotYSpeed();
-        double zSpeed = Gamepads.getRobotZSpeed();
-        super.driveCartesian(ySpeed, xSpeed, m_turning ? zSpeed : 0.0, m_fieldOriented ? getHeading().getDegrees() : 0.0);
+        double xSpeed = Gamepads.getRobotXInputSpeed();
+        double ySpeed = Gamepads.getRobotYInputSpeed();
+        double zSpeed = Gamepads.getRobotZInputSpeed();
+
+        WheelSpeeds speeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, m_turning ? zSpeed : 0.0, m_fieldOriented ? getHeading().getDegrees() : 0.0);
+        
+        m_frontLeft.set(speeds.frontLeft);
+        m_rearLeft.set(speeds.rearLeft);
+        m_frontRight.set(speeds.frontRight);
+        m_rearRight.set(speeds.rearRight);
+
+        feed();
     }
 
     /** @returns the current velocity of the robot. */
@@ -222,7 +227,8 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
      * @return the current heading of the robot
      */
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
+        // pigeon headings are already +CCW, no need to negate
+        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
     }
 
     /** @returns the current position of the robot. */

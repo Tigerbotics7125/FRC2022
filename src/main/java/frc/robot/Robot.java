@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.DashboardManager.Tab;
 import frc.robot.commands.auto.HolonomicTestPath;
 import frc.tigerlib.command.AutonomousCommand;
@@ -24,7 +25,8 @@ public class Robot extends TimedRobot {
         m_container = new RobotContainer();
 
         // auto chooser
-        DashboardManager.kAutoChooser.setDefaultOption("No Auto", null);
+        DashboardManager.kAutoChooser.setDefaultOption("No Auto",
+                new InstantCommand(() -> RobotContainer.kDrivetrain.stopMotor()));
         DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
 
         DashboardManager.init();
@@ -45,13 +47,14 @@ public class Robot extends TimedRobot {
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
 
-        AutonomousCommand autoCommand =
-                (AutonomousCommand) DashboardManager.kAutoChooser.getSelected();
+        AutonomousCommand autoCommand = (AutonomousCommand) DashboardManager.kAutoChooser.getSelected();
         if (autoCommand != null) {
-            RobotContainer.kDrivetrain.resetOdometry(
-                    DashboardManager.kAutoChooser
-                            .getSelected()
-                            .getInitialPose()); // sets odometry to initial pose.
+            /*
+             * RobotContainer.kDrivetrain.resetOdometry(
+             * DashboardManager.kAutoChooser
+             * .getSelected()
+             * .getInitialPose()); // sets odometry to initial pose.
+             */
             autoCommand.schedule();
         }
     }
@@ -74,10 +77,12 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void simulationInit() {}
+    public void simulationInit() {
+    }
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationPeriodic() {
+    }
 
     @Override
     public void disabledInit() {

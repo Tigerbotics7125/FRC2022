@@ -11,8 +11,7 @@ public class AutonomousTrajectories {
     public static final PathPlannerTrajectory[] kHolonomicTestPath = {
         PathPlanner.loadPath(
                 "HolonomicTestPath",
-                MecanumDrivetrainConstants.kMaxSpeed,
-                MecanumDrivetrainConstants.kMaxAngularSpeed,
-                false)
+                MecanumDrivetrainConstants.kMaxAutoVelocity,
+                MecanumDrivetrainConstants.kMaxAutoAcceleration)
     };
 }

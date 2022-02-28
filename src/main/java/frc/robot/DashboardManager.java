@@ -7,24 +7,23 @@ package frc.robot;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.MecanumDrivetrainConstants;
 import frc.tigerlib.Util;
-import frc.tigerlib.command.AutonomousCommand;
 
 public class DashboardManager {
 
     private static final Map<String, ShuffleboardTab> kTabs = new HashMap<>();
 
     public static final Field2d kField = new Field2d();
-    public static final SendableChooser<AutonomousCommand> kAutoChooser =
-            new SendableChooser<AutonomousCommand>();
+    public static final SendableChooser<Command> kAutoChooser =
+            new SendableChooser<Command>();
 
     private static final String kFieldWidget =
             "Field"; // because BuiltInWidgets doesnt contain it yet.

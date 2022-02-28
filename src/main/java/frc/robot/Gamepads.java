@@ -61,21 +61,21 @@ public class Gamepads {
         new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2)).whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true)).whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
     }
 
-    public static double getRobotXSpeed() {
+    public static double getRobotXInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 m_driverFlightJs.getX(),
                 kDeadband,
                 kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
     }
 
-    public static double getRobotYSpeed() {
+    public static double getRobotYInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 -m_driverFlightJs.getY(),
                 kDeadband,
                 kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
     }
 
-    public static double getRobotZSpeed() {
+    public static double getRobotZInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 m_driverFlightJs.getZ(),
                 kDeadband,
