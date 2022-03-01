@@ -1,0 +1,4 @@
+.66m frame width
+.81m frame length
+.77m frame w/ bumpers width
+.98m frame w/ bumpers length

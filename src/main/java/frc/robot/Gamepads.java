@@ -54,32 +54,41 @@ public class Gamepads {
 
     public static void driverFlightBindings() {
         // Driver button Controls
-        
+
         // when trigger is held, field oriented is enabled, disabled otherwise
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1)).whenPressed(() -> RobotContainer.kDrivetrain.setFieldOriented(true)).whenReleased(() -> RobotContainer.kDrivetrain.setFieldOriented(false));
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
+                .whenPressed(() -> RobotContainer.kDrivetrain.setFieldOriented(true))
+                .whenReleased(() -> RobotContainer.kDrivetrain.setFieldOriented(false));
         // when thumb button is held, turning is enabled, disabled otherwise
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2)).whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true)).whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2))
+                .whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true))
+                .whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
     }
 
     public static double getRobotXInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 m_driverFlightJs.getX(),
                 kDeadband,
-                kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
+                kIsUsingThrottle
+                        ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5)
+                        : kSensitivity);
     }
 
     public static double getRobotYInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 -m_driverFlightJs.getY(),
                 kDeadband,
-                kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
+                kIsUsingThrottle
+                        ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5)
+                        : kSensitivity);
     }
 
     public static double getRobotZInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 m_driverFlightJs.getZ(),
                 kDeadband,
-                kIsUsingThrottle ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5) : kSensitivity);
+                kIsUsingThrottle
+                        ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5)
+                        : kSensitivity);
     }
-
 }

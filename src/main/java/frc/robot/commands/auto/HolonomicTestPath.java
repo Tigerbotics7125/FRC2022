@@ -10,7 +10,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kXPID;
 import static frc.robot.constants.MecanumDrivetrainConstants.kYPID;
 
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,12 +38,14 @@ public class HolonomicTestPath extends SequentialCommandGroup implements Autonom
 
     public HolonomicTestPath() {
         addCommands(
-            new InstantCommand(() -> { 
-                m_drivetrain.setHeading(getInitialPose().getRotation());
-                m_drivetrain.resetOdometry(getInitialPose());
-            }),
-            m_mecConCom,
-            new InstantCommand(() -> m_drivetrain.setSpeeds(new MecanumDriveWheelSpeeds(0, 0, 0, 0))));
+                new InstantCommand(
+                        () -> {
+                            m_drivetrain.setHeading(getInitialPose().getRotation());
+                            m_drivetrain.resetOdometry(getInitialPose());
+                        }),
+                m_mecConCom,
+                new InstantCommand(
+                        () -> m_drivetrain.setSpeeds(new MecanumDriveWheelSpeeds(0, 0, 0, 0))));
     }
 
     @Override

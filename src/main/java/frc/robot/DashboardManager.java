@@ -4,9 +4,6 @@
  */
 package frc.robot;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -16,14 +13,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.MecanumDrivetrainConstants;
 import frc.tigerlib.Util;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DashboardManager {
 
     private static final Map<String, ShuffleboardTab> kTabs = new HashMap<>();
 
     public static final Field2d kField = new Field2d();
-    public static final SendableChooser<Command> kAutoChooser =
-            new SendableChooser<Command>();
+    public static final SendableChooser<Command> kAutoChooser = new SendableChooser<Command>();
 
     private static final String kFieldWidget =
             "Field"; // because BuiltInWidgets doesnt contain it yet.
@@ -56,8 +54,7 @@ public class DashboardManager {
     }
 
     /** Sets up cameras */
-    public static void initCameras() {
-    }
+    public static void initCameras() {}
 
     /** Adds widgets to each Tab */
     private static void initTabWidgets() {
@@ -67,8 +64,8 @@ public class DashboardManager {
                 .withWidget(BuiltInWidgets.kComboBoxChooser)
                 .withSize(3, 1)
                 .withPosition(0, 0);
-                
-                kTabs.get(Tab.PRE_GAME.name)
+
+        kTabs.get(Tab.PRE_GAME.name)
                 .add("Field", kField)
                 .withWidget(kFieldWidget)
                 .withSize(5, 3)
@@ -81,27 +78,27 @@ public class DashboardManager {
                 .withWidget(kFieldWidget)
                 .withSize(5, 3)
                 .withPosition(0, 2);
-                kTabs.get(Tab.AUTO.name)
+        kTabs.get(Tab.AUTO.name)
                 .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
                 .withWidget(BuiltInWidgets.kMecanumDrive)
                 .withSize(3, 3)
                 .withPosition(0, 0);
-                // #endregion
+        // #endregion
 
-                // #region TELEOP
-                kTabs.get(Tab.TELEOP.name)
+        // #region TELEOP
+        kTabs.get(Tab.TELEOP.name)
                 .add("Drive Sub", RobotContainer.kDrivetrain)
                 .withSize(1, 1)
                 .withPosition(0, 0);
         kTabs.get(Tab.TELEOP.name)
-        .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
-        .withWidget(BuiltInWidgets.kMecanumDrive)
-        .withSize(3, 3)
-        .withPosition(0, 0);
+                .add(RobotContainer.kDrivetrain.getDescription(), RobotContainer.kDrivetrain)
+                .withWidget(BuiltInWidgets.kMecanumDrive)
+                .withSize(3, 3)
+                .withPosition(0, 0);
         // #endregion
-}
+    }
 
-public static void update() {
+    public static void update() {
         kField.setRobotPose(RobotContainer.kDrivetrain.getPose());
         SmartDashboard.putNumber("Heading", RobotContainer.kDrivetrain.getHeading().getDegrees());
         SmartDashboard.putNumber(

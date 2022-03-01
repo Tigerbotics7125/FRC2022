@@ -25,8 +25,8 @@ public class Robot extends TimedRobot {
         m_container = new RobotContainer();
 
         // auto chooser
-        DashboardManager.kAutoChooser.setDefaultOption("No Auto",
-                new InstantCommand(() -> RobotContainer.kDrivetrain.stopMotor()));
+        DashboardManager.kAutoChooser.setDefaultOption(
+                "No Auto", new InstantCommand(() -> RobotContainer.kDrivetrain.stopMotor()));
         DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
 
         DashboardManager.init();
@@ -47,7 +47,8 @@ public class Robot extends TimedRobot {
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
 
-        AutonomousCommand autoCommand = (AutonomousCommand) DashboardManager.kAutoChooser.getSelected();
+        AutonomousCommand autoCommand =
+                (AutonomousCommand) DashboardManager.kAutoChooser.getSelected();
         if (autoCommand != null) {
             /*
              * RobotContainer.kDrivetrain.resetOdometry(
@@ -77,12 +78,10 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void simulationInit() {
-    }
+    public void simulationInit() {}
 
     @Override
-    public void simulationPeriodic() {
-    }
+    public void simulationPeriodic() {}
 
     @Override
     public void disabledInit() {

@@ -11,6 +11,7 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kMaxSpeed;
+import static frc.robot.constants.MecanumDrivetrainConstants.kMaxWheelSpeedMPS;
 import static frc.robot.constants.MecanumDrivetrainConstants.kMotorType;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRPMtoMPSConversionFactor;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
@@ -20,15 +21,12 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kS;
 import static frc.robot.constants.MecanumDrivetrainConstants.kV;
 
-import java.time.Instant;
-
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +34,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
@@ -45,8 +44,7 @@ import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
 
 /**
- * The mecanum drivetrain of the robot, able to be simulated and work inf
- * autonomous.
+ * The mecanum drivetrain of the robot, able to be simulated and work inf autonomous.
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
@@ -71,16 +69,16 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     // IMU, kinematics, and odometry
     static final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
-    static final MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
-            kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
+    static final MecanumDriveKinematics m_kinematics =
+            new MecanumDriveKinematics(
+                    kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
 
-    static final MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+    static final MecanumDriveOdometry m_odometry =
+            new MecanumDriveOdometry(m_kinematics, new Rotation2d());
 
     // feedforward
-    SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(
-            kS, kV, kA);
-    static double lastVelocity = 0;
-    static Instant lastTime = Instant.now();
+    SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+    static double m_lastTime = 0;
 
     // variables for this buttons to control
     static boolean m_turning = false;
@@ -130,7 +128,6 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
             REVPhysicsSim.getInstance().addSparkMax(m_frontRight, DCMotor.getNEO(1));
             REVPhysicsSim.getInstance().addSparkMax(m_rearRight, DCMotor.getNEO(1));
         }
-
     }
 
     /** general periodic updates. */
@@ -169,33 +166,82 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     }
 
     /** sets the drivetrain to move according to the input. */
-    public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-        m_frontLeftVelocitySetpoint = speeds.frontLeftMetersPerSecond;
-        m_rearLeftVelocitySetpoint = speeds.rearLeftMetersPerSecond;
-        m_frontRightVelocitySetpoint = speeds.frontRightMetersPerSecond;
-        m_rearRightVelocitySetpoint = speeds.rearRightMetersPerSecond;
+    public void setSpeeds(MecanumDriveWheelSpeeds targetSpeeds) {
+        MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
+        double now = Timer.getFPGATimestamp();
 
-        // using meters per second as we set a conversion factor in constructor.
-        m_frontLeftPID.setReference(speeds.frontLeftMetersPerSecond, ControlType.kVelocity);
-        m_rearLeftPID.setReference(speeds.rearLeftMetersPerSecond, ControlType.kVelocity);
-        m_frontRightPID.setReference(speeds.frontRightMetersPerSecond, ControlType.kVelocity);
-        m_rearRightPID.setReference(speeds.rearRightMetersPerSecond, ControlType.kVelocity);
+        double flSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.frontLeftMetersPerSecond,
+                        targetSpeeds.frontLeftMetersPerSecond,
+                        now - m_lastTime);
+        double rlSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.rearLeftMetersPerSecond,
+                        targetSpeeds.rearLeftMetersPerSecond,
+                        now - m_lastTime);
+        double frSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.frontRightMetersPerSecond,
+                        targetSpeeds.frontRightMetersPerSecond,
+                        now - m_lastTime);
+        double rrSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.rearRightMetersPerSecond,
+                        targetSpeeds.rearRightMetersPerSecond,
+                        now - m_lastTime);
 
+        m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
+        m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
+        m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
+        m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
+
+        m_lastTime = Timer.getFPGATimestamp();
         feed();
     }
 
+    /** drives with joysticks, converts to velocity then passes to feedforward. */
     public void drive() {
         double xSpeed = Gamepads.getRobotXInputSpeed();
         double ySpeed = Gamepads.getRobotYInputSpeed();
         double zSpeed = Gamepads.getRobotZInputSpeed();
 
-        WheelSpeeds speeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, m_turning ? zSpeed : 0.0, m_fieldOriented ? getHeading().getDegrees() : 0.0);
-        
-        m_frontLeft.set(speeds.frontLeft);
-        m_rearLeft.set(speeds.rearLeft);
-        m_frontRight.set(speeds.frontRight);
-        m_rearRight.set(speeds.rearRight);
+        WheelSpeeds targetSpeeds =
+                MecanumDrive.driveCartesianIK(
+                        ySpeed,
+                        xSpeed,
+                        m_turning ? zSpeed : 0.0,
+                        m_fieldOriented ? getHeading().getDegrees() : 0.0);
+        MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
+        double now = Timer.getFPGATimestamp();
 
+        double flSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.frontLeftMetersPerSecond,
+                        targetSpeeds.frontLeft * kMaxWheelSpeedMPS,
+                        now - m_lastTime);
+        double rlSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.rearLeftMetersPerSecond,
+                        targetSpeeds.rearLeft * kMaxWheelSpeedMPS,
+                        now - m_lastTime);
+        double frSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.frontRightMetersPerSecond,
+                        targetSpeeds.frontRight * kMaxWheelSpeedMPS,
+                        now - m_lastTime);
+        double rrSpeed =
+                m_feedforward.calculate(
+                        currentSpeeds.rearRightMetersPerSecond,
+                        targetSpeeds.rearRight * kMaxWheelSpeedMPS,
+                        now - m_lastTime);
+
+        m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
+        m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
+        m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
+        m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
+
+        m_lastTime = Timer.getFPGATimestamp();
         feed();
     }
 

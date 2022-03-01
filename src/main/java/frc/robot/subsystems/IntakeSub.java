@@ -4,22 +4,28 @@
  */
 package frc.robot.subsystems;
 
-import static frc.robot.constants.IntakeConstants.*;
+import static frc.robot.constants.IntakeConstants.kId;
+import static frc.robot.constants.IntakeConstants.kMotorType;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class IntakeSub implements Subsystem {
 
     static final CANSparkMax m_intake = new CANSparkMax(kId, kMotorType);
+    static final SparkMaxPIDController m_pid = m_intake.getPIDController();
 
-    public IntakeSub() {}
+    public IntakeSub() {
+
+        // m_intake.burnFlash();
+    }
 
     public void intake() {
-        m_intake.setVoltage(12);
+        m_pid.setReference(1, CANSparkMax.ControlType.kDutyCycle);
     }
 
     public void eject() {
-        m_intake.setVoltage(-12);
+        m_pid.setReference(-1, CANSparkMax.ControlType.kDutyCycle);
     }
 }

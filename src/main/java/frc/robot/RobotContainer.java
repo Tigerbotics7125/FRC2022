@@ -4,8 +4,6 @@
  */
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.subsystems.MecanumDrivetrainSub;
@@ -23,5 +21,4 @@ public class RobotContainer {
     // public static final ArmSub kArm = new ArmSub();
     // public static final IntakeSub kIntake = new IntakeSub();
 
-    
 }
