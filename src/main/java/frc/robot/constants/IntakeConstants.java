@@ -10,5 +10,5 @@ public class IntakeConstants {
 
     public static final int kId = 5;
     public static final CANSparkMaxLowLevel.MotorType kMotorType =
-            CANSparkMaxLowLevel.MotorType.kBrushless;
+            CANSparkMaxLowLevel.MotorType.kBrushed;
 }

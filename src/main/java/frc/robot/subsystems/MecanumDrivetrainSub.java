@@ -4,7 +4,6 @@
  */
 package frc.robot.subsystems;
 
-import static frc.robot.constants.MecanumDrivetrainConstants.kA;
 import static frc.robot.constants.MecanumDrivetrainConstants.kDistancePerPulse;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
@@ -17,8 +16,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightOffset;
-import static frc.robot.constants.MecanumDrivetrainConstants.kS;
-import static frc.robot.constants.MecanumDrivetrainConstants.kV;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -26,7 +23,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -75,10 +71,6 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
 
     static final MecanumDriveOdometry m_odometry =
             new MecanumDriveOdometry(m_kinematics, new Rotation2d());
-
-    // feedforward
-    SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
-    static double m_lastTime = 0;
 
     // variables for this buttons to control
     static boolean m_turning = false;

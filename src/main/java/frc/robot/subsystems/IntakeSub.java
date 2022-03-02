@@ -8,28 +8,23 @@ import static frc.robot.constants.IntakeConstants.kId;
 import static frc.robot.constants.IntakeConstants.kMotorType;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class IntakeSub implements Subsystem {
 
     static final CANSparkMax m_intake = new CANSparkMax(kId, kMotorType);
-    static final SparkMaxPIDController m_pid = m_intake.getPIDController();
 
-    public IntakeSub() {
-
-        // m_intake.burnFlash();
-    }
+    public IntakeSub() {}
 
     public void intake() {
-        m_pid.setReference(1, CANSparkMax.ControlType.kDutyCycle);
+        m_intake.set(.8);
     }
 
     public void eject() {
-        m_pid.setReference(-1, CANSparkMax.ControlType.kDutyCycle);
+        m_intake.set(-.8);
     }
 
     public void disable() {
-        m_pid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+        m_intake.set(0);
     }
 }

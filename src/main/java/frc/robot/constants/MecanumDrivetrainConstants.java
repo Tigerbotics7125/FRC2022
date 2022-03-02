@@ -35,11 +35,6 @@ public class MecanumDrivetrainConstants {
             0.2; // fixes joystick range to [-1, -kDeadband)(0.0)(kDeadband, 1]
     public static final double kSensitivity = 3; // fixes joystick sensitivy to +/- x^sensitivity
 
-    // feedforward constants
-    public static final double kS = 1;
-    public static final double kV = 1;
-    public static final double kA = 1;
-
     // CAN IDs
     public static final int kFrontLeftId = 1;
     public static final int kRearLeftId = 2;
