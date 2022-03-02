@@ -10,10 +10,13 @@ public class ArmConstants {
 
     public static final int kId = 0;
 
-    public static final double kSVolts = 0.0; // static gain // TODO:
-    public static final double kGVolts = 0.0; // gravity gain // TODO:
-    public static final double kVVoltSecondPerRad = 0.0; // velocity gain // TODO:
-    public static final double kAVoltSecondSquaredPerRad = 0.0; // acceleration gain // TODO:
+    public static final double kUp = .1;
+    public static final double kDown = 0;
+
+    public static final double kSVolts = 0.1; // static gain // TODO:
+    public static final double kGVolts = 0.1; // gravity gain // TODO:
+    public static final double kVVoltSecondPerRad = 0.1; // velocity gain // TODO:
+    public static final double kAVoltSecondSquaredPerRad = 0.1; // acceleration gain // TODO:
 
     public static final double kPlanetaryGearboxRatio = 81.0; // 81:1
     public static final double kGearAndChainRatio = 1; // TODO: idk yet.

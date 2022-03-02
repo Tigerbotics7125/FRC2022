@@ -11,7 +11,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kMaxSpeed;
-import static frc.robot.constants.MecanumDrivetrainConstants.kMaxWheelSpeedMPS;
 import static frc.robot.constants.MecanumDrivetrainConstants.kMotorType;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRPMtoMPSConversionFactor;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
@@ -34,7 +33,8 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
@@ -162,13 +162,14 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     /** sets the heading of the robot */
     public void setHeading(Rotation2d heading) {
         m_pigeon.setFusedHeading(heading.getDegrees());
-        resetOdometry(getPose());
     }
 
     /** sets the drivetrain to move according to the input. */
     public void setSpeeds(MecanumDriveWheelSpeeds targetSpeeds) {
+        /*
         MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
         double now = Timer.getFPGATimestamp();
+        System.out.println("input Speeds:" + targetSpeeds.toString());
 
         double flSpeed =
                 m_feedforward.calculate(
@@ -191,12 +192,21 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
                         targetSpeeds.rearRightMetersPerSecond,
                         now - m_lastTime);
 
+        System.out.println("output Speeds:" + flSpeed + " " + rlSpeed + " " + frSpeed + " " + rrSpeed);
+
         m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
         m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
         m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
 
-        m_lastTime = Timer.getFPGATimestamp();
+        */
+
+        m_frontLeftPID.setReference(targetSpeeds.frontLeftMetersPerSecond, ControlType.kVelocity);
+        m_rearLeftPID.setReference(targetSpeeds.rearLeftMetersPerSecond, ControlType.kVelocity);
+        m_frontRightPID.setReference(targetSpeeds.frontRightMetersPerSecond, ControlType.kVelocity);
+        m_rearRightPID.setReference(targetSpeeds.rearRightMetersPerSecond, ControlType.kVelocity);
+
+        // m_lastTime = Timer.getFPGATimestamp();
         feed();
     }
 
@@ -212,6 +222,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
                         xSpeed,
                         m_turning ? zSpeed : 0.0,
                         m_fieldOriented ? getHeading().getDegrees() : 0.0);
+        /*
         MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
         double now = Timer.getFPGATimestamp();
 
@@ -242,6 +253,12 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
 
         m_lastTime = Timer.getFPGATimestamp();
+        */
+        m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
+        m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
+        m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
+        m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
+
         feed();
     }
 
@@ -274,7 +291,9 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
      */
     public Rotation2d getHeading() {
         // pigeon headings are already +CCW, no need to negate
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+        return Rotation2d.fromDegrees(
+                m_pigeon.getFusedHeading()
+                        + (DriverStation.getAlliance() == Alliance.Blue ? 0 : 180));
     }
 
     /** @returns the current position of the robot. */

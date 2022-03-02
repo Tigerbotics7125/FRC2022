@@ -5,11 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.DashboardManager.Tab;
 import frc.robot.commands.auto.HolonomicTestPath;
-import frc.tigerlib.command.AutonomousCommand;
+import frc.robot.commands.auto.TwoBallAuto;
 
 /**
  * The main robot class, runs all loops and main control
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
         DashboardManager.kAutoChooser.setDefaultOption(
                 "No Auto", new InstantCommand(() -> RobotContainer.kDrivetrain.stopMotor()));
         DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
+        DashboardManager.kAutoChooser.addOption("Two Ball", new TwoBallAuto());
 
         DashboardManager.init();
         DashboardManager.showTab(Tab.PRE_GAME);
@@ -47,8 +49,7 @@ public class Robot extends TimedRobot {
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
 
-        AutonomousCommand autoCommand =
-                (AutonomousCommand) DashboardManager.kAutoChooser.getSelected();
+        Command autoCommand = DashboardManager.kAutoChooser.getSelected();
         if (autoCommand != null) {
             /*
              * RobotContainer.kDrivetrain.resetOdometry(

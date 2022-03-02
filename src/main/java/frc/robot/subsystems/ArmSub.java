@@ -6,12 +6,14 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.ArmConstants.kAVoltSecondSquaredPerRad;
 import static frc.robot.constants.ArmConstants.kArmOffsetRads;
+import static frc.robot.constants.ArmConstants.kDown;
 import static frc.robot.constants.ArmConstants.kGVolts;
 import static frc.robot.constants.ArmConstants.kGearAndChainRatio;
 import static frc.robot.constants.ArmConstants.kId;
 import static frc.robot.constants.ArmConstants.kPlanetaryGearboxRatio;
 import static frc.robot.constants.ArmConstants.kSVolts;
 import static frc.robot.constants.ArmConstants.kTrapezoidProfile;
+import static frc.robot.constants.ArmConstants.kUp;
 import static frc.robot.constants.ArmConstants.kVVoltSecondPerRad;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -64,5 +66,13 @@ public class ArmSub extends TrapezoidProfileSubsystem {
 
         // set the output
         m_arm.set(ControlMode.Velocity, state.velocity + ff);
+    }
+
+    public void setUp() {
+        setGoal(kUp);
+    }
+
+    public void setDown() {
+        setGoal(kDown);
     }
 }

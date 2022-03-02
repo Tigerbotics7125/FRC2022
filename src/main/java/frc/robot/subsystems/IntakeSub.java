@@ -28,4 +28,8 @@ public class IntakeSub implements Subsystem {
     public void eject() {
         m_pid.setReference(-1, CANSparkMax.ControlType.kDutyCycle);
     }
+
+    public void disable() {
+        m_pid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+    }
 }

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.MecanumDrivetrainConstants;
 import frc.tigerlib.Util;
+import frc.tigerlib.command.AutonomousCommand;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,6 +101,9 @@ public class DashboardManager {
 
     public static void update() {
         kField.setRobotPose(RobotContainer.kDrivetrain.getPose());
+        if (kAutoChooser.getSelected() instanceof AutonomousCommand) {
+            ((AutonomousCommand) kAutoChooser.getSelected()).preview();
+        }
         SmartDashboard.putNumber("Heading", RobotContainer.kDrivetrain.getHeading().getDegrees());
         SmartDashboard.putNumber(
                 "xController",

@@ -11,6 +11,7 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kYPID;
 
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -63,7 +64,7 @@ public class TwoBallAuto extends SequentialCommandGroup implements AutonomousCom
     }
 
     public Pose2d getInitialPose() {
-        return AutonomousTrajectories.kTwoBallAuto[0].getInitialPose();
+        return new Pose2d(5.97, 4.71, Rotation2d.fromDegrees(90));
     }
 
     @Override
