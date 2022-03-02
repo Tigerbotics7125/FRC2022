@@ -10,7 +10,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kXPID;
 import static frc.robot.constants.MecanumDrivetrainConstants.kYPID;
 
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,31 +31,33 @@ public class TwoBallAuto extends SequentialCommandGroup implements AutonomousCom
     private ArmSub m_arm = RobotContainer.kArm;
     private IntakeSub m_intake = RobotContainer.kIntake;
 
-    private Command m_mecCommand = new PPMecanumControllerCommand(
-            AutonomousTrajectories.kTwoBallAuto[0],
-            m_drivetrain::getPose,
-            m_drivetrain.getKinematics(),
-            kXPID,
-            kYPID,
-            kThetaPID,
-            kMaxWheelSpeedMPS,
-            m_drivetrain::setSpeeds,
-            m_drivetrain);
+    private Command m_mecCommand =
+            new PPMecanumControllerCommand(
+                    AutonomousTrajectories.kTwoBallAuto[0],
+                    m_drivetrain::getPose,
+                    m_drivetrain.getKinematics(),
+                    kXPID,
+                    kYPID,
+                    kThetaPID,
+                    kMaxWheelSpeedMPS,
+                    m_drivetrain::setSpeeds,
+                    m_drivetrain);
 
     public TwoBallAuto() {
         addCommands(
-                new InstantCommand(
-                        () -> m_drivetrain.resetOdometry(getInitialPose())),
+                new InstantCommand(() -> m_drivetrain.resetOdometry(getInitialPose())),
                 new ParallelCommandGroup(
                         m_mecCommand, // driving command
                         new InstantCommand(() -> m_arm.setDown()),
                         new InstantCommand(() -> m_intake.intake()),
                         new SequentialCommandGroup(
-                                new WaitCommand(2.5),
-                                new InstantCommand(() -> m_arm.setUp()))),
+                                new WaitCommand(2.5), new InstantCommand(() -> m_arm.setUp()))),
                 new InstantCommand(() -> m_intake.eject()),
                 new ParallelCommandGroup(
-                        new InstantCommand(() -> m_drivetrain.setSpeeds(new MecanumDriveWheelSpeeds(0, 0, 0, 0))),
+                        new InstantCommand(
+                                () ->
+                                        m_drivetrain.setSpeeds(
+                                                new MecanumDriveWheelSpeeds(0, 0, 0, 0))),
                         new InstantCommand(() -> m_arm.disable()),
                         new InstantCommand(() -> m_intake.disable())));
     }
@@ -67,6 +68,8 @@ public class TwoBallAuto extends SequentialCommandGroup implements AutonomousCom
 
     @Override
     public void preview() {
-        DashboardManager.kField.getObject("Two Ball Auto").setTrajectory(AutonomousTrajectories.kTwoBallAuto[0]);
+        DashboardManager.kField
+                .getObject("Two Ball Auto")
+                .setTrajectory(AutonomousTrajectories.kTwoBallAuto[0]);
     }
 }
