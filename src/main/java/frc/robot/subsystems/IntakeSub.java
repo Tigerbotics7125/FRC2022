@@ -10,6 +10,11 @@ import static frc.robot.constants.IntakeConstants.kMotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
+/**
+ * Controls the intake of the robot
+ * 
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class IntakeSub implements Subsystem {
 
     static final CANSparkMax m_intake = new CANSparkMax(kId, kMotorType);

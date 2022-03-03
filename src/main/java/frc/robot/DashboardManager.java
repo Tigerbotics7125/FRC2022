@@ -17,6 +17,11 @@ import frc.tigerlib.command.AutonomousCommand;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Helps manage dashboards in one location
+ * 
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class DashboardManager {
 
     private static final Map<String, ShuffleboardTab> kTabs = new HashMap<>();

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MecanumDrivetrainSub;
 
 /**
- * Drives a Mecanum Drivetrain
+ * Runs the drivetrain as a command; actuall driving is done in drivetrain class.
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */

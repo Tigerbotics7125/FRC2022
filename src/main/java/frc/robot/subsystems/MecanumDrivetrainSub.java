@@ -38,7 +38,7 @@ import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
 
 /**
- * The mecanum drivetrain of the robot, able to be simulated and work inf autonomous.
+ * Controls the mecanum drivetrain of the robot
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */

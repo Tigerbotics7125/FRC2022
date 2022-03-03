@@ -10,6 +10,11 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kMaxAutoVelocity;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+/**
+ * Contains all autonomous trajectories.
+ * 
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class AutonomousTrajectories {
     public static final PathPlannerTrajectory[] kHolonomicTestPath = {
         PathPlanner.loadPath("HolonomicTestPath", kMaxAutoVelocity, kMaxAutoAcceleration)
