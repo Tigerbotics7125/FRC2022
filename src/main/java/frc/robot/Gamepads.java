@@ -57,38 +57,42 @@ public class Gamepads {
 
         // when trigger is held, field oriented is enabled, disabled otherwise
         /*
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
-                .whenPressed(() -> RobotContainer.kDrivetrain.setFieldOriented(true))
-                .whenReleased(() -> RobotContainer.kDrivetrain.setFieldOriented(false));
-        */
+         * new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
+         * .whenPressed(() -> RobotContainer.kDrivetrain.setFieldOriented(true))
+         * .whenReleased(() -> RobotContainer.kDrivetrain.setFieldOriented(false));
+         */
         // when thumb button is held, turning is enabled, disabled otherwise
         /*
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2))
-                .whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true))
-                .whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
-        */
+         * new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2))
+         * .whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true))
+         * .whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
+         */
+
+        // when trigger is pressed, raise arm then eject, then lower arm.
+        new Button(() -> m_driverFlightJs.getRawButton(1))
+                .whenPressed(RobotContainer.kArm.getRaiseEjectLowerCommand());
 
         // when thumb is held down, intake.
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2))
+        new Button(() -> m_driverFlightJs.getRawButton(2))
                 .whileHeld(() -> RobotContainer.kIntake.intake())
                 .whenReleased(() -> RobotContainer.kIntake.disable());
+
+        // when button 3 is pressed lower arm
+        new Button(() -> m_driverFlightJs.getRawButton(3))
+                .whenPressed(() -> RobotContainer.kArm.setDown());
+
+        // when button 5 is pressed lift arm
+        new Button(() -> m_driverFlightJs.getRawButton(5))
+                .whenPressed(() -> RobotContainer.kArm.setUp());
 
         // when button 6 is held down, eject.
         new Button(() -> m_driverFlightJs.getRawButton(6))
                 .whileHeld(() -> RobotContainer.kIntake.eject())
                 .whenReleased(() -> RobotContainer.kIntake.disable());
 
-        // when trigger is pressed, raise arm then eject, then lower arm.
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
-                .whenPressed(RobotContainer.kArm.getRaiseEjectLowerCommand());
-
-        // when button 5 is pressed lift arm
-        new Button(() -> m_driverFlightJs.getRawButton(5))
-                .whenPressed(() -> RobotContainer.kArm.setUp());
-
-        // when button 3 is pressed lower arm
-        new Button(() -> m_driverFlightJs.getRawButton(3))
-                .whenPressed(() -> RobotContainer.kArm.setDown());
+        // when button 10 is pressed, toggle field oriented
+        new Button(() -> m_driverFlightJs.getRawButton(10))
+                .whenPressed(() -> RobotContainer.kDrivetrain.toggleFieldOriented());
 
         // when button 11 is pressed reset odometry
         new Button(() -> m_driverFlightJs.getRawButton(11))
@@ -99,9 +103,6 @@ public class Gamepads {
         new Button(() -> m_driverFlightJs.getRawButton(12))
                 .whenPressed(() -> RobotContainer.kDrivetrain.toggleFieldOffset());
 
-        // when button 10 is pressed, toggle field oriented
-        new Button(() -> m_driverFlightJs.getRawButton(10))
-                .whenPressed(() -> RobotContainer.kDrivetrain.toggleFieldOriented());
     }
 
     public static double getRobotXInputSpeed() {
