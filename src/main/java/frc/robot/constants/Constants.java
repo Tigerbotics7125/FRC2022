@@ -14,5 +14,4 @@ public class Constants {
     // CAN IDs
     public static final int kPowerDistributionPanelId = 0;
     public static final int kPigeonId = 0;
-    
 }

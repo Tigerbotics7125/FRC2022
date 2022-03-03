@@ -12,7 +12,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 
 /**
  * Contains all autonomous trajectories.
- * 
+ *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class AutonomousTrajectories {

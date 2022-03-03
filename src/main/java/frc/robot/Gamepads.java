@@ -102,7 +102,6 @@ public class Gamepads {
         // when button 12 is pressed, toggle field offset for field oriented
         new Button(() -> m_driverFlightJs.getRawButton(12))
                 .whenPressed(() -> RobotContainer.kDrivetrain.toggleFieldOffset());
-
     }
 
     public static double getRobotXInputSpeed() {

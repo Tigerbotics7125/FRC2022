@@ -10,7 +10,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kXPID;
 import static frc.robot.constants.MecanumDrivetrainConstants.kYPID;
 
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
@@ -28,8 +27,9 @@ import frc.robot.subsystems.MecanumDrivetrainSub;
 import frc.tigerlib.command.AutonomousCommand;
 
 /**
- * A mostly simple autnomous path to take our preloaded ball, and one ball from the field and score them
- * 
+ * A mostly simple autnomous path to take our preloaded ball, and one ball from the field and score
+ * them
+ *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class TwoBallAuto extends SequentialCommandGroup implements AutonomousCommand {
@@ -55,19 +55,15 @@ public class TwoBallAuto extends SequentialCommandGroup implements AutonomousCom
                 // tell the robot where it is
                 new InstantCommand(() -> m_drivetrain.resetOdometry(getInitialPose())),
                 // drive around and intake.
-                new ParallelCommandGroup(
-                        m_driveCommand,
-                        new RunCommand(() -> m_intake.intake())
-                ),
+                new ParallelCommandGroup(m_driveCommand, new RunCommand(() -> m_intake.intake())),
                 // score the balls pls.
                 m_arm.getRaiseEjectLowerCommand(),
                 // shut off the motors.
                 new ParallelCommandGroup(
-                        new InstantCommand(() -> m_drivetrain.setSpeeds(new MecanumDriveWheelSpeeds())),
+                        new InstantCommand(
+                                () -> m_drivetrain.setSpeeds(new MecanumDriveWheelSpeeds())),
                         new InstantCommand(() -> m_intake.disable()),
-                        new InstantCommand(() -> m_arm.disable())
-                )
-                );
+                        new InstantCommand(() -> m_arm.disable())));
     }
 
     public Pose2d getInitialPose() {

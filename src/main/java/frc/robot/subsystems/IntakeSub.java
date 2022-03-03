@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * Controls the intake of the robot
- * 
+ *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class IntakeSub implements Subsystem {

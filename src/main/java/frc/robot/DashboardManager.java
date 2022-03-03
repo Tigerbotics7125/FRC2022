@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * Helps manage dashboards in one location
- * 
+ *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class DashboardManager {

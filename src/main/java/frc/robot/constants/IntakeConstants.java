@@ -8,7 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 
 /**
  * Contains all intake constants.
- * 
+ *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class IntakeConstants {
