@@ -19,9 +19,9 @@ import frc.robot.subsystems.MecanumDrivetrainSub;
  */
 public class RobotContainer {
 
+    public static final UsbCamera kCamera1 = CameraServer.startAutomaticCapture();
     public static final PowerDistribution kPdp = new PowerDistribution(0, ModuleType.kCTRE);
     public static final MecanumDrivetrainSub kDrivetrain = new MecanumDrivetrainSub();
-    public static final UsbCamera kCamera1 = CameraServer.startAutomaticCapture(0);
     public static final ArmSub kArm = new ArmSub();
     public static final IntakeSub kIntake = new IntakeSub();
 }
