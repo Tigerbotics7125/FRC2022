@@ -5,9 +5,9 @@
 package frc.robot;
 
 import static frc.robot.constants.MecanumDrivetrainConstants.kDeadband;
-import static frc.robot.constants.MecanumDrivetrainConstants.kIsUsingThrottle;
 import static frc.robot.constants.MecanumDrivetrainConstants.kSensitivity;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -56,39 +56,53 @@ public class Gamepads {
         // Driver button Controls
 
         // when trigger is held, field oriented is enabled, disabled otherwise
+        /*
         new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
                 .whenPressed(() -> RobotContainer.kDrivetrain.setFieldOriented(true))
                 .whenReleased(() -> RobotContainer.kDrivetrain.setFieldOriented(false));
+        */
         // when thumb button is held, turning is enabled, disabled otherwise
+        /*
         new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2))
                 .whenPressed(() -> RobotContainer.kDrivetrain.setTurning(true))
                 .whenReleased(() -> RobotContainer.kDrivetrain.setTurning(false));
+        */
+
+        // when thumb is held down, intake.
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2)).whileHeld(() -> RobotContainer.kIntake.intake()).whenReleased(() -> RobotContainer.kIntake.disable());
+
+        // when trigger is pressed, raise arm then eject, then lower arm.
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1)).whenPressed(RobotContainer.kArm.getRaiseEjectLowerCommand());
+
+        // when button 5 is pressed lift arm
+        new Button(() -> m_driverFlightJs.getRawButton(5)).whenPressed(() -> RobotContainer.kArm.setUp());
+
+        // when button 3 is pressed lower arm
+        new Button(() -> m_driverFlightJs.getRawButton(3)).whenPressed(() -> RobotContainer.kArm.setDown());
+
+        // when button 11 is pressed reset odometry
+        new Button(() -> m_driverFlightJs.getRawButton(11)).whenPressed(() -> RobotContainer.kDrivetrain.setHeading(Rotation2d.fromDegrees(0)));
+
     }
 
     public static double getRobotXInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 m_driverFlightJs.getX(),
                 kDeadband,
-                kIsUsingThrottle
-                        ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5)
-                        : kSensitivity);
+                kSensitivity);
     }
 
     public static double getRobotYInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 -m_driverFlightJs.getY(),
                 kDeadband,
-                kIsUsingThrottle
-                        ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5)
-                        : kSensitivity);
+                kSensitivity);
     }
 
     public static double getRobotZInputSpeed() {
         return Util.joystickDeadbandSensitivity(
                 m_driverFlightJs.getZ(),
                 kDeadband,
-                kIsUsingThrottle
-                        ? Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5)
-                        : kSensitivity);
+                kSensitivity);
     }
 }

@@ -40,7 +40,8 @@ import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
 
 /**
- * The mecanum drivetrain of the robot, able to be simulated and work inf autonomous.
+ * The mecanum drivetrain of the robot, able to be simulated and work inf
+ * autonomous.
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
@@ -65,16 +66,14 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     // IMU, kinematics, and odometry
     static final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
-    static final MecanumDriveKinematics m_kinematics =
-            new MecanumDriveKinematics(
-                    kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
+    static final MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
+            kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
 
-    static final MecanumDriveOdometry m_odometry =
-            new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+    static final MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
 
     // variables for this buttons to control
-    static boolean m_turning = false;
-    static boolean m_fieldOriented = false;
+    static boolean m_turning = true;
+    static boolean m_fieldOriented = true;
 
     // Variables for dashboard
     static double m_frontLeftVelocitySetpoint = 0;
@@ -159,39 +158,40 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     /** sets the drivetrain to move according to the input. */
     public void setSpeeds(MecanumDriveWheelSpeeds targetSpeeds) {
         /*
-        MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
-        double now = Timer.getFPGATimestamp();
-        System.out.println("input Speeds:" + targetSpeeds.toString());
-
-        double flSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.frontLeftMetersPerSecond,
-                        targetSpeeds.frontLeftMetersPerSecond,
-                        now - m_lastTime);
-        double rlSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.rearLeftMetersPerSecond,
-                        targetSpeeds.rearLeftMetersPerSecond,
-                        now - m_lastTime);
-        double frSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.frontRightMetersPerSecond,
-                        targetSpeeds.frontRightMetersPerSecond,
-                        now - m_lastTime);
-        double rrSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.rearRightMetersPerSecond,
-                        targetSpeeds.rearRightMetersPerSecond,
-                        now - m_lastTime);
-
-        System.out.println("output Speeds:" + flSpeed + " " + rlSpeed + " " + frSpeed + " " + rrSpeed);
-
-        m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
-        m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
-        m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
-        m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
-
-        */
+         * MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
+         * double now = Timer.getFPGATimestamp();
+         * System.out.println("input Speeds:" + targetSpeeds.toString());
+         * 
+         * double flSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.frontLeftMetersPerSecond,
+         * targetSpeeds.frontLeftMetersPerSecond,
+         * now - m_lastTime);
+         * double rlSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.rearLeftMetersPerSecond,
+         * targetSpeeds.rearLeftMetersPerSecond,
+         * now - m_lastTime);
+         * double frSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.frontRightMetersPerSecond,
+         * targetSpeeds.frontRightMetersPerSecond,
+         * now - m_lastTime);
+         * double rrSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.rearRightMetersPerSecond,
+         * targetSpeeds.rearRightMetersPerSecond,
+         * now - m_lastTime);
+         * 
+         * System.out.println("output Speeds:" + flSpeed + " " + rlSpeed + " " + frSpeed
+         * + " " + rrSpeed);
+         * 
+         * m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
+         * m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
+         * m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
+         * m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
+         * 
+         */
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeftMetersPerSecond, ControlType.kVelocity);
         m_rearLeftPID.setReference(targetSpeeds.rearLeftMetersPerSecond, ControlType.kVelocity);
@@ -208,44 +208,58 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         double ySpeed = Gamepads.getRobotYInputSpeed();
         double zSpeed = Gamepads.getRobotZInputSpeed();
 
-        WheelSpeeds targetSpeeds =
-                MecanumDrive.driveCartesianIK(
-                        ySpeed,
-                        xSpeed,
-                        m_turning ? zSpeed : 0.0,
-                        m_fieldOriented ? getHeading().getDegrees() : 0.0);
+        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(
+                ySpeed,
+                xSpeed,
+                m_turning ? zSpeed : 0.0,
+                m_fieldOriented ? getHeading().getDegrees() : 0.0);
         /*
-        MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
-        double now = Timer.getFPGATimestamp();
+         * MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
+         * double now = Timer.getFPGATimestamp();
+         * 
+         * double flSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.frontLeftMetersPerSecond,
+         * targetSpeeds.frontLeft * kMaxWheelSpeedMPS,
+         * now - m_lastTime);
+         * double rlSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.rearLeftMetersPerSecond,
+         * targetSpeeds.rearLeft * kMaxWheelSpeedMPS,
+         * now - m_lastTime);
+         * double frSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.frontRightMetersPerSecond,
+         * targetSpeeds.frontRight * kMaxWheelSpeedMPS,
+         * now - m_lastTime);
+         * double rrSpeed =
+         * m_feedforward.calculate(
+         * currentSpeeds.rearRightMetersPerSecond,
+         * targetSpeeds.rearRight * kMaxWheelSpeedMPS,
+         * now - m_lastTime);
+         * 
+         * m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
+         * m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
+         * m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
+         * m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
+         * 
+         * m_lastTime = Timer.getFPGATimestamp();
+         */
+        m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
+        m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
+        m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
+        m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
 
-        double flSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.frontLeftMetersPerSecond,
-                        targetSpeeds.frontLeft * kMaxWheelSpeedMPS,
-                        now - m_lastTime);
-        double rlSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.rearLeftMetersPerSecond,
-                        targetSpeeds.rearLeft * kMaxWheelSpeedMPS,
-                        now - m_lastTime);
-        double frSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.frontRightMetersPerSecond,
-                        targetSpeeds.frontRight * kMaxWheelSpeedMPS,
-                        now - m_lastTime);
-        double rrSpeed =
-                m_feedforward.calculate(
-                        currentSpeeds.rearRightMetersPerSecond,
-                        targetSpeeds.rearRight * kMaxWheelSpeedMPS,
-                        now - m_lastTime);
+        feed();
+    }
 
-        m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
-        m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
-        m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
-        m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
+    public void drive(double ySpeed, double xSpeed, double zSpeed) {
+        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(
+                ySpeed,
+                xSpeed,
+                zSpeed,
+                0.0);
 
-        m_lastTime = Timer.getFPGATimestamp();
-        */
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
         m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
