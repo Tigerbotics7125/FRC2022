@@ -9,7 +9,6 @@ import static frc.robot.constants.ArmConstants.kId;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -47,24 +46,21 @@ public class ArmSub implements Subsystem {
 
     public Command getRaiseEjectLowerCommand() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> setUp()),
-            new WaitCommand(1.25),
-            new ParallelRaceGroup(
-                new PerpetualCommand(
-                    new InstantCommand(() -> RobotContainer.kDrivetrain.drive(0, .75, 0))
-                ),
-                new WaitCommand(1)
-            ),
-            new InstantCommand(() -> RobotContainer.kIntake.eject()),
-            new WaitCommand(.5),
-            new InstantCommand(() -> RobotContainer.kIntake.disable()),
-            new ParallelRaceGroup(
-                new PerpetualCommand(
-                    new InstantCommand(() -> RobotContainer.kDrivetrain.drive(0, -.75, 0))
-                ),
-                new WaitCommand(1)
-            ),
-            new InstantCommand(() -> setDown())
-        );
+                new InstantCommand(() -> setUp()),
+                new WaitCommand(1.25),
+                new ParallelRaceGroup(
+                        new PerpetualCommand(
+                                new InstantCommand(
+                                        () -> RobotContainer.kDrivetrain.drive(0, .75, 0))),
+                        new WaitCommand(1)),
+                new InstantCommand(() -> RobotContainer.kIntake.eject()),
+                new WaitCommand(.5),
+                new InstantCommand(() -> RobotContainer.kIntake.disable()),
+                new ParallelRaceGroup(
+                        new PerpetualCommand(
+                                new InstantCommand(
+                                        () -> RobotContainer.kDrivetrain.drive(0, -.75, 0))),
+                        new WaitCommand(1)),
+                new InstantCommand(() -> setDown()));
     }
 }

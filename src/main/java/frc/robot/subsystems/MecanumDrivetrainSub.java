@@ -40,8 +40,7 @@ import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
 
 /**
- * The mecanum drivetrain of the robot, able to be simulated and work inf
- * autonomous.
+ * The mecanum drivetrain of the robot, able to be simulated and work inf autonomous.
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
@@ -66,10 +65,12 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     // IMU, kinematics, and odometry
     static final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
-    static final MecanumDriveKinematics m_kinematics = new MecanumDriveKinematics(
-            kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
+    static final MecanumDriveKinematics m_kinematics =
+            new MecanumDriveKinematics(
+                    kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
 
-    static final MecanumDriveOdometry m_odometry = new MecanumDriveOdometry(m_kinematics, new Rotation2d());
+    static final MecanumDriveOdometry m_odometry =
+            new MecanumDriveOdometry(m_kinematics, new Rotation2d());
 
     // variables for this buttons to control
     static boolean m_turning = true;
@@ -119,6 +120,9 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
             REVPhysicsSim.getInstance().addSparkMax(m_frontRight, DCMotor.getNEO(1));
             REVPhysicsSim.getInstance().addSparkMax(m_rearRight, DCMotor.getNEO(1));
         }
+
+        setTurning(true);
+        setFieldOriented(true);
     }
 
     /** general periodic updates. */
@@ -161,7 +165,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
          * MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
          * double now = Timer.getFPGATimestamp();
          * System.out.println("input Speeds:" + targetSpeeds.toString());
-         * 
+         *
          * double flSpeed =
          * m_feedforward.calculate(
          * currentSpeeds.frontLeftMetersPerSecond,
@@ -182,15 +186,15 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
          * currentSpeeds.rearRightMetersPerSecond,
          * targetSpeeds.rearRightMetersPerSecond,
          * now - m_lastTime);
-         * 
+         *
          * System.out.println("output Speeds:" + flSpeed + " " + rlSpeed + " " + frSpeed
          * + " " + rrSpeed);
-         * 
+         *
          * m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
          * m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
          * m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
          * m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
-         * 
+         *
          */
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeftMetersPerSecond, ControlType.kVelocity);
@@ -208,15 +212,16 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         double ySpeed = Gamepads.getRobotYInputSpeed();
         double zSpeed = Gamepads.getRobotZInputSpeed();
 
-        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(
-                ySpeed,
-                xSpeed,
-                m_turning ? zSpeed : 0.0,
-                m_fieldOriented ? getHeading().getDegrees() : 0.0);
+        WheelSpeeds targetSpeeds =
+                MecanumDrive.driveCartesianIK(
+                        ySpeed,
+                        xSpeed,
+                        m_turning ? zSpeed : 0.0,
+                        m_fieldOriented ? getHeading().getDegrees() : 0.0);
         /*
          * MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
          * double now = Timer.getFPGATimestamp();
-         * 
+         *
          * double flSpeed =
          * m_feedforward.calculate(
          * currentSpeeds.frontLeftMetersPerSecond,
@@ -237,12 +242,12 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
          * currentSpeeds.rearRightMetersPerSecond,
          * targetSpeeds.rearRight * kMaxWheelSpeedMPS,
          * now - m_lastTime);
-         * 
+         *
          * m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
          * m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
          * m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
          * m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
-         * 
+         *
          * m_lastTime = Timer.getFPGATimestamp();
          */
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
@@ -254,11 +259,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     }
 
     public void drive(double ySpeed, double xSpeed, double zSpeed) {
-        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(
-                ySpeed,
-                xSpeed,
-                zSpeed,
-                0.0);
+        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, zSpeed, 0.0);
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);

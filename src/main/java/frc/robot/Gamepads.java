@@ -69,40 +69,37 @@ public class Gamepads {
         */
 
         // when thumb is held down, intake.
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2)).whileHeld(() -> RobotContainer.kIntake.intake()).whenReleased(() -> RobotContainer.kIntake.disable());
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(2))
+                .whileHeld(() -> RobotContainer.kIntake.intake())
+                .whenReleased(() -> RobotContainer.kIntake.disable());
 
         // when trigger is pressed, raise arm then eject, then lower arm.
-        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1)).whenPressed(RobotContainer.kArm.getRaiseEjectLowerCommand());
+        new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
+                .whenPressed(RobotContainer.kArm.getRaiseEjectLowerCommand());
 
         // when button 5 is pressed lift arm
-        new Button(() -> m_driverFlightJs.getRawButton(5)).whenPressed(() -> RobotContainer.kArm.setUp());
+        new Button(() -> m_driverFlightJs.getRawButton(5))
+                .whenPressed(() -> RobotContainer.kArm.setUp());
 
         // when button 3 is pressed lower arm
-        new Button(() -> m_driverFlightJs.getRawButton(3)).whenPressed(() -> RobotContainer.kArm.setDown());
+        new Button(() -> m_driverFlightJs.getRawButton(3))
+                .whenPressed(() -> RobotContainer.kArm.setDown());
 
         // when button 11 is pressed reset odometry
-        new Button(() -> m_driverFlightJs.getRawButton(11)).whenPressed(() -> RobotContainer.kDrivetrain.setHeading(Rotation2d.fromDegrees(0)));
-
+        new Button(() -> m_driverFlightJs.getRawButton(11))
+                .whenPressed(
+                        () -> RobotContainer.kDrivetrain.setHeading(Rotation2d.fromDegrees(0)));
     }
 
     public static double getRobotXInputSpeed() {
-        return Util.joystickDeadbandSensitivity(
-                m_driverFlightJs.getX(),
-                kDeadband,
-                kSensitivity);
+        return Util.joystickDeadbandSensitivity(m_driverFlightJs.getX(), kDeadband, kSensitivity);
     }
 
     public static double getRobotYInputSpeed() {
-        return Util.joystickDeadbandSensitivity(
-                -m_driverFlightJs.getY(),
-                kDeadband,
-                kSensitivity);
+        return Util.joystickDeadbandSensitivity(-m_driverFlightJs.getY(), kDeadband, kSensitivity);
     }
 
     public static double getRobotZInputSpeed() {
-        return Util.joystickDeadbandSensitivity(
-                m_driverFlightJs.getZ(),
-                kDeadband,
-                kSensitivity);
+        return Util.joystickDeadbandSensitivity(m_driverFlightJs.getZ(), kDeadband, kSensitivity);
     }
 }
