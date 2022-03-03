@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -28,8 +28,8 @@ public class ArmSub implements Subsystem {
         m_arm.config_kP(0, 1);
         m_arm.config_kI(0, 0);
         m_arm.config_kD(0, 0);
-        // setGoal(0); // lower arm
 
+        setDown(); // lower arm as soon as match starts
     }
 
     public void setUp() {
@@ -49,17 +49,13 @@ public class ArmSub implements Subsystem {
                 new InstantCommand(() -> setUp()),
                 new WaitCommand(1.25),
                 new ParallelRaceGroup(
-                        new PerpetualCommand(
-                                new InstantCommand(
-                                        () -> RobotContainer.kDrivetrain.drive(0, .75, 0))),
+                        new RunCommand(() -> RobotContainer.kDrivetrain.drive(0, .75, 0)),
                         new WaitCommand(1)),
                 new InstantCommand(() -> RobotContainer.kIntake.eject()),
                 new WaitCommand(.5),
                 new InstantCommand(() -> RobotContainer.kIntake.disable()),
                 new ParallelRaceGroup(
-                        new PerpetualCommand(
-                                new InstantCommand(
-                                        () -> RobotContainer.kDrivetrain.drive(0, -.75, 0))),
+                        new RunCommand(() -> RobotContainer.kDrivetrain.drive(0, -.75, 0)),
                         new WaitCommand(1)),
                 new InstantCommand(() -> setDown()));
     }
