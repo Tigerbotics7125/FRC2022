@@ -29,8 +29,6 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
@@ -75,6 +73,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     // variables for this buttons to control
     static boolean m_turning = true;
     static boolean m_fieldOriented = true;
+    static boolean m_fieldOffset = true;
 
     // Variables for dashboard
     static double m_frontLeftVelocitySetpoint = 0;
@@ -94,6 +93,11 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_rearLeft.setInverted(false);
         m_frontRight.setInverted(true);
         m_rearRight.setInverted(true);
+
+        m_frontLeftPID.setP(5e-5);
+        m_rearLeftPID.setP(5e-5);
+        m_frontRightPID.setP(5e-5);
+        m_rearRightPID.setP(5e-5);
 
         // changes encoder distance from encoder ticks to meters
         m_frontLeftEncoder.setPositionConversionFactor(kDistancePerPulse);
@@ -157,6 +161,14 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     /** sets the heading of the robot */
     public void setHeading(Rotation2d heading) {
         m_pigeon.setFusedHeading(heading.getDegrees());
+    }
+
+    public void toggleFieldOffset() {
+        m_fieldOffset = !m_fieldOffset;
+    }
+
+    public void toggleFieldOriented() {
+        m_fieldOriented = !m_fieldOriented;
     }
 
     /** sets the drivetrain to move according to the input. */
@@ -298,9 +310,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
      */
     public Rotation2d getHeading() {
         // pigeon headings are already +CCW, no need to negate
-        return Rotation2d.fromDegrees(
-                m_pigeon.getFusedHeading()
-                        + (DriverStation.getAlliance() == Alliance.Blue ? 0 : 180));
+        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() + (m_fieldOffset ? 180 : 0));
     }
 
     /** @returns the current position of the robot. */
