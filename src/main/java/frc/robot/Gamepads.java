@@ -73,6 +73,11 @@ public class Gamepads {
                 .whileHeld(() -> RobotContainer.kIntake.intake())
                 .whenReleased(() -> RobotContainer.kIntake.disable());
 
+        // when button 6 is held down, eject.
+        new Button(() -> m_driverFlightJs.getRawButton(6))
+                .whileHeld(() -> RobotContainer.kIntake.eject())
+                .whenReleased(() -> RobotContainer.kIntake.disable());
+
         // when trigger is pressed, raise arm then eject, then lower arm.
         new Button(() -> Gamepads.m_driverFlightJs.getRawButton(1))
                 .whenPressed(RobotContainer.kArm.getRaiseEjectLowerCommand());
@@ -89,6 +94,14 @@ public class Gamepads {
         new Button(() -> m_driverFlightJs.getRawButton(11))
                 .whenPressed(
                         () -> RobotContainer.kDrivetrain.setHeading(Rotation2d.fromDegrees(0)));
+
+        // when button 12 is pressed, toggle field offset for field oriented
+        new Button(() -> m_driverFlightJs.getRawButton(12))
+                .whenPressed(() -> RobotContainer.kDrivetrain.toggleFieldOffset());
+
+        // when button 10 is pressed, toggle field oriented
+        new Button(() -> m_driverFlightJs.getRawButton(10))
+                .whenPressed(() -> RobotContainer.kDrivetrain.toggleFieldOriented());
     }
 
     public static double getRobotXInputSpeed() {
