@@ -12,7 +12,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kYPID;
 import com.pathplanner.lib.commands.PPMecanumControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -48,19 +47,14 @@ public class TwoBallAuto extends SequentialCommandGroup implements AutonomousCom
         addCommands(
                 new InstantCommand(() -> m_drivetrain.resetOdometry(getInitialPose())),
                 new ParallelCommandGroup(
-                        m_mecCommand, // driving command
-                        new InstantCommand(() -> m_arm.setDown()),
+                        m_mecCommand,
                         new InstantCommand(() -> m_intake.intake()),
                         new SequentialCommandGroup(
-                                new WaitCommand(2.5), new InstantCommand(() -> m_arm.setUp()))),
-                new InstantCommand(() -> m_intake.eject()),
-                new ParallelCommandGroup(
-                        new InstantCommand(
-                                () ->
-                                        m_drivetrain.setSpeeds(
-                                                new MecanumDriveWheelSpeeds(0, 0, 0, 0))),
-                        new InstantCommand(() -> m_arm.disable()),
-                        new InstantCommand(() -> m_intake.disable())));
+                                new WaitCommand(1.5), m_arm.getRaiseEjectLowerCommand()),
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> m_drivetrain.drive(0, 0, 0)),
+                                new InstantCommand(() -> m_intake.disable()),
+                                new InstantCommand(() -> m_arm.disable()))));
     }
 
     public Pose2d getInitialPose() {
