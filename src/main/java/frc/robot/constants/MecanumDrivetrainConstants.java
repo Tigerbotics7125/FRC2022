@@ -20,7 +20,7 @@ public class MecanumDrivetrainConstants {
 
     // Body Constants
     // [0, 1] will limit max speed
-    public static final double kMaxSpeed = .75;
+    public static final double kMaxSpeed = .83;
     public static final double kWheelDiameter = Units.inchesToMeters(6);
 
     // Joystick Constants
