@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.DashboardManager.Tab;
 import frc.robot.commands.auto.HolonomicTestPath;
 import frc.robot.commands.auto.TwoBallAuto;
 
@@ -25,14 +24,8 @@ public class Robot extends TimedRobot {
         // initialize variables
         m_container = new RobotContainer();
 
-        // auto chooser
-        DashboardManager.kAutoChooser.setDefaultOption(
-                "No Auto", new InstantCommand(() -> RobotContainer.kDrivetrain.stopMotor()));
-        DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
-        DashboardManager.kAutoChooser.addOption("Two Ball", new TwoBallAuto());
-
+        // init dashboard
         DashboardManager.init();
-        DashboardManager.showTab(Tab.PRE_GAME);
     }
 
     @Override
@@ -40,12 +33,13 @@ public class Robot extends TimedRobot {
         // Ensure the controller(s) are always configured / connected
         Gamepads.configure();
         // Update the dashboard
-        DashboardManager.update();
+        DashboardManager.periodicUpdate();
+        // Run any scheduled commands
+        CommandScheduler.getInstance().run();
     }
 
     @Override
     public void autonomousInit() {
-        DashboardManager.showTab(Tab.AUTO);
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
 
@@ -63,19 +57,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        CommandScheduler.getInstance().run();
     }
 
     @Override
     public void teleopInit() {
-        DashboardManager.showTab(Tab.TELEOP);
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
     }
 
     @Override
     public void teleopPeriodic() {
-        CommandScheduler.getInstance().run();
     }
 
     @Override
@@ -86,13 +77,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        DashboardManager.showTab(Tab.PRE_GAME);
         CommandScheduler.getInstance().cancelAll();
         Gamepads.resetConfig();
     }
 
     @Override
-    public void disabledPeriodic() {
-        DashboardManager.showTab(Tab.PRE_GAME);
-    }
+    public void disabledPeriodic() {}
 }
