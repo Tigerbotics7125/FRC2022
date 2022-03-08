@@ -138,7 +138,6 @@ public class MecanumDrivetrainSub implements Subsystem {
     public void periodic() {
         // setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
         m_odometry.update(getHeading(), getSpeeds());
-        DashboardManager.kField.setRobotPose(m_odometry.getPoseMeters());
     }
 
     /** update sparkmaxs during sim */
