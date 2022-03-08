@@ -16,11 +16,24 @@ import com.pathplanner.lib.PathPlannerTrajectory;
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class AutonomousTrajectories {
+
     public static final PathPlannerTrajectory[] kHolonomicTestPath = {
         PathPlanner.loadPath("HolonomicTestPath", kMaxAutoVelocity, kMaxAutoAcceleration)
     };
 
+    public static final PathPlannerTrajectory[] kOneBallTarmacExit = {
+        PathPlanner.loadPath("1BallTarmacExit", kMaxAutoVelocity, kMaxAutoAcceleration)
+    };
+
+    public static final PathPlannerTrajectory[] kTwoBallTarmacExit = {
+        PathPlanner.loadPath("2BallTarmacExit", kMaxAutoVelocity, kMaxAutoAcceleration)
+    };
+
     public static final PathPlannerTrajectory[] kTwoBallAuto = {
         PathPlanner.loadPath("2BallAuto", kMaxAutoVelocity, kMaxAutoAcceleration)
+    };
+
+    public static final PathPlannerTrajectory[] kFiveBallAuto = {
+        PathPlanner.loadPath("5BallAuto", kMaxAutoAcceleration, kMaxAutoAcceleration)
     };
 }
