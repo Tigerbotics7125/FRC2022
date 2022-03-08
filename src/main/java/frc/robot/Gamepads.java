@@ -79,11 +79,11 @@ public class Gamepads {
 
         // when button 3 is pressed lower arm
         new Button(() -> m_driverFlightJs.getRawButton(3))
-                .whenPressed(() -> RobotContainer.kArm.setDown());
+                .whenPressed(() -> RobotContainer.kArm.setDownSafe(() -> m_driverFlightJs.getRawButton(3)));
 
         // when button 5 is pressed lift arm
         new Button(() -> m_driverFlightJs.getRawButton(5))
-                .whenPressed(() -> RobotContainer.kArm.setUp());
+                .whenPressed(() -> RobotContainer.kArm.setUpSafe(() -> m_driverFlightJs.getRawButton(5)));
 
         // when button 6 is held down, eject.
         new Button(() -> m_driverFlightJs.getRawButton(6))
