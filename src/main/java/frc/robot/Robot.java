@@ -5,12 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.DashboardManager.Tab;
-import frc.robot.commands.auto.HolonomicTestPath;
-import frc.robot.commands.auto.TwoBallAuto;
+import frc.robot.commands.auto.ExitTarmac;
 
 /**
  * The main robot class, runs all loops and main control
@@ -19,20 +20,24 @@ import frc.robot.commands.auto.TwoBallAuto;
  */
 public class Robot extends TimedRobot {
     public static RobotContainer m_container;
+    private static SendableChooser<Command> kAutoChooser;
 
     @Override
     public void robotInit() {
         // initialize variables
         m_container = new RobotContainer();
-
+        kAutoChooser = new SendableChooser<Command>();
         // auto chooser
-        DashboardManager.kAutoChooser.setDefaultOption(
+        kAutoChooser.setDefaultOption(
                 "No Auto", new InstantCommand(() -> RobotContainer.kDrivetrain.stopMotor()));
-        DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
-        DashboardManager.kAutoChooser.addOption("Two Ball", new TwoBallAuto());
+        //DashboardManager.kAutoChooser.addOption("HoloTest", new HolonomicTestPath());
+        //DashboardManager.kAutoChooser.addOption("Two Ball", new TwoBallAuto());
+        kAutoChooser.addOption("Leave Tarmac Straight", new ExitTarmac());
 
-        DashboardManager.init();
-        DashboardManager.showTab(Tab.PRE_GAME);
+
+        SmartDashboard.putData(kAutoChooser);
+        //DashboardManager.init();
+        //DashboardManager.showTab(Tab.PRE_GAME);
     }
 
     @Override
@@ -40,11 +45,12 @@ public class Robot extends TimedRobot {
         // Ensure the controller(s) are always configured / connected
         Gamepads.configure();
         // Update the dashboard
-        DashboardManager.update();
+        //DashboardManager.update();
     }
 
     @Override
     public void autonomousInit() {
+        /*
         DashboardManager.showTab(Tab.AUTO);
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
@@ -56,9 +62,14 @@ public class Robot extends TimedRobot {
              * DashboardManager.kAutoChooser
              * .getSelected()
              * .getInitialPose()); // sets odometry to initial pose.
-             */
+             
             autoCommand.schedule();
         }
+        */
+
+        CommandScheduler.getInstance().schedule(new ExitTarmac());
+
+    
     }
 
     @Override
