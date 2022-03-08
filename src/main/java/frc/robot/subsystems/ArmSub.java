@@ -6,9 +6,12 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.ArmConstants.kId;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -38,11 +41,27 @@ public class ArmSub implements Subsystem {
     }
 
     public void setUp() {
-        m_arm.set(ControlMode.PercentOutput, -1);
+        m_arm.set(ControlMode.PercentOutput, -.75);
+    }
+
+    public void setUpSafe(Supplier<Boolean> button) {
+        if (button.get()) {
+            m_arm.set(ControlMode.PercentOutput, -.75);
+        } else {
+            disable();
+        }
     }
 
     public void setDown() {
-        m_arm.set(ControlMode.PercentOutput, 1);
+        m_arm.set(ControlMode.PercentOutput, .75);
+    }
+
+    public void setDownSafe(Supplier<Boolean> button) {
+        if (button.get()) {
+            m_arm.set(ControlMode.PercentOutput, .75);
+        } else {
+            disable();
+        }
     }
 
     public void disable() {
@@ -55,11 +74,11 @@ public class ArmSub implements Subsystem {
                 new ParallelRaceGroup(
                         new RunCommand(() -> setUp()),
                         new RunCommand(() -> RobotContainer.kDrivetrain.drive(0, -.75, 0)),
-                        new WaitCommand(1.5)),
+                        new WaitCommand(.7)),
                 // drive up to goal
                 new ParallelRaceGroup(
                         new RunCommand(() -> RobotContainer.kDrivetrain.drive(0, .75, 0)),
-                        new WaitCommand(2)),
+                        new WaitCommand(1)),
                 // eject ball
                 new SequentialCommandGroup(
                         new InstantCommand(() -> RobotContainer.kIntake.eject()),
@@ -68,7 +87,7 @@ public class ArmSub implements Subsystem {
                 // lower arm and scoot back
                 new ParallelRaceGroup(
                         new RunCommand(() -> RobotContainer.kDrivetrain.drive(0, -.75, 0)),
-                        new WaitCommand(1.5),
-                        new InstantCommand(() -> setDown())));
+                        new InstantCommand(() -> setDown()),
+                        new WaitCommand(.7)));
     }
 }
