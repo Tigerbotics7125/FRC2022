@@ -9,7 +9,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightOffset;
-import static frc.robot.constants.MecanumDrivetrainConstants.kMaxSpeed;
 import static frc.robot.constants.MecanumDrivetrainConstants.kMotorType;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRPMtoMPSConversionFactor;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
@@ -17,12 +16,16 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightOffset;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -30,6 +33,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.drive.MecanumDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.DashboardManager;
 import frc.robot.Gamepads;
@@ -42,7 +46,7 @@ import frc.robot.constants.Constants;
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
-public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
+public class MecanumDrivetrainSub implements Subsystem {
 
     // Motors, PID controllers, and encoders
     static final CANSparkMax m_frontLeft = new CANSparkMax(kFrontLeftId, kMotorType);
@@ -82,9 +86,9 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
     static double m_rearRightVelocitySetpoint = 0;
 
     public MecanumDrivetrainSub() {
-        super(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight); // super constructor
+        //super(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight); // super constructor
         // set max output so we can go faster / dont go too fast, a bit oxymoronic.
-        setMaxOutput(kMaxSpeed);
+        //setMaxOutput(kMaxSpeed);
         // set default command so we actually drive.
         setDefaultCommand(new Drive(this));
 
@@ -126,7 +130,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         }
 
         setTurning(true);
-        setFieldOriented(true);
+        setFieldOriented(false);
     }
 
     /** general periodic updates. */
@@ -215,7 +219,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_rearRightPID.setReference(targetSpeeds.rearRightMetersPerSecond, ControlType.kVelocity);
 
         // m_lastTime = Timer.getFPGATimestamp();
-        feed();
+        //feed();
     }
 
     /** drives with joysticks, converts to velocity then passes to feedforward. */
@@ -267,18 +271,27 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
         m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
 
-        feed();
+        //feed();
     }
 
     public void drive(double ySpeed, double xSpeed, double zSpeed) {
-        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, zSpeed, 0.0);
+        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(xSpeed, ySpeed, zSpeed, 0.0);
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
         m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
         m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
 
-        feed();
+        Logger.getLogger("org.opencv.osgi").log(Level.INFO, "AUTON FEED");
+
+        //feed();
+    }
+
+    public void stopMotor() {
+        m_frontLeftPID.setReference(0, ControlType.kDutyCycle);
+        m_rearLeftPID.setReference(0, ControlType.kDutyCycle);
+        m_frontRightPID.setReference(0, ControlType.kDutyCycle);
+        m_rearRightPID.setReference(0, ControlType.kDutyCycle);
     }
 
     /** @returns the current velocity of the robot. */
