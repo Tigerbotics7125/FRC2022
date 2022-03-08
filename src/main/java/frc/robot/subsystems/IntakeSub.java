@@ -22,11 +22,11 @@ public class IntakeSub implements Subsystem {
     public IntakeSub() {}
 
     public void intake() {
-        m_intake.set(.8);
+        m_intake.set(1);
     }
 
     public void eject() {
-        m_intake.set(-.8);
+        m_intake.set(-1);
     }
 
     public void disable() {
