@@ -115,4 +115,8 @@ public class Gamepads {
     public static double getRobotZInputSpeed() {
         return Util.joystickDeadbandSensitivity(m_driverFlightJs.getZ(), kDeadband, kSensitivity);
     }
+
+    public static double getScaledThrottle() {
+        return Util.scaleInput(m_driverFlightJs.getThrottle(), -1, 1, 1, 5);
+    }
 }
