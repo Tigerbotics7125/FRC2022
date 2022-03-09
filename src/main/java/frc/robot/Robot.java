@@ -7,9 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.auto.HolonomicTestPath;
-import frc.robot.commands.auto.TwoBallAuto;
 
 /**
  * The main robot class, runs all loops and main control
@@ -45,19 +42,12 @@ public class Robot extends TimedRobot {
 
         Command autoCommand = DashboardManager.kAutoChooser.getSelected();
         if (autoCommand != null) {
-            /*
-             * RobotContainer.kDrivetrain.resetOdometry(
-             * DashboardManager.kAutoChooser
-             * .getSelected()
-             * .getInitialPose()); // sets odometry to initial pose.
-             */
             autoCommand.schedule();
         }
     }
 
     @Override
-    public void autonomousPeriodic() {
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void teleopInit() {
@@ -66,8 +56,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void simulationInit() {}

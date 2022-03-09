@@ -1,7 +1,12 @@
+/**
+ * Copyright (C) 2022, Tigerbotics' team members and all other contributors.
+ * Open source software; you can modify and/or share this software.
+ */
 package frc.robot.subsystems;
 
-import frc.tigerlib.ledmatrix.Matrix2D;
 import static frc.robot.constants.LEDMatrixConstants.*;
+
+import frc.tigerlib.ledmatrix.Matrix2D;
 
 public class LEDMatrixSub {
     private Matrix2D m_matrix;
@@ -13,5 +18,4 @@ public class LEDMatrixSub {
             e.printStackTrace();
         }
     }
-
 }

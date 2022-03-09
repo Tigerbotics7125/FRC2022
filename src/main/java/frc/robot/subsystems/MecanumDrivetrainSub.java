@@ -9,7 +9,6 @@ import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightId;
 import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightOffset;
-import static frc.robot.constants.MecanumDrivetrainConstants.kMaxSpeed;
 import static frc.robot.constants.MecanumDrivetrainConstants.kMotorType;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRPMtoMPSConversionFactor;
 import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
@@ -30,61 +29,53 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.drive.MecanumDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.DashboardManager;
 import frc.robot.Gamepads;
 import frc.robot.Robot;
 import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
+import frc.tigerlib.Util;
 
 /**
  * Controls the mecanum drivetrain of the robot
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
-public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
+public class MecanumDrivetrainSub implements Subsystem {
 
     // Motors, PID controllers, and encoders
-    static final CANSparkMax m_frontLeft = new CANSparkMax(kFrontLeftId, kMotorType);
-    static final CANSparkMax m_rearLeft = new CANSparkMax(kRearLeftId, kMotorType);
-    static final CANSparkMax m_frontRight = new CANSparkMax(kFrontRightId, kMotorType);
-    static final CANSparkMax m_rearRight = new CANSparkMax(kRearRightId, kMotorType);
+    final CANSparkMax m_frontLeft = new CANSparkMax(kFrontLeftId, kMotorType);
+    final CANSparkMax m_rearLeft = new CANSparkMax(kRearLeftId, kMotorType);
+    final CANSparkMax m_frontRight = new CANSparkMax(kFrontRightId, kMotorType);
+    final CANSparkMax m_rearRight = new CANSparkMax(kRearRightId, kMotorType);
 
-    static final SparkMaxPIDController m_frontLeftPID = m_frontLeft.getPIDController();
-    static final SparkMaxPIDController m_rearLeftPID = m_rearLeft.getPIDController();
-    static final SparkMaxPIDController m_frontRightPID = m_frontRight.getPIDController();
-    static final SparkMaxPIDController m_rearRightPID = m_rearRight.getPIDController();
+    final SparkMaxPIDController m_frontLeftPID = m_frontLeft.getPIDController();
+    final SparkMaxPIDController m_rearLeftPID = m_rearLeft.getPIDController();
+    final SparkMaxPIDController m_frontRightPID = m_frontRight.getPIDController();
+    final SparkMaxPIDController m_rearRightPID = m_rearRight.getPIDController();
 
-    static final RelativeEncoder m_frontLeftEncoder = m_frontLeft.getEncoder();
-    static final RelativeEncoder m_rearLeftEncoder = m_rearLeft.getEncoder();
-    static final RelativeEncoder m_frontRightEncoder = m_frontRight.getEncoder();
-    static final RelativeEncoder m_rearRightEncoder = m_rearRight.getEncoder();
+    final RelativeEncoder m_frontLeftEncoder = m_frontLeft.getEncoder();
+    final RelativeEncoder m_rearLeftEncoder = m_rearLeft.getEncoder();
+    final RelativeEncoder m_frontRightEncoder = m_frontRight.getEncoder();
+    final RelativeEncoder m_rearRightEncoder = m_rearRight.getEncoder();
 
     // IMU, kinematics, and odometry
-    static final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
+    final WPI_PigeonIMU m_pigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
-    static final MecanumDriveKinematics m_kinematics =
+    final MecanumDriveKinematics m_kinematics =
             new MecanumDriveKinematics(
                     kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
 
-    static final MecanumDriveOdometry m_odometry =
+    final MecanumDriveOdometry m_odometry =
             new MecanumDriveOdometry(m_kinematics, new Rotation2d());
 
-    // variables for this buttons to control
-    static boolean m_turning = true;
-    static boolean m_fieldOriented = true;
-    static boolean m_fieldOffset = true;
-
-    // Variables for dashboard
-    static double m_frontLeftVelocitySetpoint = 0;
-    static double m_rearLeftVelocitySetpoint = 0;
-    static double m_frontRightVelocitySetpoint = 0;
-    static double m_rearRightVelocitySetpoint = 0;
+    // Variables used for different driving techniques
+    boolean m_turning;
+    boolean m_fieldOriented;
+    boolean m_fieldOffset;
 
     public MecanumDrivetrainSub() {
-        super(m_frontLeft, m_rearLeft, m_frontRight, m_rearRight); // super constructor
-        // set max output so we can go faster / dont go too fast, a bit oxymoronic.
-        setMaxOutput(kMaxSpeed);
         // set default command so we actually drive.
         setDefaultCommand(new Drive(this));
 
@@ -111,7 +102,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_frontRightEncoder.setVelocityConversionFactor(kRPMtoMPSConversionFactor);
         m_rearRightEncoder.setVelocityConversionFactor(kRPMtoMPSConversionFactor);
 
-        // make sure encoders start on 0
+        // make sure stuff starts on 0
         m_frontLeftEncoder.setPosition(0.0);
         m_rearLeftEncoder.setPosition(0.0);
         m_frontRightEncoder.setPosition(0.0);
@@ -126,7 +117,7 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         }
 
         setTurning(true);
-        setFieldOriented(true);
+        setFieldOriented(false);
     }
 
     /** general periodic updates. */
@@ -170,51 +161,17 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
         m_fieldOriented = !m_fieldOriented;
     }
 
-    /** sets the drivetrain to move according to the input. */
+    /**
+     * Sets the drivetrain to move as per the given speeds.
+     *
+     * @param targetSpeeds The input speeds.
+     */
     public void setSpeeds(MecanumDriveWheelSpeeds targetSpeeds) {
-        /*
-         * MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
-         * double now = Timer.getFPGATimestamp();
-         * System.out.println("input Speeds:" + targetSpeeds.toString());
-         *
-         * double flSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.frontLeftMetersPerSecond,
-         * targetSpeeds.frontLeftMetersPerSecond,
-         * now - m_lastTime);
-         * double rlSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.rearLeftMetersPerSecond,
-         * targetSpeeds.rearLeftMetersPerSecond,
-         * now - m_lastTime);
-         * double frSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.frontRightMetersPerSecond,
-         * targetSpeeds.frontRightMetersPerSecond,
-         * now - m_lastTime);
-         * double rrSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.rearRightMetersPerSecond,
-         * targetSpeeds.rearRightMetersPerSecond,
-         * now - m_lastTime);
-         *
-         * System.out.println("output Speeds:" + flSpeed + " " + rlSpeed + " " + frSpeed
-         * + " " + rrSpeed);
-         *
-         * m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
-         * m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
-         * m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
-         * m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
-         *
-         */
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeftMetersPerSecond, ControlType.kVelocity);
         m_rearLeftPID.setReference(targetSpeeds.rearLeftMetersPerSecond, ControlType.kVelocity);
         m_frontRightPID.setReference(targetSpeeds.frontRightMetersPerSecond, ControlType.kVelocity);
         m_rearRightPID.setReference(targetSpeeds.rearRightMetersPerSecond, ControlType.kVelocity);
-
-        // m_lastTime = Timer.getFPGATimestamp();
-        feed();
     }
 
     /** drives with joysticks, converts to velocity then passes to feedforward. */
@@ -229,58 +186,42 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
                         xSpeed,
                         m_turning ? zSpeed : 0.0,
                         m_fieldOriented ? getHeading().getDegrees() : 0.0);
-        /*
-         * MecanumDriveWheelSpeeds currentSpeeds = getSpeeds();
-         * double now = Timer.getFPGATimestamp();
-         *
-         * double flSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.frontLeftMetersPerSecond,
-         * targetSpeeds.frontLeft * kMaxWheelSpeedMPS,
-         * now - m_lastTime);
-         * double rlSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.rearLeftMetersPerSecond,
-         * targetSpeeds.rearLeft * kMaxWheelSpeedMPS,
-         * now - m_lastTime);
-         * double frSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.frontRightMetersPerSecond,
-         * targetSpeeds.frontRight * kMaxWheelSpeedMPS,
-         * now - m_lastTime);
-         * double rrSpeed =
-         * m_feedforward.calculate(
-         * currentSpeeds.rearRightMetersPerSecond,
-         * targetSpeeds.rearRight * kMaxWheelSpeedMPS,
-         * now - m_lastTime);
-         *
-         * m_frontLeftPID.setReference(flSpeed, ControlType.kDutyCycle);
-         * m_rearLeftPID.setReference(rlSpeed, ControlType.kDutyCycle);
-         * m_frontRightPID.setReference(frSpeed, ControlType.kDutyCycle);
-         * m_rearRightPID.setReference(rrSpeed, ControlType.kDutyCycle);
-         *
-         * m_lastTime = Timer.getFPGATimestamp();
-         */
+
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
         m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
         m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
-
-        feed();
     }
 
+    /**
+     * Drives the robot based on manual input
+     *
+     * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Forward is positive.
+     * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Right is positive.
+     * @param zSpeed The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is positive.
+     */
     public void drive(double ySpeed, double xSpeed, double zSpeed) {
+        ySpeed = Util.clamp(ySpeed, -1, 1);
+        xSpeed = Util.clamp(xSpeed, -1, 1);
+        zSpeed = Util.clamp(zSpeed, -1, 1);
+
         WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, zSpeed, 0.0);
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
         m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
         m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
-
-        feed();
     }
 
-    /** @returns the current velocity of the robot. */
+    /** Disables all motor output */
+    public void disable() {
+        m_frontLeft.disable();
+        m_rearLeft.disable();
+        m_frontRight.disable();
+        m_rearRight.disable();
+    }
+
+    /** @return The current velocity of the robot. */
     public MecanumDriveWheelSpeeds getSpeeds() {
         return new MecanumDriveWheelSpeeds(
                 m_frontLeftEncoder.getVelocity(),
@@ -289,24 +230,22 @@ public class MecanumDrivetrainSub extends MecanumDrive implements Subsystem {
                 m_rearRightEncoder.getVelocity());
     }
 
+    /** @return If turning is enabled. */
     public boolean getTurning() {
         return m_turning;
     }
 
+    /** @return If field oriented driving is enabled. */
     public boolean getFieldOriented() {
         return m_fieldOriented;
     }
 
-    /** @returns the drivetrains kinematics */
+    /** @return The drivetrains kinematics. */
     public MecanumDriveKinematics getKinematics() {
         return m_kinematics;
     }
 
-    /**
-     * the heading but negative because of the unit circle vs gyro.
-     *
-     * @return the current heading of the robot
-     */
+    /** @return the current heading of the robot */
     public Rotation2d getHeading() {
         // pigeon headings are already +CCW, no need to negate
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading() + (m_fieldOffset ? 180 : 0));
