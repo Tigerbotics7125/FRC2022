@@ -44,12 +44,6 @@ public class Robot extends TimedRobot {
 
         Command autoCommand = DashboardManager.kAutoChooser.getSelected();
         if (autoCommand != null) {
-            /*
-             * RobotContainer.kDrivetrain.resetOdometry(
-             * DashboardManager.kAutoChooser
-             * .getSelected()
-             * .getInitialPose()); // sets odometry to initial pose.
-             */
             autoCommand.schedule();
         }
         
@@ -57,8 +51,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousPeriodic() {
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void teleopInit() {
@@ -67,8 +60,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void simulationInit() {}

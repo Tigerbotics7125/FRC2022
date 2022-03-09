@@ -19,10 +19,10 @@ public abstract class AutonomousCommand extends SequentialCommandGroup {
 
     public AutonomousCommand() {}
 
-    @Override 
+    @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        kDrivetrain.stopMotor();
+        kDrivetrain.disable();
         kArm.disable();
         kIntake.disable();
     }
@@ -37,6 +37,4 @@ public abstract class AutonomousCommand extends SequentialCommandGroup {
     public abstract void preview();
 
     public abstract String getName();
-
 }
-
