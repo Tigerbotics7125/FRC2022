@@ -16,31 +16,25 @@ import frc.robot.commands.auto.NothingAuto;
  */
 public class DashboardManager {
 
-	public static final SendableChooser<AutonomousCommand> kAutoChooser = new SendableChooser<AutonomousCommand>();
+    public static final SendableChooser<AutonomousCommand> kAutoChooser =
+            new SendableChooser<AutonomousCommand>();
 
-	/** Creates new tabs for each Tab enum value. */
-	public static void init() {
-		kAutoChooser.addOption(
-			"No Auto", new NothingAuto());
-	}
+    /** Creates new tabs for each Tab enum value. */
+    public static void init() {
+        kAutoChooser.addOption("No Auto", new NothingAuto());
+    }
 
-	public static void periodicUpdate() {
-		SmartDashboard.putNumber("Heading", RobotContainer.kDrivetrain.getHeading().getDegrees());
-		SmartDashboard.putNumber(
-				"xController",
-				Gamepads.getRobotXInputSpeed());
-		SmartDashboard.putNumber(
-				"yController",
-				Gamepads.getRobotYInputSpeed());
-		SmartDashboard.putNumber(
-				"zController",
-				Gamepads.getRobotZInputSpeed());
-		SmartDashboard.putNumber(
-				"Sensitivity",
-				Gamepads.getScaledThrottle());
-		SmartDashboard.putData("AutoChooser", kAutoChooser);
-		SmartDashboard.putString("Chosen Auto Command", kAutoChooser.getSelected().getName());
-		SmartDashboard.putBoolean("Turning", RobotContainer.kDrivetrain.getTurning());
-		SmartDashboard.putBoolean("Field Oriented", RobotContainer.kDrivetrain.getFieldOriented());
-	}
+    public static void periodicUpdate() {
+        SmartDashboard.putNumber("Heading", RobotContainer.kDrivetrain.getHeading().getDegrees());
+        SmartDashboard.putNumber("xController", Gamepads.getRobotXInputSpeed());
+        SmartDashboard.putNumber("yController", Gamepads.getRobotYInputSpeed());
+        SmartDashboard.putNumber("zController", Gamepads.getRobotZInputSpeed());
+        SmartDashboard.putNumber("Sensitivity", Gamepads.getScaledThrottle());
+        SmartDashboard.putData("AutoChooser", kAutoChooser);
+        SmartDashboard.putString("Chosen Auto Command", kAutoChooser.getSelected().getName());
+        SmartDashboard.putBoolean("Turning", RobotContainer.kDrivetrain.getTurning());
+        SmartDashboard.putBoolean("Field Oriented", RobotContainer.kDrivetrain.getFieldOriented());
+        SmartDashboard.putBoolean("Arm Down", RobotContainer.kArm.getRevLimitSwitch());
+        SmartDashboard.putBoolean("Arm Up", RobotContainer.kArm.getFwdLimitSwitch());
+    }
 }
