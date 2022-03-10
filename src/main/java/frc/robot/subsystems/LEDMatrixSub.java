@@ -4,7 +4,11 @@
  */
 package frc.robot.subsystems;
 
-import static frc.robot.constants.LEDMatrixConstants.*;
+import static frc.robot.constants.LEDMatrixConstants.kGifs;
+import static frc.robot.constants.LEDMatrixConstants.kHeight;
+import static frc.robot.constants.LEDMatrixConstants.kPWMPort;
+import static frc.robot.constants.LEDMatrixConstants.kSerpentine;
+import static frc.robot.constants.LEDMatrixConstants.kWidth;
 
 import frc.tigerlib.ledmatrix.Matrix2D;
 
