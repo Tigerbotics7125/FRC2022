@@ -14,23 +14,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class Robot extends TimedRobot {
-    public static RobotContainer m_container;
 
     @Override
-    public void robotInit() {
-        // initialize variables
-        m_container = new RobotContainer();
-
-        // init dashboard
-        DashboardManager.init();
-    }
+    public void robotInit() {}
 
     @Override
     public void robotPeriodic() {
         // Ensure the controller(s) are always configured / connected
         Gamepads.configure();
         // Update the dashboard
-        DashboardManager.periodicUpdate();
+        DashboardManager.getInstance().updateValues();
         // Run any scheduled commands
         CommandScheduler.getInstance().run();
     }
@@ -40,14 +33,16 @@ public class Robot extends TimedRobot {
         // Stops all previously running commands.
         CommandScheduler.getInstance().cancelAll();
 
-        Command autoCommand = DashboardManager.kAutoChooser.getSelected();
+        Command autoCommand = DashboardManager.getInstance().getChosenAutonomousCommand();
         if (autoCommand != null) {
             autoCommand.schedule();
         }
     }
 
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+        // weep a smither.
+    }
 
     @Override
     public void teleopInit() {
