@@ -30,10 +30,14 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.drive.MecanumDrive.WheelSpeeds;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Gamepads;
 import frc.robot.Robot;
-import frc.robot.commands.Drive;
 import frc.robot.constants.Constants;
 import frc.tigerlib.Util;
 
@@ -42,7 +46,7 @@ import frc.tigerlib.Util;
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
-public class MecanumDrivetrainSub implements Subsystem {
+public class MecanumDrivetrainSub extends SubsystemBase {
 
     // Motors, PID controllers, and encoders
     final CANSparkMax m_frontLeft = new CANSparkMax(kFrontLeftId, kMotorType);
@@ -75,9 +79,24 @@ public class MecanumDrivetrainSub implements Subsystem {
     boolean m_fieldOriented;
     boolean m_fieldOffset;
 
+    // Commands used to operate the drivetrain
+    public final Command kDisable =
+            new ParallelCommandGroup(
+                    new InstantCommand(() -> m_frontLeft.disable(), this),
+                    new InstantCommand(() -> m_rearLeft.disable(), this),
+                    new InstantCommand(() -> m_frontRight.disable(), this),
+                    new InstantCommand(() -> m_rearRight.disable(), this));
+
+    public final Command kDriveWJoystick =
+            new PerpetualCommand(new RunCommand(() -> drive(), this));
+
     public MecanumDrivetrainSub() {
         // set default command so we actually drive.
-        setDefaultCommand(new Drive(this));
+        setDefaultCommand(kDriveWJoystick);
+
+        // set default driving options
+        setTurning(true);
+        setFieldOriented(false);
 
         // invert right side because motors backwards.
         m_frontLeft.setInverted(false);
@@ -115,9 +134,6 @@ public class MecanumDrivetrainSub implements Subsystem {
             REVPhysicsSim.getInstance().addSparkMax(m_frontRight, DCMotor.getNEO(1));
             REVPhysicsSim.getInstance().addSparkMax(m_rearRight, DCMotor.getNEO(1));
         }
-
-        setTurning(true);
-        setFieldOriented(false);
     }
 
     /** general periodic updates. */
@@ -196,13 +212,13 @@ public class MecanumDrivetrainSub implements Subsystem {
     /**
      * Drives the robot based on manual input
      *
-     * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Forward is positive.
      * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Right is positive.
+     * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Forward is positive.
      * @param zSpeed The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is positive.
      */
-    public void drive(double ySpeed, double xSpeed, double zSpeed) {
-        ySpeed = Util.clamp(ySpeed, -1, 1);
+    public void drive(double xSpeed, double ySpeed, double zSpeed) {
         xSpeed = Util.clamp(xSpeed, -1, 1);
+        ySpeed = Util.clamp(ySpeed, -1, 1);
         zSpeed = Util.clamp(zSpeed, -1, 1);
 
         WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, zSpeed, 0.0);

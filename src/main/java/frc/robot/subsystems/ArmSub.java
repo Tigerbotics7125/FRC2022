@@ -13,14 +13,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Controls the arm of the robot.
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
-public class ArmSub implements Subsystem {
+public class ArmSub extends SubsystemBase {
 
     final WPI_TalonSRX m_arm = new WPI_TalonSRX(kId);
 
@@ -35,6 +35,8 @@ public class ArmSub implements Subsystem {
         m_arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
         m_arm.setNeutralMode(NeutralMode.Brake);
         m_arm.setInverted(true);
+
+        setDefaultCommand(kDisable);
     }
 
     public void disable() {
