@@ -10,7 +10,6 @@ import static frc.robot.constants.IntakeConstants.kMotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -23,9 +22,31 @@ public class IntakeSub extends SubsystemBase {
 
     final CANSparkMax m_intake = new CANSparkMax(kId, kMotorType);
 
-    public final Command kIntake = new RunCommand(() -> m_intake.set(1), this);
-    public final Command kEject = new RunCommand(() -> m_intake.set(-1), this);
-    public final Command kDisable = new InstantCommand(() -> m_intake.set(0), this);
+    public final Command kIntake =
+            new RunCommand(() -> m_intake.set(1), this) {
+                @Override
+                public String getName() {
+                    return "intake";
+                }
+            };
+    public final Command kEject =
+            new RunCommand(() -> m_intake.set(-1), this) {
+                @Override
+                public String getName() {
+                    return "eject";
+                }
+            };
+    public final Command kDisable =
+            new RunCommand(() -> m_intake.set(0), this) {
+                @Override
+                public String getName() {
+                    return "disabled";
+                }
+            };
+
+    public IntakeSub() {
+        setDefaultCommand(kDisable);
+    }
 
     public void disable() {
         CommandScheduler.getInstance().schedule(kDisable);

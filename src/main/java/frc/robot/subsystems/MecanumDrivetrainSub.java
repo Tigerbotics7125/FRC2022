@@ -82,13 +82,23 @@ public class MecanumDrivetrainSub extends SubsystemBase {
     // Commands used to operate the drivetrain
     public final Command kDisable =
             new ParallelCommandGroup(
-                    new InstantCommand(() -> m_frontLeft.disable(), this),
-                    new InstantCommand(() -> m_rearLeft.disable(), this),
-                    new InstantCommand(() -> m_frontRight.disable(), this),
-                    new InstantCommand(() -> m_rearRight.disable(), this));
+                    new InstantCommand(() -> m_frontLeft.disable()),
+                    new InstantCommand(() -> m_rearLeft.disable()),
+                    new InstantCommand(() -> m_frontRight.disable()),
+                    new InstantCommand(() -> m_rearRight.disable())) {
+                @Override
+                public String getName() {
+                    return "disabled";
+                }
+            };
 
     public final Command kDriveWJoystick =
-            new PerpetualCommand(new RunCommand(() -> drive(), this));
+            new PerpetualCommand(new RunCommand(() -> drive(), this)) {
+                @Override
+                public String getName() {
+                    return "drive w/ stick";
+                }
+            };
 
     public MecanumDrivetrainSub() {
         // set default command so we actually drive.

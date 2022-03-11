@@ -82,7 +82,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The X value of the joystick.
      */
     public double getX() {
-        return super.getRawAxis(AxisType.kX.value);
+        return -super.getRawAxis(AxisType.kX.value);
     }
 
     /**
@@ -93,7 +93,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The Y value of the joystick.
      */
     public double getY() {
-        return super.getRawAxis(AxisType.kY.value);
+        return -super.getRawAxis(AxisType.kY.value);
     }
 
     /**
