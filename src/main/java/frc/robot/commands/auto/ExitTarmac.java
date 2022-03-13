@@ -5,6 +5,9 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.MecanumDrivetrainSub;
 
@@ -13,16 +16,10 @@ public class ExitTarmac extends AutonomousCommand {
     private MecanumDrivetrainSub m_drivetrain = RobotContainer.kDrivetrain;
 
     public ExitTarmac() {
-        /*
-        * addCommands(
-        * new ParallelRaceGroup(
-        * new RunCommand(() -> m_drivetrain.drive(0, 1, 0)).withTimeout(.5),
-        * new WaitCommand(1)));
         addCommands(
-            new InstantCommand(() -> m_drivetrain.drive(0, -1, 0)).withTimeout(.5),
-            new RunCommand(() -> RobotContainer.kIntake.eject()).withTimeout(1),
-            new InstantCommand(() -> RobotContainer.kIntake.disable()));
-            */
+                new ParallelRaceGroup(
+                        new RunCommand(() -> m_drivetrain.drive(-.5, 0, 0)), new WaitCommand(1)),
+                RobotContainer.kArm.kDown);
     }
 
     @Override

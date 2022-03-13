@@ -8,6 +8,7 @@ import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.auto.AutonomousCommand;
+import frc.robot.commands.auto.ExitTarmac;
 import frc.robot.commands.auto.NothingAuto;
 
 /**
@@ -29,9 +30,12 @@ public class DashboardManager {
     private DashboardManager() {
         m_AutoChooser = new SendableChooser<AutonomousCommand>();
         m_AutoChooser.setDefaultOption("No Auto", new NothingAuto());
+        m_AutoChooser.addOption("Exit Tarmac Backwards", new ExitTarmac());
 
         RobotContainer.kCamera1.setFPS(30);
         RobotContainer.kCamera2.setFPS(30);
+        RobotContainer.kCamera1.setResolution(320, 240);
+        RobotContainer.kCamera2.setResolution(320, 240);
         RobotContainer.kCamera1.setWhiteBalanceAuto();
         RobotContainer.kCamera2.setWhiteBalanceAuto();
         RobotContainer.kCamera1.setExposureAuto();
@@ -62,11 +66,10 @@ public class DashboardManager {
 
         // Subsystems
         // SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
-        // SmartDashboard.putData("PDP", RobotContainer.kPdp);
-        String drivetrainCmd = RobotContainer.kDrivetrain.getCurrentCommand().getName();
-        SmartDashboard.putString("Drivetrain", drivetrainCmd);
-        SmartDashboard.putString("Arm", RobotContainer.kArm.getCurrentCommand().getName());
-        SmartDashboard.putString("Intake", RobotContainer.kIntake.getCurrentCommand().getName());
+        // SmartDashboard.putData("PDP", RobotContainer.kPdp);;
+        SmartDashboard.putData("Drivetrain", RobotContainer.kDrivetrain);
+        SmartDashboard.putData("Arm", RobotContainer.kArm);
+        SmartDashboard.putData("Intake", RobotContainer.kIntake);
 
         // Puts all sendable data to the dashboard.
         SmartDashboard.updateValues();
