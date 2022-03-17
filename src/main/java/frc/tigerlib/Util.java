@@ -103,7 +103,7 @@ public class Util {
      * @param originMax
      * @param newMin
      * @param newMax
-     * @return
+     * @return the scaled value of x
      */
     public static double scaleInput(
             double x, double origMin, double originMax, double newMin, double newMax) {
