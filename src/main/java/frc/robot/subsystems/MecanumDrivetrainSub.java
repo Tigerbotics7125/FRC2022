@@ -75,9 +75,10 @@ public class MecanumDrivetrainSub extends SubsystemBase {
             new MecanumDriveOdometry(m_kinematics, new Rotation2d());
 
     // Variables used for different driving techniques
-    boolean m_turning;
-    boolean m_fieldOriented;
-    boolean m_fieldOffset;
+    boolean m_turning; // whether or not the robot should be turning
+    boolean m_fieldOriented; // whether or not the robot should drive field-oriented
+    Rotation2d m_angleOffset; // the angle to keep the robot facing
+    boolean m_fieldOffset; // which side of the field the robot consideres forward
 
     // Commands used to operate the drivetrain
     public final Command kDisable =
@@ -205,6 +206,27 @@ public class MecanumDrivetrainSub extends SubsystemBase {
         double xSpeed = Gamepads.getRobotXInputSpeed();
         double ySpeed = Gamepads.getRobotYInputSpeed();
         double zSpeed = Gamepads.getRobotZInputSpeed();
+
+        if (m_turning && zSpeed == 0.0) {
+            // if we were turning and are no longer, then set the angle offset to the current angle
+            m_angleOffset = getHeading();
+            m_turning = false; // no longer turning
+        }
+        if (!m_turning && zSpeed == 0.0) {
+            // if we are not turning and z speed is 0, then the difference from our angleOffset and
+            // currentHeading needs to be applied to keep our angle constant.
+            double difference = getHeading().minus(m_angleOffset).getDegrees();
+            zSpeed =
+                    Util.scaleInput(
+                            difference,
+                            -difference,
+                            difference,
+                            -1,
+                            1); // will return +- 1, should 100% be changed to something else.
+        } else {
+            // we are turning, either by boolean or zSpeed, so just make sure m_turning is true
+            m_turning = true;
+        }
 
         WheelSpeeds targetSpeeds =
                 MecanumDrive.driveCartesianIK(
