@@ -6,9 +6,12 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.ArmConstants.kId;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -79,5 +82,21 @@ public class ArmSub extends SubsystemBase {
 
     public boolean getRevLimitSwitch() {
         return m_arm.getSensorCollection().isRevLimitSwitchClosed();
+    }
+
+    public BooleanSupplier isDown() {
+        return () -> getRevLimitSwitch();
+    }
+
+    public BooleanSupplier isNotDown() {
+        return () -> !getRevLimitSwitch();
+    }
+
+    public BooleanSupplier isUp() {
+        return () -> getFwdLimitSwitch();
+    }
+
+    public BooleanSupplier isNotUp() {
+        return () -> !getFwdLimitSwitch();
     }
 }
