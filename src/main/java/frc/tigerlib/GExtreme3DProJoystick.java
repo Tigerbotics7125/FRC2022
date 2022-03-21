@@ -5,10 +5,14 @@
 package frc.tigerlib;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /**
- * An input class for the logitech flight joystick that actually makes sense.
+ * An input wrapper for the logitech flight joystick that actually makes sense.
+ *
+ * <p>Saves RAM on the roborio by only instantiating a button when its used. CPU time is cheaper
+ * than RAM in this scenario.
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
@@ -52,18 +56,26 @@ public class GExtreme3DProJoystick extends GenericHID {
         }
     }
 
-    public final Button kTrigger = new Button(() -> getRawButton(ButtonType.kTrigger.value));
-    public final Button kThumb = new Button(() -> getRawButton(ButtonType.kThumb.value));
-    public final Button kTop3 = new Button(() -> getRawButton(ButtonType.kTop3.value));
-    public final Button kTop4 = new Button(() -> getRawButton(ButtonType.kTop4.value));
-    public final Button kTop5 = new Button(() -> getRawButton(ButtonType.kTop5.value));
-    public final Button kTop6 = new Button(() -> getRawButton(ButtonType.kTop6.value));
-    public final Button kBottom7 = new Button(() -> getRawButton(ButtonType.kBottom7.value));
-    public final Button kBottom8 = new Button(() -> getRawButton(ButtonType.kBottom8.value));
-    public final Button kBottom9 = new Button(() -> getRawButton(ButtonType.kBottom9.value));
-    public final Button kBottom10 = new Button(() -> getRawButton(ButtonType.kBottom10.value));
-    public final Button kBottom11 = new Button(() -> getRawButton(ButtonType.kBottom11.value));
-    public final Button kBottom12 = new Button(() -> getRawButton(ButtonType.kBottom12.value));
+    private JoystickButton _triggerButton;
+    private JoystickButton _thumbButton;
+    private JoystickButton _3Button;
+    private JoystickButton _4Button;
+    private JoystickButton _5Button;
+    private JoystickButton _6Button;
+    private JoystickButton _7Button;
+    private JoystickButton _8Button;
+    private JoystickButton _9Button;
+    private JoystickButton _10Button;
+    private JoystickButton _11Button;
+    private JoystickButton _12Button;
+    private POVButton _uButton;
+    private POVButton _urButton;
+    private POVButton _rButton;
+    private POVButton _drButton;
+    private POVButton _dButton;
+    private POVButton _dlButton;
+    private POVButton _lButton;
+    private POVButton _ulButton;
 
     /**
      * Constructs a new instance of the joystick
@@ -75,14 +87,254 @@ public class GExtreme3DProJoystick extends GenericHID {
     }
 
     /**
+     * Returns the trigger's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton trigger() {
+        if (_triggerButton == null) {
+            _triggerButton = new JoystickButton(this, ButtonType.kTrigger.value);
+        }
+        return _triggerButton;
+    }
+
+    /**
+     * Returns the thumb's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton thumb() {
+        if (_thumbButton == null) {
+            _thumbButton = new JoystickButton(this, ButtonType.kThumb.value);
+        }
+        return _thumbButton;
+    }
+
+    /**
+     * Returns the 3 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton three() {
+        if (_3Button == null) {
+            _3Button = new JoystickButton(this, ButtonType.kTop3.value);
+        }
+        return _3Button;
+    }
+
+    /**
+     * Returns the 4 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton four() {
+        if (_4Button == null) {
+            _4Button = new JoystickButton(this, ButtonType.kTop4.value);
+        }
+        return _4Button;
+    }
+
+    /**
+     * Returns the 5 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton five() {
+        if (_5Button == null) {
+            _5Button = new JoystickButton(this, ButtonType.kTop5.value);
+        }
+        return _5Button;
+    }
+
+    /**
+     * Returns the 6 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton six() {
+        if (_6Button == null) {
+            _6Button = new JoystickButton(this, ButtonType.kTop6.value);
+        }
+        return _6Button;
+    }
+
+    /**
+     * Returns the 7 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton seven() {
+        if (_7Button == null) {
+            _7Button = new JoystickButton(this, ButtonType.kBottom7.value);
+        }
+        return _7Button;
+    }
+
+    /**
+     * Returns the 8 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton eight() {
+        if (_8Button == null) {
+            _8Button = new JoystickButton(this, ButtonType.kBottom8.value);
+        }
+        return _8Button;
+    }
+
+    /**
+     * Returns the 9 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton nine() {
+        if (_9Button == null) {
+            _9Button = new JoystickButton(this, ButtonType.kBottom9.value);
+        }
+        return _9Button;
+    }
+
+    /**
+     * Returns the 10 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton ten() {
+        if (_10Button == null) {
+            _10Button = new JoystickButton(this, ButtonType.kBottom10.value);
+        }
+        return _10Button;
+    }
+
+    /**
+     * Returns the 11 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton eleven() {
+        if (_11Button == null) {
+            _11Button = new JoystickButton(this, ButtonType.kBottom11.value);
+        }
+        return _11Button;
+    }
+
+    /**
+     * Returns the 12 button's {@link JoystickButton}.
+     *
+     * <p>To get its value, use {@link JoystickButton#get()}.
+     */
+    public JoystickButton twelve() {
+        if (_12Button == null) {
+            _12Button = new JoystickButton(this, ButtonType.kBottom12.value);
+        }
+        return _12Button;
+    }
+
+    /**
+     * Returns the upper (0 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton up() {
+        if (_uButton == null) {
+            _uButton = new POVButton(this, 0);
+        }
+        return _uButton;
+    }
+
+    /**
+     * Returns the upper-right (45 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton upRight() {
+        if (_urButton == null) {
+            _urButton = new POVButton(this, 45);
+        }
+        return _urButton;
+    }
+
+    /**
+     * Returns the right (90 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton right() {
+        if (_rButton == null) {
+            _rButton = new POVButton(this, 90);
+        }
+        return _rButton;
+    }
+
+    /**
+     * Returns the downwards-right (135 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton downRight() {
+        if (_drButton == null) {
+            _drButton = new POVButton(this, 135);
+        }
+        return _drButton;
+    }
+
+    /**
+     * Returns the downwards (180 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton down() {
+        if (_dButton == null) {
+            _dButton = new POVButton(this, 180);
+        }
+        return _dButton;
+    }
+
+    /**
+     * Returns the downwards-left (225 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton downLeft() {
+        if (_dlButton == null) {
+            _dlButton = new POVButton(this, 225);
+        }
+        return _dlButton;
+    }
+
+    /**
+     * Returns the left (270 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton left() {
+        if (_lButton == null) {
+            _lButton = new POVButton(this, 270);
+        }
+        return _lButton;
+    }
+
+    /**
+     * Returns the upper-left (315 degrees) button's {@link POVButton}.
+     *
+     * <p>To get its value, use {@link POVButton#get()}.
+     */
+    public POVButton upLeft() {
+        if (_ulButton == null) {
+            _ulButton = new POVButton(this, 315);
+        }
+        return _ulButton;
+    }
+
+    /**
      * Get the X value of the joystick.
      *
      * <p>Right is positive.
      *
      * @return The X value of the joystick.
      */
-    public double getX() {
-        return -super.getRawAxis(AxisType.kX.value);
+    public double xAxis() {
+        return -getRawAxis(AxisType.kX.value);
     }
 
     /**
@@ -92,8 +344,8 @@ public class GExtreme3DProJoystick extends GenericHID {
      *
      * @return The Y value of the joystick.
      */
-    public double getY() {
-        return -super.getRawAxis(AxisType.kY.value);
+    public double yAxis() {
+        return -getRawAxis(AxisType.kY.value);
     }
 
     /**
@@ -103,8 +355,8 @@ public class GExtreme3DProJoystick extends GenericHID {
      *
      * @return The Z value of the joystick.
      */
-    public double getZ() {
-        return super.getRawAxis(AxisType.kZ.value);
+    public double zAxis() {
+        return getRawAxis(AxisType.kZ.value);
     }
 
     /**
@@ -114,40 +366,8 @@ public class GExtreme3DProJoystick extends GenericHID {
      *
      * @return The throttle position of the joystick.
      */
-    public double getThrottle() {
-        return super.getRawAxis(AxisType.kThrottle.value);
-    }
-
-    /**
-     * Gets the POV of the dpad; in 45 degree increments CW from the top.
-     *
-     * <p>For instance: up is 0, up & right is 45, right is 90, etc.
-     *
-     * @return The POV of the dpad.
-     */
-    public int getPOV() {
-        int x = (int) -super.getRawAxis(AxisType.kDpadX.value);
-        int y = (int) super.getRawAxis(AxisType.kDpadY.value);
-
-        if (x == 1 && y == 0) {
-            return 0;
-        } else if (x == 1 && y == 1) {
-            return 45;
-        } else if (x == 0 && y == 1) {
-            return 90;
-        } else if (x == -1 && y == 1) {
-            return 135;
-        } else if (x == -1 && y == 0) {
-            return 180;
-        } else if (x == -1 && y == -1) {
-            return 225;
-        } else if (x == 0 && y == -1) {
-            return 270;
-        } else if (x == 1 && y == -1) {
-            return 315;
-        } else {
-            return -1;
-        }
+    public double throttleAxis() {
+        return -super.getRawAxis(AxisType.kThrottle.value);
     }
 
     /**
@@ -157,7 +377,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The magnitude of the direction vector
      */
     public double getMagnitude() {
-        return Math.sqrt(Math.pow(getX(), 2) + Math.pow(getY(), 2));
+        return Math.sqrt(Math.pow(xAxis(), 2) + Math.pow(yAxis(), 2));
     }
 
     /**
@@ -166,7 +386,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The direction of the vector in radians
      */
     public double getDirectionRadians() {
-        return Math.atan2(getX(), -getY());
+        return Math.atan2(xAxis(), -yAxis());
     }
 
     /**

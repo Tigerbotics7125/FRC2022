@@ -4,17 +4,17 @@
  */
 package frc.robot.subsystems;
 
-import static frc.robot.constants.MecanumDrivetrainConstants.kDistancePerPulse;
-import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftId;
-import static frc.robot.constants.MecanumDrivetrainConstants.kFrontLeftOffset;
-import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightId;
-import static frc.robot.constants.MecanumDrivetrainConstants.kFrontRightOffset;
-import static frc.robot.constants.MecanumDrivetrainConstants.kMotorType;
-import static frc.robot.constants.MecanumDrivetrainConstants.kRPMtoMPSConversionFactor;
-import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftId;
-import static frc.robot.constants.MecanumDrivetrainConstants.kRearLeftOffset;
-import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightId;
-import static frc.robot.constants.MecanumDrivetrainConstants.kRearRightOffset;
+import static frc.robot.Constants.Drivetrain.kDistancePerPulse;
+import static frc.robot.Constants.Drivetrain.kFrontLeftId;
+import static frc.robot.Constants.Drivetrain.kFrontLeftOffset;
+import static frc.robot.Constants.Drivetrain.kFrontRightId;
+import static frc.robot.Constants.Drivetrain.kFrontRightOffset;
+import static frc.robot.Constants.Drivetrain.kMotorType;
+import static frc.robot.Constants.Drivetrain.kRPMtoMPSConversionFactor;
+import static frc.robot.Constants.Drivetrain.kRearLeftId;
+import static frc.robot.Constants.Drivetrain.kRearLeftOffset;
+import static frc.robot.Constants.Drivetrain.kRearRightId;
+import static frc.robot.Constants.Drivetrain.kRearRightOffset;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -30,15 +30,9 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.drive.MecanumDrive.WheelSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PerpetualCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Gamepads;
+import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.constants.Constants;
 import frc.tigerlib.Util;
 
 /**
@@ -46,7 +40,7 @@ import frc.tigerlib.Util;
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
-public class MecanumDrivetrainSub extends SubsystemBase {
+public class DrivetrainSubsys extends SubsystemBase {
 
     // Motors, PID controllers, and encoders
     final CANSparkMax m_frontLeft = new CANSparkMax(kFrontLeftId, kMotorType);
@@ -80,31 +74,7 @@ public class MecanumDrivetrainSub extends SubsystemBase {
     Rotation2d m_angleOffset; // the angle to keep the robot facing
     boolean m_fieldOffset; // which side of the field the robot consideres forward
 
-    // Commands used to operate the drivetrain
-    public final Command kDisable =
-            new ParallelCommandGroup(
-                    new InstantCommand(() -> m_frontLeft.disable()),
-                    new InstantCommand(() -> m_rearLeft.disable()),
-                    new InstantCommand(() -> m_frontRight.disable()),
-                    new InstantCommand(() -> m_rearRight.disable())) {
-                @Override
-                public String getName() {
-                    return "disabled";
-                }
-            };
-
-    public final Command kDriveWJoystick =
-            new PerpetualCommand(new RunCommand(() -> drive(), this)) {
-                @Override
-                public String getName() {
-                    return "drive w/ stick";
-                }
-            };
-
-    public MecanumDrivetrainSub() {
-        // set default command so we actually drive.
-        setDefaultCommand(kDriveWJoystick);
-
+    public DrivetrainSubsys() {
         // set default driving options
         setTurning(true);
         setFieldOriented(false);
@@ -201,19 +171,31 @@ public class MecanumDrivetrainSub extends SubsystemBase {
         m_rearRightPID.setReference(targetSpeeds.rearRightMetersPerSecond, ControlType.kVelocity);
     }
 
-    /** drives with joysticks, converts to velocity then passes to feedforward. */
-    public void drive() {
-        double xSpeed = Gamepads.getRobotXInputSpeed();
-        double ySpeed = Gamepads.getRobotYInputSpeed();
-        double zSpeed = Gamepads.getRobotZInputSpeed();
+    /**
+     * Drives the robot based on the input. All input is clamped to [-1, 1]; input should be scaled
+     * before passing into this method.
+     *
+     * @param xSpeed Robot X Speed, forward is positive.
+     * @param ySpeed Robot Y Speed, Right is positive.
+     * @param zSpeed Robot Z/Theta Speed, Clockwise is positive.
+     */
+    public void drive(double xSpeed, double ySpeed, double zSpeed) {
+
+        /*
+         * TODO
+         * make this work while keeping the ability to strafe; or maybe a
+         * different system that only does it when going forwards and backwards.
+         */
 
         if (m_turning && zSpeed == 0.0) {
-            // if we were turning and are no longer, then set the angle offset to the current angle
+            // if we were turning and are no longer, then set the angle offset to the
+            // current angle
             m_angleOffset = getHeading();
             m_turning = false; // no longer turning
         }
         if (!m_turning && zSpeed == 0.0) {
-            // if we are not turning and z speed is 0, then the difference from our angleOffset and
+            // if we are not turning and z speed is 0, then the difference from our
+            // angleOffset and
             // currentHeading needs to be applied to keep our angle constant.
             double difference = getHeading().minus(m_angleOffset).getDegrees();
             zSpeed =
@@ -224,7 +206,8 @@ public class MecanumDrivetrainSub extends SubsystemBase {
                             -1,
                             1); // will return +- 1, should 100% be changed to something else.
         } else {
-            // we are turning, either by boolean or zSpeed, so just make sure m_turning is true
+            // we are turning, either by boolean or zSpeed, so just make sure m_turning is
+            // true
             m_turning = true;
         }
 
@@ -234,26 +217,6 @@ public class MecanumDrivetrainSub extends SubsystemBase {
                         xSpeed,
                         m_turning ? zSpeed : 0.0,
                         m_fieldOriented ? getHeading().getDegrees() : 0.0);
-
-        m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
-        m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
-        m_frontRightPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
-        m_rearRightPID.setReference(targetSpeeds.rearRight, ControlType.kDutyCycle);
-    }
-
-    /**
-     * Drives the robot based on manual input
-     *
-     * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Right is positive.
-     * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Forward is positive.
-     * @param zSpeed The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is positive.
-     */
-    public void drive(double xSpeed, double ySpeed, double zSpeed) {
-        xSpeed = Util.clamp(xSpeed, -1, 1);
-        ySpeed = Util.clamp(ySpeed, -1, 1);
-        zSpeed = Util.clamp(zSpeed, -1, 1);
-
-        WheelSpeeds targetSpeeds = MecanumDrive.driveCartesianIK(ySpeed, xSpeed, zSpeed, 0.0);
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
