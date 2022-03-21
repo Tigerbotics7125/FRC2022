@@ -4,6 +4,7 @@
  */
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -15,34 +16,31 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
 
+    RobotContainer mContainer;
+
     @Override
-    public void robotInit() {}
+    public void robotInit() {
+        mContainer = new RobotContainer();
+    }
 
     @Override
     public void robotPeriodic() {
-        // Ensure the controller(s) are always configured / connected
-        Gamepads.configure();
         // Update the dashboard
-        DashboardManager.getInstance().updateValues();
+        mContainer.updateValues();
         // Run any scheduled commands
         CommandScheduler.getInstance().run();
     }
 
     @Override
     public void autonomousInit() {
-        // Stops all previously running commands.
-        CommandScheduler.getInstance().cancelAll();
-
-        Command autoCommand = DashboardManager.getInstance().getChosenAutonomousCommand();
+        Command autoCommand = mContainer.getSelectedAuto();
         if (autoCommand != null) {
             autoCommand.schedule();
         }
     }
 
     @Override
-    public void autonomousPeriodic() {
-        // weep a smither.
-    }
+    public void autonomousPeriodic() {}
 
     @Override
     public void teleopInit() {
@@ -54,7 +52,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {}
 
     @Override
-    public void simulationInit() {}
+    public void simulationInit() {
+        DriverStation.silenceJoystickConnectionWarning(true);
+    }
 
     @Override
     public void simulationPeriodic() {}
@@ -62,7 +62,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
-        Gamepads.resetConfig();
     }
 
     @Override
