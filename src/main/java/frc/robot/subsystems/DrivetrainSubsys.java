@@ -4,6 +4,7 @@
  */
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.Drivetrain.kDeadband;
 import static frc.robot.Constants.Drivetrain.kDistancePerPulse;
 import static frc.robot.Constants.Drivetrain.kFrontLeftId;
 import static frc.robot.Constants.Drivetrain.kFrontLeftOffset;
@@ -15,6 +16,7 @@ import static frc.robot.Constants.Drivetrain.kRearLeftId;
 import static frc.robot.Constants.Drivetrain.kRearLeftOffset;
 import static frc.robot.Constants.Drivetrain.kRearRightId;
 import static frc.robot.Constants.Drivetrain.kRearRightOffset;
+import static frc.robot.Constants.Drivetrain.kSensitivity;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -121,7 +123,7 @@ public class DrivetrainSubsys extends SubsystemBase {
     @Override
     public void periodic() {
         // setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
-        m_odometry.update(getHeading(), getSpeeds());
+        // m_odometry.update(getHeading(), getSpeeds());
     }
 
     /** update sparkmaxs during sim */
@@ -181,42 +183,11 @@ public class DrivetrainSubsys extends SubsystemBase {
      */
     public void drive(double xSpeed, double ySpeed, double zSpeed) {
 
-        /*
-         * TODO
-         * make this work while keeping the ability to strafe; or maybe a
-         * different system that only does it when going forwards and backwards.
-         */
-
-        if (m_turning && zSpeed == 0.0) {
-            // if we were turning and are no longer, then set the angle offset to the
-            // current angle
-            m_angleOffset = getHeading();
-            m_turning = false; // no longer turning
-        }
-        if (!m_turning && zSpeed == 0.0) {
-            // if we are not turning and z speed is 0, then the difference from our
-            // angleOffset and
-            // currentHeading needs to be applied to keep our angle constant.
-            double difference = getHeading().minus(m_angleOffset).getDegrees();
-            zSpeed =
-                    Util.scaleInput(
-                            difference,
-                            -difference,
-                            difference,
-                            -1,
-                            1); // will return +- 1, should 100% be changed to something else.
-        } else {
-            // we are turning, either by boolean or zSpeed, so just make sure m_turning is
-            // true
-            m_turning = true;
-        }
-
+        xSpeed = Util.scaledDeadbandClamp(xSpeed, kDeadband, kSensitivity, -1, 1);
+        ySpeed = Util.scaledDeadbandClamp(ySpeed, kDeadband, kSensitivity, -1, 1);
+        zSpeed = Util.scaledDeadbandClamp(zSpeed, kDeadband, kSensitivity, -1, 1);
         WheelSpeeds targetSpeeds =
-                MecanumDrive.driveCartesianIK(
-                        ySpeed,
-                        xSpeed,
-                        m_turning ? zSpeed : 0.0,
-                        m_fieldOriented ? getHeading().getDegrees() : 0.0);
+                MecanumDrive.driveCartesianIK(ySpeed, xSpeed, m_turning ? zSpeed : 0.0, 0.0);
 
         m_frontLeftPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         m_rearLeftPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
