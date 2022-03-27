@@ -124,8 +124,10 @@ public class Constants {
 
     public static class Climber {
         // NEO 550 motor type
-        public static final CANSparkMax.MotorType kMotorType = CANSparkMax.MotorType.kBrushless;
+        public static final CANSparkMax.MotorType kMotorType = CANSparkMax.MotorType.kBrushed;
 
+        // speed as %; 1.00 == 100%, 0.50 == 50%, 0.00 == 0%
+        public static final double kSpeed = 0.75;
         // CANSparkMax CAN IDs
         public static final int kLId = 6;
         public static final int kRId = 7;
