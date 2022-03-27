@@ -4,6 +4,7 @@
  */
 package frc.robot.commands.auto;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -33,11 +34,12 @@ public class ExitTarmacCmd extends SequentialCommandGroup {
 
         setName("Auto: Exit Tarmac");
         addCommands(
-                new ParallelRaceGroup(
-                        new RunCommand(() -> mDrivetrain.drive(-.5, 0, 0)), new WaitCommand(1)),
+                new RunCommand(mIntake::eject).withTimeout(1),
+                new InstantCommand(mIntake::disable),
+                new RunCommand(() -> mDrivetrain.drive(0, -.5, 0)).withTimeout(5.5),
                 new ParallelRaceGroup(
                         new RunCommand(mArm::lower, mArm),
                         new WaitUntilCommand(mArm::isDown),
-                        new WaitCommand(2)));
+                        new WaitCommand(3)));
     }
 }
