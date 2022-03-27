@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.Climber.kLId;
 import static frc.robot.Constants.Climber.kMotorType;
 import static frc.robot.Constants.Climber.kRId;
+import static frc.robot.Constants.Climber.kSpeed;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,12 +34,12 @@ public class ClimberSubsys extends SubsystemBase {
     }
 
     public void winch() {
-        m_left.set(1);
-        m_right.set(1);
+        m_left.set(1 * kSpeed);
+        m_right.set(1 * kSpeed);
     }
 
-    public void repel() {
-        m_left.set(-1);
-        m_right.set(-1);
+    public void rappel() {
+        m_left.set(-1 * kSpeed);
+        m_right.set(-1 * kSpeed);
     }
 }
