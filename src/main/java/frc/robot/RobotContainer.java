@@ -4,6 +4,9 @@
  */
 package frc.robot;
 
+import static frc.robot.Constants.Drivetrain.kDeadband;
+import static frc.robot.Constants.Drivetrain.kSensitivity;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
@@ -13,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.auto.ExitTarmacCmd;
@@ -21,7 +25,11 @@ import frc.robot.subsystems.ArmSubsys;
 import frc.robot.subsystems.ClimberSubsys;
 import frc.robot.subsystems.DrivetrainSubsys;
 import frc.robot.subsystems.IntakeSubsys;
+import frc.robot.subsystems.LEDSubsys;
 import frc.tigerlib.GExtreme3DProJoystick;
+import frc.tigerlib.Util;
+
+;
 
 /**
  * Contains and manages subsystems of the robot.
@@ -33,25 +41,26 @@ public class RobotContainer {
     private SendableChooser<Command> mAutoChooser = new SendableChooser<>();
     private GExtreme3DProJoystick mJoystick = new GExtreme3DProJoystick(0);
     private UsbCamera mCamera1;
-    private UsbCamera mCamera2;
-    // public final PowerDistribution mPdp = new PowerDistribution(0, ModuleType.kCTRE);
+    // public final PowerDistribution mPdp = new PowerDistribution(0,
+    // ModuleType.kCTRE);
     private DrivetrainSubsys mDrivetrain = new DrivetrainSubsys();
     private ArmSubsys mArm = new ArmSubsys();
     private IntakeSubsys mIntake = new IntakeSubsys();
     private ClimberSubsys mClimber = new ClimberSubsys();
+    private LEDSubsys mLeds = new LEDSubsys();
 
     public RobotContainer() {
         configureAutoChooser();
         configureButtonBindings();
-        // configureCameras();
+        configureCameras();
 
         // set default commands
         mDrivetrain.setDefaultCommand(
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mJoystick.yAxis(),
                                                 mJoystick.xAxis(),
+                                                mJoystick.yAxis(),
                                                 mJoystick.zAxis()),
                                 mDrivetrain)
                         .withName("Default Drive"));
@@ -62,25 +71,31 @@ public class RobotContainer {
 
     public void updateValues() {
         // Controller
-        SmartDashboard.putNumber("xInput", mJoystick.xAxis());
-        SmartDashboard.putNumber("yInput", mJoystick.yAxis());
-        SmartDashboard.putNumber("zInput", mJoystick.zAxis());
-        SmartDashboard.putNumber("tInput", mJoystick.throttleAxis());
+        SmartDashboard.putNumber(
+                "xInput",
+                Util.scaledDeadbandClamp(mJoystick.xAxis(), kDeadband, kSensitivity, -1, 1));
+        SmartDashboard.putNumber(
+                "yInput",
+                Util.scaledDeadbandClamp(mJoystick.yAxis(), kDeadband, kSensitivity, -1, 1));
+        SmartDashboard.putNumber(
+                "zInput",
+                Util.scaledDeadbandClamp(mJoystick.zAxis(), kDeadband, kSensitivity, -1, 1));
+        SmartDashboard.putNumber(
+                "tInput",
+                Util.scaledDeadbandClamp(mJoystick.throttleAxis(), kDeadband, kSensitivity, -1, 1));
 
         // Auto
-        SmartDashboard.putData("AutoChooser", mAutoChooser);
-        if (mAutoChooser.getSelected() != null) {
-            SmartDashboard.putString("AutoChooser", mAutoChooser.getSelected().getName());
-        }
+        SmartDashboard.putData("Auto", mAutoChooser);
+        SmartDashboard.putString("AutoChooser", mAutoChooser.getSelected().getName());
 
         // Robot Info
-        SmartDashboard.putNumber("Heading", mDrivetrain.getHeading().getDegrees());
+        // SmartDashboard.putNumber("Heading", mDrivetrain.getHeading().getDegrees());
         SmartDashboard.putBoolean("Is up?", mArm.getFwdLimitSwitch());
         SmartDashboard.putBoolean("Is down?", mArm.getRevLimitSwitch());
 
         // Driving Options
-        SmartDashboard.putBoolean("Turning?", mDrivetrain.getTurning());
-        SmartDashboard.putBoolean("Field Oriented?", mDrivetrain.getFieldOriented());
+        // SmartDashboard.putBoolean("Turning?", mDrivetrain.getTurning());
+        // SmartDashboard.putBoolean("Field Oriented?", mDrivetrain.getFieldOriented());
 
         // Subsystems
         // SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
@@ -121,10 +136,12 @@ public class RobotContainer {
         mJoystick
                 .three()
                 .whenPressed(
-                        new ParallelRaceGroup(
-                                        new RunCommand(mArm::lower, mArm),
-                                        new WaitUntilCommand(mArm::isDown),
-                                        new WaitCommand(2))
+                        new SequentialCommandGroup(
+                                        new ParallelRaceGroup(
+                                                new RunCommand(mArm::lower, mArm),
+                                                new WaitUntilCommand(mArm::isDown),
+                                                new WaitCommand(2)),
+                                        new RunCommand(mArm::disable, mArm))
                                 .withName("Lower Arm Safely"),
                         true);
 
@@ -132,26 +149,32 @@ public class RobotContainer {
         mJoystick
                 .five()
                 .whenPressed(
-                        new ParallelRaceGroup(
-                                        new RunCommand(mArm::raise, mArm),
-                                        new WaitUntilCommand(mArm::isUp),
-                                        new WaitCommand(2))
+                        new SequentialCommandGroup(
+                                        new ParallelRaceGroup(
+                                                new RunCommand(mArm::raise, mArm),
+                                                new WaitUntilCommand(mArm::isUp),
+                                                new WaitCommand(2)),
+                                        new RunCommand(mArm::disable, mArm))
                                 .withName("Raise Arm Safely"),
                         true);
+
+        mJoystick
+                .twelve()
+                .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
+                .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
+
+        mJoystick
+                .eleven()
+                .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
+                .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
 
     public void configureCameras() {
         mCamera1 = CameraServer.startAutomaticCapture();
-        mCamera2 = CameraServer.startAutomaticCapture();
         mCamera1.setFPS(30);
-        mCamera2.setFPS(30);
-        mCamera1.setResolution(320, 240);
-        mCamera2.setResolution(320, 240);
+        mCamera1.setResolution(320 / 32, 240 / 32);
         mCamera1.setWhiteBalanceAuto();
-        mCamera2.setWhiteBalanceAuto();
         mCamera1.setExposureAuto();
-        mCamera2.setExposureAuto();
         mCamera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        mCamera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     }
 }
