@@ -89,6 +89,7 @@ public class Constants {
         public static final PIDController kYPID = new PIDController(.02, 0, 0);
         public static final ProfiledPIDController kThetaPID =
                 new ProfiledPIDController(.02, 0, 0, new Constraints(6.28, 3.14));
+        public static final PIDController kZPID = new PIDController(.018, 0, 0);
 
         // Gearbox Constants
         public static final double kGearRatio = 10.71; // 10.71:1 Toughboxes
