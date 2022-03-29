@@ -109,6 +109,10 @@ public class Constants {
         public static final double kPlanetaryGearboxRatio = 81.0; // 81:1
         public static final double kGearAndChainRatio =
                 12 / 60; // 12 teeth on gearbox, 60 teeth on arm
+
+        // LED constants
+        public static final int kLedLength = 60;
+        public static final int kNumGradients = 4;
     }
 
     public static class Intake {

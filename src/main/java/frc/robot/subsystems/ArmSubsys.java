@@ -5,11 +5,17 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.Arm.kId;
+import static frc.robot.Constants.Arm.kLedLength;
+import static frc.robot.Constants.Arm.kNumGradients;
 import static frc.robot.Constants.Arm.kSpeed;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -19,32 +25,41 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class ArmSubsys extends SubsystemBase {
 
-    final WPI_TalonSRX m_arm = new WPI_TalonSRX(kId);
+    final WPI_TalonSRX mArm = new WPI_TalonSRX(kId);
+    final AddressableLED mLeds = new AddressableLED(0);
+    int mLedIndex = 0;
 
     public ArmSubsys() {
-        m_arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
-        m_arm.setNeutralMode(NeutralMode.Brake);
-        m_arm.setInverted(true);
+        mArm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
+        mArm.setNeutralMode(NeutralMode.Brake);
+        mArm.setInverted(true);
+
+        mLeds.setLength(kLedLength);
+        mLeds.start();
     }
 
     public void disable() {
-        m_arm.stopMotor();
+        mArm.stopMotor();
     }
 
     public void raise() {
-        m_arm.set(1 * kSpeed);
+        mArm.set(1 * kSpeed);
     }
 
     public void lower() {
-        m_arm.set(-1 * kSpeed);
+        mArm.set(-1 * kSpeed);
+    }
+
+    public void holdUp() {
+        mArm.set(.1);
     }
 
     public boolean getFwdLimitSwitch() {
-        return m_arm.getSensorCollection().isFwdLimitSwitchClosed();
+        return mArm.getSensorCollection().isFwdLimitSwitchClosed();
     }
 
     public boolean getRevLimitSwitch() {
-        return m_arm.getSensorCollection().isRevLimitSwitchClosed();
+        return mArm.getSensorCollection().isRevLimitSwitchClosed();
     }
 
     public Boolean isUp() {
@@ -61,5 +76,59 @@ public class ArmSubsys extends SubsystemBase {
 
     public Boolean isNotDown() {
         return !getRevLimitSwitch();
+    }
+
+    @Override
+    public void periodic() {
+        AddressableLEDBuffer b = new AddressableLEDBuffer(kLedLength);
+        if (RobotState.isDisabled()) {
+            // make alliance color and black gradient that winds through the leds when disabled
+            for (int i = 0; i < kLedLength; i++) {
+                int val =
+                        (int)
+                                ((255 / 2)
+                                        * Math.sin(
+                                                (Math.PI
+                                                                / (kLedLength * kNumGradients)
+                                                                * (i + mLedIndex))
+                                                        + (255 / 2)));
+                switch (DriverStation.getAlliance()) {
+                    case Red:
+                        {
+                            b.setRGB(i, val, 0, 0);
+                            break;
+                        }
+                    case Blue:
+                        {
+                            b.setRGB(i, 0, 0, val);
+                            break;
+                        }
+                    case Invalid:
+                        {
+                        }
+                    default:
+                        {
+                            b.setRGB(i, val, val, val);
+                        }
+                }
+            }
+            mLedIndex++;
+            mLedIndex = mLedIndex % kLedLength;
+        } else {
+            if (isUp()) {
+                for (int i = 0; i < kLedLength; i++) {
+                    b.setRGB(i, 0, 255, 0);
+                }
+            } else if (isDown()) {
+                for (int i = 0; i < kLedLength; i++) {
+                    b.setRGB(i, 0, 255, 255);
+                }
+            } else {
+                for (int i = 0; i < kLedLength; i++) {
+                    b.setRGB(i, 255, 0, 255);
+                }
+            }
+        }
+        mLeds.setData(b);
     }
 }
