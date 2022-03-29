@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 public class GExtreme3DProJoystick extends GenericHID {
 
     /** Represents an analog axis on the joystick */
-    public enum AxisType {
+    public enum Axis {
         kX(0),
         kY(1),
         kZ(2),
@@ -29,13 +29,13 @@ public class GExtreme3DProJoystick extends GenericHID {
 
         public final int value;
 
-        AxisType(int value) {
+        Axis(int value) {
             this.value = value;
         }
     }
 
     /** Represents a digital button on the joystick */
-    public enum ButtonType {
+    public enum Button {
         kTrigger(1),
         kThumb(2),
         kTop3(3),
@@ -51,7 +51,7 @@ public class GExtreme3DProJoystick extends GenericHID {
 
         public final int value;
 
-        ButtonType(int value) {
+        Button(int value) {
             this.value = value;
         }
     }
@@ -93,7 +93,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton trigger() {
         if (_triggerButton == null) {
-            _triggerButton = new JoystickButton(this, ButtonType.kTrigger.value);
+            _triggerButton = new JoystickButton(this, Button.kTrigger.value);
         }
         return _triggerButton;
     }
@@ -105,7 +105,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton thumb() {
         if (_thumbButton == null) {
-            _thumbButton = new JoystickButton(this, ButtonType.kThumb.value);
+            _thumbButton = new JoystickButton(this, Button.kThumb.value);
         }
         return _thumbButton;
     }
@@ -117,7 +117,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton three() {
         if (_3Button == null) {
-            _3Button = new JoystickButton(this, ButtonType.kTop3.value);
+            _3Button = new JoystickButton(this, Button.kTop3.value);
         }
         return _3Button;
     }
@@ -129,7 +129,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton four() {
         if (_4Button == null) {
-            _4Button = new JoystickButton(this, ButtonType.kTop4.value);
+            _4Button = new JoystickButton(this, Button.kTop4.value);
         }
         return _4Button;
     }
@@ -141,7 +141,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton five() {
         if (_5Button == null) {
-            _5Button = new JoystickButton(this, ButtonType.kTop5.value);
+            _5Button = new JoystickButton(this, Button.kTop5.value);
         }
         return _5Button;
     }
@@ -153,7 +153,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton six() {
         if (_6Button == null) {
-            _6Button = new JoystickButton(this, ButtonType.kTop6.value);
+            _6Button = new JoystickButton(this, Button.kTop6.value);
         }
         return _6Button;
     }
@@ -165,7 +165,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton seven() {
         if (_7Button == null) {
-            _7Button = new JoystickButton(this, ButtonType.kBottom7.value);
+            _7Button = new JoystickButton(this, Button.kBottom7.value);
         }
         return _7Button;
     }
@@ -177,7 +177,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton eight() {
         if (_8Button == null) {
-            _8Button = new JoystickButton(this, ButtonType.kBottom8.value);
+            _8Button = new JoystickButton(this, Button.kBottom8.value);
         }
         return _8Button;
     }
@@ -189,7 +189,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton nine() {
         if (_9Button == null) {
-            _9Button = new JoystickButton(this, ButtonType.kBottom9.value);
+            _9Button = new JoystickButton(this, Button.kBottom9.value);
         }
         return _9Button;
     }
@@ -201,7 +201,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton ten() {
         if (_10Button == null) {
-            _10Button = new JoystickButton(this, ButtonType.kBottom10.value);
+            _10Button = new JoystickButton(this, Button.kBottom10.value);
         }
         return _10Button;
     }
@@ -213,7 +213,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton eleven() {
         if (_11Button == null) {
-            _11Button = new JoystickButton(this, ButtonType.kBottom11.value);
+            _11Button = new JoystickButton(this, Button.kBottom11.value);
         }
         return _11Button;
     }
@@ -225,7 +225,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      */
     public JoystickButton twelve() {
         if (_12Button == null) {
-            _12Button = new JoystickButton(this, ButtonType.kBottom12.value);
+            _12Button = new JoystickButton(this, Button.kBottom12.value);
         }
         return _12Button;
     }
@@ -334,7 +334,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The X value of the joystick.
      */
     public double xAxis() {
-        return -getRawAxis(AxisType.kX.value);
+        return -getRawAxis(Axis.kX.value);
     }
 
     /**
@@ -345,7 +345,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The Y value of the joystick.
      */
     public double yAxis() {
-        return -getRawAxis(AxisType.kY.value);
+        return -getRawAxis(Axis.kY.value);
     }
 
     /**
@@ -356,7 +356,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The Z value of the joystick.
      */
     public double zAxis() {
-        return getRawAxis(AxisType.kZ.value);
+        return getRawAxis(Axis.kZ.value);
     }
 
     /**
@@ -367,7 +367,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The throttle position of the joystick.
      */
     public double throttleAxis() {
-        return -super.getRawAxis(AxisType.kThrottle.value);
+        return -super.getRawAxis(Axis.kThrottle.value);
     }
 
     /**
