@@ -36,8 +36,8 @@ public class RobotContainer {
     private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
     private XboxController mXbox = new XboxController(1);
     private UsbCamera mCamera1;
-    private UsbCamera mCamera2;
-    // public final PowerDistribution mPdp = new PowerDistribution(0, ModuleType.kCTRE);
+    // public final PowerDistribution mPdp = new PowerDistribution(0,
+    // ModuleType.kCTRE);
     private DrivetrainSubsys mDrivetrain = new DrivetrainSubsys();
     private ArmSubsys mArm = new ArmSubsys();
     private IntakeSubsys mIntake = new IntakeSubsys();
@@ -46,14 +46,14 @@ public class RobotContainer {
     public RobotContainer() {
         configureAutoChooser();
         configureButtonBindings();
-        // configureCameras();
+        configureCameras();
 
         // set default commands
         mDrivetrain.setDefaultCommand(
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mFliJoy.yAxis(), mFliJoy.xAxis(), mFliJoy.zAxis()),
+                                                mFliJoy.xAxis(), mFliJoy.yAxis(), mFliJoy.zAxis()),
                                 mDrivetrain)
                         .withName("Default Drive"));
         mArm.setDefaultCommand(new RunCommand(mArm::disable, mArm).withName("Disable"));
@@ -70,13 +70,13 @@ public class RobotContainer {
         }
 
         // Robot Info
-        SmartDashboard.putNumber("Heading", mDrivetrain.getHeading().getDegrees());
+        // SmartDashboard.putNumber("Heading", mDrivetrain.getHeading().getDegrees());
         SmartDashboard.putBoolean("Is up?", mArm.getFwdLimitSwitch());
         SmartDashboard.putBoolean("Is down?", mArm.getRevLimitSwitch());
 
         // Driving Options
-        SmartDashboard.putBoolean("Turning?", mDrivetrain.getTurning());
-        SmartDashboard.putBoolean("Field Oriented?", mDrivetrain.getFieldOriented());
+        // SmartDashboard.putBoolean("Turning?", mDrivetrain.getTurning());
+        // SmartDashboard.putBoolean("Field Oriented?", mDrivetrain.getFieldOriented());
 
         // Subsystems
         // SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
@@ -115,10 +115,12 @@ public class RobotContainer {
         // pressing button 3 lowers the arm safely
         mFliJoy.three()
                 .whenPressed(
-                        new ParallelRaceGroup(
-                                        new RunCommand(mArm::lower, mArm),
-                                        new WaitUntilCommand(mArm::isDown),
-                                        new WaitCommand(2))
+                        new SequentialCommandGroup(
+                                        new ParallelRaceGroup(
+                                                new RunCommand(mArm::lower, mArm),
+                                                new WaitUntilCommand(mArm::isDown),
+                                                new WaitCommand(2)),
+                                        new RunCommand(mArm::disable, mArm))
                                 .withName("Lower Arm Safely"),
                         true);
 
@@ -133,20 +135,22 @@ public class RobotContainer {
                                         new RunCommand(mArm::holdUp, mArm))
                                 .withName("Raise Arm Safely"),
                         true);
+
+        mFliJoy.twelve()
+                .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
+                .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
+
+        mFliJoy.eleven()
+                .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
+                .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
 
     public void configureCameras() {
         mCamera1 = CameraServer.startAutomaticCapture();
-        mCamera2 = CameraServer.startAutomaticCapture();
         mCamera1.setFPS(30);
-        mCamera2.setFPS(30);
-        mCamera1.setResolution(320, 240);
-        mCamera2.setResolution(320, 240);
+        mCamera1.setResolution(320 / 32, 240 / 32);
         mCamera1.setWhiteBalanceAuto();
-        mCamera2.setWhiteBalanceAuto();
         mCamera1.setExposureAuto();
-        mCamera2.setExposureAuto();
         mCamera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        mCamera2.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     }
 }

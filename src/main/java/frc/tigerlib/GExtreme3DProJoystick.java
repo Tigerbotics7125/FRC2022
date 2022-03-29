@@ -334,7 +334,7 @@ public class GExtreme3DProJoystick extends GenericHID {
      * @return The X value of the joystick.
      */
     public double xAxis() {
-        return -getRawAxis(Axis.kX.value);
+        return getRawAxis(Axis.kX.value);
     }
 
     /**

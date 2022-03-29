@@ -155,6 +155,7 @@ public class DrivetrainSubsys extends SubsystemBase {
         if (RobotState.isAutonomous()) {
             mOdometry.update(getHeading(), getSpeeds());
         }
+        // m_odometry.update(getHeading(), getSpeeds());
 
         if (Robot.isSimulation()) {
             REVPhysicsSim.getInstance().run();

@@ -31,6 +31,6 @@ public class IntakeSubsys extends SubsystemBase {
     }
 
     public void eject() {
-        mIntake.set(1 * kSpeed);
+        mIntake.set(-1 * kSpeed);
     }
 }
