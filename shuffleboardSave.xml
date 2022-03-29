@@ -1,66 +1,62 @@
 <xml version="1.0">
 <dashboard>
-	<widget field="AutoChooser" type="String" class="edu.wpi.first.smartdashboard.gui.elements.FormattedField">
-		<location x="7" y="68"/>
+	<widget field="Field Oriented?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.CheckBox">
+		<location x="536" y="107"/>
+	</widget>
+	<widget field="Heading Protection?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.CheckBox">
+		<location x="512" y="88"/>
+	</widget>
+	<widget field="Desired Heading" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="215"/>
+	</widget>
+	<widget field="Current Heading" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="194"/>
+	</widget>
+	<widget field="Auto To Run" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="70" y="2"/>
+	</widget>
+	<widget field="AutoChooser" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="69" y="20"/>
 	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
 		<location x="3" y="2"/>
 		<width>64</width>
 		<height>61</height>
 	</static-widget>
-	<widget field="zInput" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.ProgressBar">
-		<location x="492" y="58"/>
-		<property name="Maximum" value="1.0"/>
-		<property name="Minimum" value="-1.0"/>
-	</widget>
-	<widget field="yInput" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.ProgressBar">
-		<location x="492" y="30"/>
-		<height>28</height>
-		<property name="Maximum" value="1.0"/>
-		<property name="Minimum" value="-1.0"/>
-	</widget>
-	<widget field="tInput" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.ProgressBar">
-		<location x="492" y="86"/>
-		<property name="Maximum" value="5.0"/>
-		<property name="Minimum" value="1.0"/>
-	</widget>
-	<widget field="xInput" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.ProgressBar">
-		<location x="492" y="2"/>
-		<property name="Maximum" value="1.0"/>
-		<property name="Minimum" value="-1.0"/>
-	</widget>
 	<widget field="Is down?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
-		<location x="418" y="10"/>
-		<width>63</width>
-		<height>21</height>
+		<location x="396" y="39"/>
+		<width>77</width>
+		<height>34</height>
+		<property name="Color to show when false" value="255.255.0.255"/>
 	</widget>
 	<widget field="Is up?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
-		<location x="362" y="10"/>
-		<width>51</width>
-		<height>22</height>
+		<location x="397" y="3"/>
+		<width>63</width>
+		<height>34</height>
+		<property name="Color to show when false" value="255.255.0.255"/>
 	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
 		<location x="639" y="1"/>
-		<width>640</width>
-		<height>480</height>
+		<width>675</width>
+		<height>506</height>
 		<property name="Camera Choice" value="USB Camera 0"/>
 	</static-widget>
 	<widget field="Drivetrain" type="Subsystem" class="edu.wpi.first.smartdashboard.gui.elements.Subsystem">
-		<location x="280" y="98"/>
+		<location x="465" y="3"/>
 		<width>172</width>
 		<height>20</height>
 		<property name="Background" value="240.240.240.255"/>
 	</widget>
 	<widget field="Intake" type="Subsystem" class="edu.wpi.first.smartdashboard.gui.elements.Subsystem">
-		<location x="296" y="140"/>
+		<location x="481" y="45"/>
 		<width>156</width>
 	</widget>
 	<widget field="Arm" type="Subsystem" class="edu.wpi.first.smartdashboard.gui.elements.Subsystem">
-		<location x="308" y="119"/>
+		<location x="493" y="24"/>
 		<width>144</width>
 	</widget>
 	<widget field="Climber" type="Subsystem" class="edu.wpi.first.smartdashboard.gui.elements.Subsystem">
-		<location x="292" y="162"/>
+		<location x="477" y="66"/>
 		<width>160</width>
 	</widget>
 	<widget field="Auto" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
@@ -68,65 +64,5 @@
 	</widget>
 </dashboard>
 <live-window>
-	<widget field="ClimberSubsys" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<location x="0" y="602"/>
-	</widget>
-	<widget field="DrivetrainSubsys" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<location x="0" y="579"/>
-	</widget>
-	<widget field="ArmSubsys" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<location x="0" y="23"/>
-	</widget>
-	<widget field="IntakeSubsys" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<location x="0" y="0"/>
-	</widget>
-	<widget field="Ungrouped" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<widget field="PIDController[1]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="PIDController[1]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="Talon SRX [0]" type="Table" class="edu.wpi.first.smartdashboard.livewindow.elements.SpeedController">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="Talon SRX [0]" type="Table" class="edu.wpi.first.smartdashboard.livewindow.elements.SpeedController">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="PIDController[2]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="PIDController[2]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="PIDController[3]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<widget field="PIDController[3]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="0" y="0"/>
-			<height>0</height>
-			<width>0</width>
-		</widget>
-		<location x="0" y="46"/>
-		<width>305</width>
-		<height>532</height>
-	</widget>
 </live-window>
-	<hidden field="Heading"/>
-	<hidden field="Turning?"/>
-	<hidden field="Field Oriented?"/>
 </xml>
