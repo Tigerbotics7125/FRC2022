@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.auto.ExitTarmacCmd;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.ClimberSubsys;
 import frc.robot.subsystems.DrivetrainSubsys;
 import frc.robot.subsystems.IntakeSubsys;
 import frc.tigerlib.GExtreme3DProJoystick;
+import frc.tigerlib.XboxController;
 
 /**
  * Contains and manages subsystems of the robot.
@@ -31,7 +33,8 @@ import frc.tigerlib.GExtreme3DProJoystick;
 public class RobotContainer {
 
     private SendableChooser<Command> mAutoChooser = new SendableChooser<>();
-    private GExtreme3DProJoystick mJoystick = new GExtreme3DProJoystick(0);
+    private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
+    private XboxController mXbox = new XboxController(1);
     private UsbCamera mCamera1;
     private UsbCamera mCamera2;
     // public final PowerDistribution mPdp = new PowerDistribution(0, ModuleType.kCTRE);
@@ -50,9 +53,7 @@ public class RobotContainer {
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mJoystick.yAxis(),
-                                                mJoystick.xAxis(),
-                                                mJoystick.zAxis()),
+                                                mFliJoy.yAxis(), mFliJoy.xAxis(), mFliJoy.zAxis()),
                                 mDrivetrain)
                         .withName("Default Drive"));
         mArm.setDefaultCommand(new RunCommand(mArm::disable, mArm).withName("Disable"));
@@ -61,16 +62,11 @@ public class RobotContainer {
     }
 
     public void updateValues() {
-        // Controller
-        SmartDashboard.putNumber("xInput", mJoystick.xAxis());
-        SmartDashboard.putNumber("yInput", mJoystick.yAxis());
-        SmartDashboard.putNumber("zInput", mJoystick.zAxis());
-        SmartDashboard.putNumber("tInput", mJoystick.throttleAxis());
 
         // Auto
         SmartDashboard.putData("AutoChooser", mAutoChooser);
         if (mAutoChooser.getSelected() != null) {
-            SmartDashboard.putString("AutoChooser", mAutoChooser.getSelected().getName());
+            SmartDashboard.putString("Auto To Run", mAutoChooser.getSelected().getName());
         }
 
         // Robot Info
@@ -105,21 +101,19 @@ public class RobotContainer {
     }
 
     public void configureButtonBindings() {
+
         // pressing the trigger ejects the ball
-        mJoystick
-                .trigger()
+        mFliJoy.trigger()
                 .whenPressed(new RunCommand(mIntake::eject, mIntake).withName("Eject"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
         // pressing the thumb button intakes the balls
-        mJoystick
-                .thumb()
+        mFliJoy.thumb()
                 .whenPressed(new RunCommand(mIntake::intake, mIntake).withName("Intake"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
         // pressing button 3 lowers the arm safely
-        mJoystick
-                .three()
+        mFliJoy.three()
                 .whenPressed(
                         new ParallelRaceGroup(
                                         new RunCommand(mArm::lower, mArm),
@@ -129,13 +123,14 @@ public class RobotContainer {
                         true);
 
         // pressing button 5 raises the arm safely
-        mJoystick
-                .five()
+        mFliJoy.five()
                 .whenPressed(
-                        new ParallelRaceGroup(
-                                        new RunCommand(mArm::raise, mArm),
-                                        new WaitUntilCommand(mArm::isUp),
-                                        new WaitCommand(2))
+                        new SequentialCommandGroup(
+                                        new ParallelRaceGroup(
+                                                new RunCommand(mArm::raise, mArm),
+                                                new WaitUntilCommand(mArm::isUp),
+                                                new WaitCommand(2)),
+                                        new RunCommand(mArm::holdUp, mArm))
                                 .withName("Raise Arm Safely"),
                         true);
     }
