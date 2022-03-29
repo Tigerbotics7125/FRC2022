@@ -26,7 +26,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -80,11 +79,16 @@ public class DrivetrainSubsys extends SubsystemBase {
     final MecanumDriveOdometry mOdometry = new MecanumDriveOdometry(mKinematics, new Rotation2d());
 
     // Variables used for different driving techniques
-    boolean mHeadingProtect = true; // whether or not the robot should be maintaining its desired heading.
+    boolean mHeadingProtect =
+            true; // whether or not the robot should be maintaining its desired heading.
     boolean mFieldOriented = true; // whether or not the robot should drive field-oriented
     boolean mCapturedHeading = false;
     Rotation2d mDesiredHeading = getHeading(); // the angle to keep the robot facing
-    Command mCaptureHeadingCmd = new SequentialCommandGroup(new WaitCommand(.75), new InstantCommand(() -> mDesiredHeading = getHeading()), new InstantCommand(() -> mCapturedHeading = true));
+    Command mCaptureHeadingCmd =
+            new SequentialCommandGroup(
+                    new WaitCommand(.75),
+                    new InstantCommand(() -> mDesiredHeading = getHeading()),
+                    new InstantCommand(() -> mCapturedHeading = true));
     IdleMode mCurrMode = IdleMode.kBrake; // the current idle mode of the drivetrain
 
     public DrivetrainSubsys() {
@@ -226,16 +230,17 @@ public class DrivetrainSubsys extends SubsystemBase {
         boolean shouldProtectHeading = mHeadingProtect && zSpeed == 0.0;
         if (shouldProtectHeading && mCapturedHeading) {
             // if we should protect heading and we have captured the desired heading
-            
+
             // negative to get us to go back to the desired orientation, not farther away;
             // that was a fun experience.
             double newSpeed =
                     -kZPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
             zSpeed = Util.clamp(newSpeed, -.75, .75);
-        } else if (shouldProtectHeading && !CommandScheduler.getInstance().isScheduled(mCaptureHeadingCmd)) {
+        } else if (shouldProtectHeading
+                && !CommandScheduler.getInstance().isScheduled(mCaptureHeadingCmd)) {
             // if we should protect heading and we havnt started to capture desired heading
             CommandScheduler.getInstance().schedule(mCaptureHeadingCmd);
-        }else if (!shouldProtectHeading) {
+        } else if (!shouldProtectHeading) {
             // if we should not protect heading
             mCapturedHeading = false;
             mDesiredHeading = getHeading();
