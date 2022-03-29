@@ -4,6 +4,7 @@
  */
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.Drivetrain.kDeadband;
 import static frc.robot.Constants.Drivetrain.kDistancePerPulse;
 import static frc.robot.Constants.Drivetrain.kFrontLeftId;
 import static frc.robot.Constants.Drivetrain.kFrontLeftOffset;
@@ -15,7 +16,8 @@ import static frc.robot.Constants.Drivetrain.kRearLeftId;
 import static frc.robot.Constants.Drivetrain.kRearLeftOffset;
 import static frc.robot.Constants.Drivetrain.kRearRightId;
 import static frc.robot.Constants.Drivetrain.kRearRightOffset;
-import static frc.robot.Constants.Drivetrain.kThetaPID;
+import static frc.robot.Constants.Drivetrain.kSensitivity;
+import static frc.robot.Constants.Drivetrain.kZPID;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -24,6 +26,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -34,7 +37,12 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.drive.MecanumDrive.WheelSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.tigerlib.Util;
@@ -72,14 +80,16 @@ public class DrivetrainSubsys extends SubsystemBase {
     final MecanumDriveOdometry mOdometry = new MecanumDriveOdometry(mKinematics, new Rotation2d());
 
     // Variables used for different driving techniques
-    boolean mTurning = true; // whether or not the robot should be turning
+    boolean mHeadingProtect = true; // whether or not the robot should be maintaining its desired heading.
     boolean mFieldOriented = true; // whether or not the robot should drive field-oriented
-    Rotation2d mDesiredHeading; // the angle to keep the robot facing
-    IdleMode currentMode = IdleMode.kCoast; // the current idle mode of the drivetrain
+    boolean mCapturedHeading = false;
+    Rotation2d mDesiredHeading = getHeading(); // the angle to keep the robot facing
+    Command mCaptureHeadingCmd = new SequentialCommandGroup(new WaitCommand(.75), new InstantCommand(() -> mDesiredHeading = getHeading()), new InstantCommand(() -> mCapturedHeading = true));
+    IdleMode mCurrMode = IdleMode.kBrake; // the current idle mode of the drivetrain
 
     public DrivetrainSubsys() {
         // set default driving options
-        setFieldOriented(false);
+        setFieldOriented(true);
 
         // invert right side because motors backwards.
         mFl.setInverted(false);
@@ -137,18 +147,18 @@ public class DrivetrainSubsys extends SubsystemBase {
 
         // when the robot is disabled put the wheels in coast mode so we can push it
         // around without breaking our ankles
-        if (RobotState.isDisabled() && currentMode != IdleMode.kCoast) {
+        if (RobotState.isDisabled() && mCurrMode != IdleMode.kCoast) {
             mFl.setIdleMode(IdleMode.kCoast);
             mRl.setIdleMode(IdleMode.kCoast);
             mFr.setIdleMode(IdleMode.kCoast);
             mRr.setIdleMode(IdleMode.kCoast);
-            currentMode = IdleMode.kCoast;
-        } else if (!RobotState.isDisabled() && currentMode != IdleMode.kBrake) {
+            mCurrMode = IdleMode.kCoast;
+        } else if (!RobotState.isDisabled() && mCurrMode != IdleMode.kBrake) {
             mFr.setIdleMode(IdleMode.kBrake);
             mRr.setIdleMode(IdleMode.kBrake);
             mFl.setIdleMode(IdleMode.kBrake);
             mRl.setIdleMode(IdleMode.kBrake);
-            currentMode = IdleMode.kBrake;
+            mCurrMode = IdleMode.kBrake;
         }
 
         // setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
@@ -169,7 +179,7 @@ public class DrivetrainSubsys extends SubsystemBase {
 
     /** enables or disables turning */
     public void setTurning(boolean turning) {
-        mTurning = turning;
+        mHeadingProtect = turning;
     }
 
     /** enables or disables field oriented driving */
@@ -208,18 +218,27 @@ public class DrivetrainSubsys extends SubsystemBase {
      * @param zSpeed Robot Z/Theta Speed, Clockwise is positive.
      */
     public void drive(double xSpeed, double ySpeed, double zSpeed) {
-
-        // check if we are no longer turning, and set our desired heading to maintain.
-        mTurning = zSpeed == 0.0 ? false : true;
-        mDesiredHeading = mTurning ? getHeading() : mDesiredHeading;
+        xSpeed = Util.scaledDeadbandClamp(xSpeed, kDeadband, kSensitivity, -1, 1);
+        ySpeed = Util.scaledDeadbandClamp(ySpeed, kDeadband, kSensitivity, -1, 1);
+        zSpeed = Util.scaledDeadbandClamp(zSpeed, kDeadband, kSensitivity, -1, 1);
 
         // heading protection, keep us facing the same direction.
-        if (!mTurning) {
+        boolean shouldProtectHeading = mHeadingProtect && zSpeed == 0.0;
+        if (shouldProtectHeading && mCapturedHeading) {
+            // if we should protect heading and we have captured the desired heading
+            
             // negative to get us to go back to the desired orientation, not farther away;
             // that was a fun experience.
             double newSpeed =
-                    -kThetaPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
-            zSpeed = Util.clamp(newSpeed, -.5, .5);
+                    -kZPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
+            zSpeed = Util.clamp(newSpeed, -.75, .75);
+        } else if (shouldProtectHeading && !CommandScheduler.getInstance().isScheduled(mCaptureHeadingCmd)) {
+            // if we should protect heading and we havnt started to capture desired heading
+            CommandScheduler.getInstance().schedule(mCaptureHeadingCmd);
+        }else if (!shouldProtectHeading) {
+            // if we should not protect heading
+            mCapturedHeading = false;
+            mDesiredHeading = getHeading();
         }
 
         WheelSpeeds targetSpeeds =
@@ -249,9 +268,9 @@ public class DrivetrainSubsys extends SubsystemBase {
                 mRrEncoder.getVelocity());
     }
 
-    /** @return If turning is enabled. */
-    public boolean getTurning() {
-        return mTurning;
+    /** @return If heading protection is enabled. */
+    public boolean getHeadingProtection() {
+        return mHeadingProtect;
     }
 
     /** @return If field oriented driving is enabled. */
@@ -268,6 +287,11 @@ public class DrivetrainSubsys extends SubsystemBase {
     public Rotation2d getHeading() {
         // pigeon headings are already +CCW, no need to negate
         return Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+    }
+
+    /** @return the current desired heading of the robot */
+    public Rotation2d getDesiredHeading() {
+        return mDesiredHeading;
     }
 
     /** @returns the current position of the robot. */
