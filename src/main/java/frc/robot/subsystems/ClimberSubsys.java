@@ -19,26 +19,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class ClimberSubsys extends SubsystemBase {
 
-    final CANSparkMax m_left = new CANSparkMax(kLId, kMotorType);
-    final CANSparkMax m_right = new CANSparkMax(kRId, kMotorType);
+    final CANSparkMax mLeft = new CANSparkMax(kLId, kMotorType);
+    final CANSparkMax mRight = new CANSparkMax(kRId, kMotorType);
 
     public ClimberSubsys() {
-        m_left.setInverted(false);
-        m_right.setInverted(true);
+        mLeft.setInverted(false);
+        mRight.setInverted(true);
     }
 
     public void disable() {
-        m_left.stopMotor();
-        m_right.stopMotor();
+        mLeft.stopMotor();
+        mRight.stopMotor();
     }
 
     public void winch() {
-        m_left.set(1);
-        m_right.set(1);
+        mLeft.set(1);
+        mRight.set(1);
     }
 
     public void repel() {
-        m_left.set(-1);
-        m_right.set(-1);
+        mLeft.set(-1);
+        mRight.set(-1);
     }
 }
