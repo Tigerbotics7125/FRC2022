@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.auto.ExitTarmacCmd;
@@ -73,18 +74,20 @@ public class RobotContainer {
         // SmartDashboard.putNumber("Heading", mDrivetrain.getHeading().getDegrees());
         SmartDashboard.putBoolean("Is up?", mArm.getFwdLimitSwitch());
         SmartDashboard.putBoolean("Is down?", mArm.getRevLimitSwitch());
+        SmartDashboard.putBoolean("Heading Protection?", mDrivetrain.getHeadingProtection());
+        SmartDashboard.putBoolean("Field Oriented?", mDrivetrain.getFieldOriented());
 
-        // Driving Options
-        // SmartDashboard.putBoolean("Turning?", mDrivetrain.getTurning());
-        // SmartDashboard.putBoolean("Field Oriented?", mDrivetrain.getFieldOriented());
+        // Drivetrain headings.
+        SmartDashboard.putNumber("Current Heading", mDrivetrain.getHeading().getDegrees());
+        SmartDashboard.putNumber("Desired Heading", mDrivetrain.getDesiredHeading().getDegrees());
 
         // Subsystems
         // SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
         // SmartDashboard.putData("PDP", RobotContainer.kPdp);;
-        SmartDashboard.putData("Drivetrain", mDrivetrain);
-        SmartDashboard.putData("Arm", mArm);
-        SmartDashboard.putData("Intake", mIntake);
-        SmartDashboard.putData("Climber", mClimber);
+        SmartDashboard.putData("Drivetrain", (SubsystemBase) mDrivetrain);
+        SmartDashboard.putData("Arm", (SubsystemBase) mArm);
+        SmartDashboard.putData("Intake", (SubsystemBase) mIntake);
+        SmartDashboard.putData("Climber", (SubsystemBase) mClimber);
 
         // Puts all sendable data to the dashboard.
         SmartDashboard.updateValues();
