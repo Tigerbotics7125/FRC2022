@@ -23,7 +23,6 @@ import frc.robot.subsystems.ArmSubsys;
 import frc.robot.subsystems.ClimberSubsys;
 import frc.robot.subsystems.DrivetrainSubsys;
 import frc.robot.subsystems.IntakeSubsys;
-import frc.tigerlib.GExtreme3DProJoystick;
 import frc.tigerlib.XboxController;
 
 /**
@@ -34,8 +33,9 @@ import frc.tigerlib.XboxController;
 public class RobotContainer {
 
     private SendableChooser<Command> mAutoChooser = new SendableChooser<>();
-    private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
-    private XboxController mXbox = new XboxController(1);
+    //private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
+    private XboxController mDriver = new XboxController(0);
+    private XboxController mOperator = new XboxController(1);
     private UsbCamera mCamera1;
     // public final PowerDistribution mPdp = new PowerDistribution(0,
     // ModuleType.kCTRE);
@@ -54,7 +54,12 @@ public class RobotContainer {
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mFliJoy.xAxis(), mFliJoy.yAxis(), mFliJoy.zAxis()),
+                                                /*mFliJoy.xAxis()*/
+                                                mDriver.leftX(), 
+                                                /*mFliJoy.yAxis()*/
+                                                mDriver.leftY(), 
+                                                /*mFliJoy.zAxis()*/
+                                                mDriver.rightX()),
                                 mDrivetrain)
                         .withName("Default Drive"));
         mArm.setDefaultCommand(new RunCommand(mArm::disable, mArm).withName("Disable"));
@@ -106,17 +111,20 @@ public class RobotContainer {
     public void configureButtonBindings() {
 
         // pressing the trigger ejects the ball
-        mFliJoy.trigger()
+        /*mFliJoy.trigger()*/
+        mDriver.rightTrigger()
                 .whenPressed(new RunCommand(mIntake::eject, mIntake).withName("Eject"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
         // pressing the thumb button intakes the balls
-        mFliJoy.thumb()
+        /*mFliJoy.thumb()*/
+        mDriver.leftTrigger()
                 .whenPressed(new RunCommand(mIntake::intake, mIntake).withName("Intake"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
         // pressing button 3 lowers the arm safely
-        mFliJoy.three()
+        /*mFliJoy.three()*/
+        mDriver.down()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
@@ -128,7 +136,8 @@ public class RobotContainer {
                         true);
 
         // pressing button 5 raises the arm safely
-        mFliJoy.five()
+        /*mFliJoy.five()*/
+        mDriver.up()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
@@ -139,11 +148,13 @@ public class RobotContainer {
                                 .withName("Raise Arm Safely"),
                         true);
 
-        mFliJoy.twelve()
+        /*mFliJoy.twelve()*/
+        mDriver.leftBumper()
                 .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
-        mFliJoy.eleven()
+        /*mFliJoy.eleven()*/
+        mDriver.rightBumper()
                 .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
