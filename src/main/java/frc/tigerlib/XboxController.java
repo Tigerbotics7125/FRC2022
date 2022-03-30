@@ -344,9 +344,10 @@ public class XboxController extends GenericHID {
         return -getRawAxis(Axis.kRightY.value);
     }
 
-    /** Get the left trigger's {@link AxisButton}
-     * 
-     * <p> to get its value, use {@link AxisButton#get()}.
+    /**
+     * Get the left trigger's {@link AxisButton}
+     *
+     * <p>to get its value, use {@link AxisButton#get()}.
      */
     public AxisButton leftTrigger() {
         if (_lt == null) {

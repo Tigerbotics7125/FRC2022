@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) 2022, Tigerbotics' team members and all other contributors.
+ * Open source software; you can modify and/or share this software.
+ */
 package frc.tigerlib;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -5,9 +9,9 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 
 /**
  * A {@link Button} class for axis's on a {@link GenericHID}.
- * 
- * <p> the button will be declared as pressed when the axis is greater than the threshold.
- * 
+ *
+ * <p>the button will be declared as pressed when the axis is greater than the threshold.
+ *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class AxisButton extends Button {

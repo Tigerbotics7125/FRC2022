@@ -33,7 +33,7 @@ import frc.tigerlib.XboxController;
 public class RobotContainer {
 
     private SendableChooser<Command> mAutoChooser = new SendableChooser<>();
-    //private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
+    // private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
     private XboxController mDriver = new XboxController(0);
     private XboxController mOperator = new XboxController(1);
     private UsbCamera mCamera1;
@@ -55,9 +55,9 @@ public class RobotContainer {
                                 () ->
                                         mDrivetrain.drive(
                                                 /*mFliJoy.xAxis()*/
-                                                mDriver.leftX(), 
+                                                mDriver.leftX(),
                                                 /*mFliJoy.yAxis()*/
-                                                mDriver.leftY(), 
+                                                mDriver.leftY(),
                                                 /*mFliJoy.zAxis()*/
                                                 mDriver.rightX()),
                                 mDrivetrain)
