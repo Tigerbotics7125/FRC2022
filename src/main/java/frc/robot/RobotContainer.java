@@ -56,9 +56,7 @@ public class RobotContainer {
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mDriver.leftX(),
-                                                mDriver.leftY(),
-                                                mDriver.rightX()),
+                                                mDriver.leftX(), mDriver.leftY(), mDriver.rightX()),
                                 mDrivetrain)
                         .withName("Default Drive"));
         mArm.setDefaultCommand(new RunCommand(mArm::disable, mArm).withName("Disable"));
@@ -107,19 +105,22 @@ public class RobotContainer {
         return mAutoChooser.getSelected();
     }
 
-        public void configureDriverButtons() {}
+    public void configureDriverButtons() {}
 
-        public void configureOperatorButtons() {
+    public void configureOperatorButtons() {
 
-        mOperator.rightTrigger()
+        mOperator
+                .rightTrigger()
                 .whenPressed(new RunCommand(mIntake::eject, mIntake).withName("Eject"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
-        mOperator.leftTrigger()
+        mOperator
+                .leftTrigger()
                 .whenPressed(new RunCommand(mIntake::intake, mIntake).withName("Intake"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
-        mOperator.down()
+        mOperator
+                .down()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
@@ -130,22 +131,27 @@ public class RobotContainer {
                                 .withName("Lower Arm Safely"),
                         true);
 
-        mOperator.up()
+        mOperator
+                .up()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
                                                 new RunCommand(mArm::raise, mArm),
                                                 new WaitUntilCommand(mArm::isUp),
                                                 new WaitCommand(2)),
-                                        new RunCommand(mArm::holdUp, mArm)) // keeps the arm from falling down.
+                                        new RunCommand(
+                                                mArm::holdUp,
+                                                mArm)) // keeps the arm from falling down.
                                 .withName("Raise Arm Safely"),
                         true);
 
-        mOperator.leftBumper()
+        mOperator
+                .leftBumper()
                 .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
-        mOperator.rightBumper()
+        mOperator
+                .rightBumper()
                 .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
