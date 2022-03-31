@@ -26,12 +26,14 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -234,7 +236,7 @@ public class DrivetrainSubsys extends SubsystemBase {
             // negative to get us to go back to the desired orientation, not farther away;
             // that was a fun experience.
             double newSpeed =
-                    -kZPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
+                    kZPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
             zSpeed = Util.clamp(newSpeed, -.75, .75);
         } else if (shouldProtectHeading
                 && !CommandScheduler.getInstance().isScheduled(mCaptureHeadingCmd)) {
@@ -290,8 +292,7 @@ public class DrivetrainSubsys extends SubsystemBase {
 
     /** @return the current heading of the robot */
     public Rotation2d getHeading() {
-        // pigeon headings are already +CCW, no need to negate
-        return Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+        return new Rotation2d(Units.degreesToRadians(-mPigeon.getFusedHeading()));
     }
 
     /** @return the current desired heading of the robot */
