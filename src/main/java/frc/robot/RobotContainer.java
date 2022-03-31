@@ -46,7 +46,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureAutoChooser();
-        configureButtonBindings();
+        // configureButtonBindings();
+        configureDriverButtons();
+        configureOperatorButtons();
         configureCameras();
 
         // set default commands
@@ -54,11 +56,8 @@ public class RobotContainer {
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                /*mFliJoy.xAxis()*/
                                                 mDriver.leftX(),
-                                                /*mFliJoy.yAxis()*/
                                                 mDriver.leftY(),
-                                                /*mFliJoy.zAxis()*/
                                                 mDriver.rightX()),
                                 mDrivetrain)
                         .withName("Default Drive"));
@@ -108,23 +107,19 @@ public class RobotContainer {
         return mAutoChooser.getSelected();
     }
 
-    public void configureButtonBindings() {
+        public void configureDriverButtons() {}
 
-        // pressing the trigger ejects the ball
-        /*mFliJoy.trigger()*/
-        mDriver.rightTrigger()
+        public void configureOperatorButtons() {
+
+        mOperator.rightTrigger()
                 .whenPressed(new RunCommand(mIntake::eject, mIntake).withName("Eject"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
-        // pressing the thumb button intakes the balls
-        /*mFliJoy.thumb()*/
-        mDriver.leftTrigger()
+        mOperator.leftTrigger()
                 .whenPressed(new RunCommand(mIntake::intake, mIntake).withName("Intake"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
-        // pressing button 3 lowers the arm safely
-        /*mFliJoy.three()*/
-        mDriver.down()
+        mOperator.down()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
@@ -135,26 +130,22 @@ public class RobotContainer {
                                 .withName("Lower Arm Safely"),
                         true);
 
-        // pressing button 5 raises the arm safely
-        /*mFliJoy.five()*/
-        mDriver.up()
+        mOperator.up()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
                                                 new RunCommand(mArm::raise, mArm),
                                                 new WaitUntilCommand(mArm::isUp),
                                                 new WaitCommand(2)),
-                                        new RunCommand(mArm::holdUp, mArm))
+                                        new RunCommand(mArm::holdUp, mArm)) // keeps the arm from falling down.
                                 .withName("Raise Arm Safely"),
                         true);
 
-        /*mFliJoy.twelve()*/
-        mDriver.leftBumper()
+        mOperator.leftBumper()
                 .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
-        /*mFliJoy.eleven()*/
-        mDriver.rightBumper()
+        mOperator.rightBumper()
                 .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
@@ -162,7 +153,7 @@ public class RobotContainer {
     public void configureCameras() {
         mCamera1 = CameraServer.startAutomaticCapture();
         mCamera1.setFPS(30);
-        mCamera1.setResolution(320 / 32, 240 / 32);
+        mCamera1.setResolution(320, 240);
         mCamera1.setWhiteBalanceAuto();
         mCamera1.setExposureAuto();
         mCamera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
