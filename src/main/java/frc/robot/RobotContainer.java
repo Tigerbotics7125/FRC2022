@@ -23,7 +23,6 @@ import frc.robot.subsystems.ArmSubsys;
 import frc.robot.subsystems.ClimberSubsys;
 import frc.robot.subsystems.DrivetrainSubsys;
 import frc.robot.subsystems.IntakeSubsys;
-import frc.tigerlib.GExtreme3DProJoystick;
 import frc.tigerlib.XboxController;
 
 /**
@@ -34,8 +33,9 @@ import frc.tigerlib.XboxController;
 public class RobotContainer {
 
     private SendableChooser<Command> mAutoChooser = new SendableChooser<>();
-    private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
-    private XboxController mXbox = new XboxController(1);
+    // private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
+    private XboxController mDriver = new XboxController(0);
+    private XboxController mOperator = new XboxController(1);
     private UsbCamera mCamera1;
     // public final PowerDistribution mPdp = new PowerDistribution(0,
     // ModuleType.kCTRE);
@@ -46,7 +46,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureAutoChooser();
-        configureButtonBindings();
+        // configureButtonBindings();
+        configureDriverButtons();
+        configureOperatorButtons();
         configureCameras();
 
         // set default commands
@@ -54,7 +56,7 @@ public class RobotContainer {
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mFliJoy.xAxis(), mFliJoy.yAxis(), mFliJoy.zAxis()),
+                                                mDriver.leftX(), mDriver.leftY(), mDriver.rightX()),
                                 mDrivetrain)
                         .withName("Default Drive"));
         mArm.setDefaultCommand(new RunCommand(mArm::disable, mArm).withName("Disable"));
@@ -103,20 +105,22 @@ public class RobotContainer {
         return mAutoChooser.getSelected();
     }
 
-    public void configureButtonBindings() {
+    public void configureDriverButtons() {}
 
-        // pressing the trigger ejects the ball
-        mFliJoy.trigger()
+    public void configureOperatorButtons() {
+
+        mOperator
+                .rightTrigger()
                 .whenPressed(new RunCommand(mIntake::eject, mIntake).withName("Eject"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
-        // pressing the thumb button intakes the balls
-        mFliJoy.thumb()
+        mOperator
+                .leftTrigger()
                 .whenPressed(new RunCommand(mIntake::intake, mIntake).withName("Intake"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
-        // pressing button 3 lowers the arm safely
-        mFliJoy.three()
+        mOperator
+                .down()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
@@ -127,23 +131,27 @@ public class RobotContainer {
                                 .withName("Lower Arm Safely"),
                         true);
 
-        // pressing button 5 raises the arm safely
-        mFliJoy.five()
+        mOperator
+                .up()
                 .whenPressed(
                         new SequentialCommandGroup(
                                         new ParallelRaceGroup(
                                                 new RunCommand(mArm::raise, mArm),
                                                 new WaitUntilCommand(mArm::isUp),
                                                 new WaitCommand(2)),
-                                        new RunCommand(mArm::holdUp, mArm))
+                                        new RunCommand(
+                                                mArm::holdUp,
+                                                mArm)) // keeps the arm from falling down.
                                 .withName("Raise Arm Safely"),
                         true);
 
-        mFliJoy.twelve()
+        mOperator
+                .leftBumper()
                 .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
-        mFliJoy.eleven()
+        mOperator
+                .rightBumper()
                 .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
@@ -151,7 +159,7 @@ public class RobotContainer {
     public void configureCameras() {
         mCamera1 = CameraServer.startAutomaticCapture();
         mCamera1.setFPS(30);
-        mCamera1.setResolution(320 / 32, 240 / 32);
+        mCamera1.setResolution(320, 240);
         mCamera1.setWhiteBalanceAuto();
         mCamera1.setExposureAuto();
         mCamera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);

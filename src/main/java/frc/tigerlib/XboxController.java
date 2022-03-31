@@ -8,6 +8,14 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
+/**
+ * An input wrapper for the Xbox controller.
+ *
+ * <p>Saves RAM on the roborio by only instantiating a button when its used. CPU time is cheaper
+ * than RAM in this scenario.
+ *
+ * @author Jeffrey Morris | Tigerbotics 7125
+ */
 public class XboxController extends GenericHID {
 
     /* Represents an analog axis on the joystick. */
@@ -56,6 +64,8 @@ public class XboxController extends GenericHID {
     private JoystickButton _startButton;
     private JoystickButton _lStickButton;
     private JoystickButton _rStickButton;
+    private AxisButton _lt;
+    private AxisButton _rt;
     private POVButton _uButton;
     private POVButton _urButton;
     private POVButton _rButton;
@@ -127,7 +137,7 @@ public class XboxController extends GenericHID {
      *
      * <p>to get its value, use {@link JoystickButton#get()}.
      */
-    public JoystickButton lb() {
+    public JoystickButton leftBumper() {
         if (_lbButton == null) {
             _lbButton = new JoystickButton(this, Button.kLB.value);
         }
@@ -139,7 +149,7 @@ public class XboxController extends GenericHID {
      *
      * <p>to get its value, use {@link JoystickButton#get()}.
      */
-    public JoystickButton rb() {
+    public JoystickButton rightBumper() {
         if (_rbButton == null) {
             _rbButton = new JoystickButton(this, Button.kRB.value);
         }
@@ -297,7 +307,7 @@ public class XboxController extends GenericHID {
      *
      * @reutrn the X value of the joystick.
      */
-    public double getLeftX() {
+    public double leftX() {
         return getRawAxis(Axis.kLeftX.value);
     }
 
@@ -308,8 +318,8 @@ public class XboxController extends GenericHID {
      *
      * @reutrn the Y value of the joystick.
      */
-    public double getLeftY() {
-        return getRawAxis(Axis.kLeftY.value);
+    public double leftY() {
+        return -getRawAxis(Axis.kLeftY.value);
     }
 
     /**
@@ -319,7 +329,7 @@ public class XboxController extends GenericHID {
      *
      * @reutrn the X value of the joystick.
      */
-    public double getRightX() {
+    public double rightX() {
         return getRawAxis(Axis.kRightX.value);
     }
 
@@ -330,19 +340,20 @@ public class XboxController extends GenericHID {
      *
      * @reutrn the Y value of the joystick.
      */
-    public double getRightY() {
-        return getRawAxis(Axis.kRightY.value);
+    public double rightY() {
+        return -getRawAxis(Axis.kRightY.value);
     }
 
     /**
-     * Get the Left Trigger value.
+     * Get the left trigger's {@link AxisButton}
      *
-     * <p>Not pressed is 0, down is 1.
-     *
-     * @return the Left Trigger value.
+     * <p>to get its value, use {@link AxisButton#get()}.
      */
-    public double getLeftTrigger() {
-        return getRawAxis(Axis.kLT.value);
+    public AxisButton leftTrigger() {
+        if (_lt == null) {
+            _lt = new AxisButton(this, Axis.kLT.value, .3);
+        }
+        return _lt;
     }
 
     /**
@@ -352,7 +363,10 @@ public class XboxController extends GenericHID {
      *
      * @return the Right Trigger value.
      */
-    public double getRightTrigger() {
-        return getRawAxis(Axis.kRT.value);
+    public AxisButton rightTrigger() {
+        if (_rt == null) {
+            _rt = new AxisButton(this, Axis.kRT.value, .3);
+        }
+        return _rt;
     }
 }
