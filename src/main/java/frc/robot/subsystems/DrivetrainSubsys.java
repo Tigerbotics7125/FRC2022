@@ -142,10 +142,9 @@ public class DrivetrainSubsys extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // reset the gyroscope so its square with field on rio user button press
+        // Reset the gyroscope so its square with field on rio user button press.
         if (RobotController.getUserButton()) {
-            mPigeon.reset();
-            mDesiredHeading = getHeading();
+            resetGyro();
         }
 
         if (RobotState.isDisabled()) {
@@ -196,13 +195,10 @@ public class DrivetrainSubsys extends SubsystemBase {
         mFieldOriented = fieldOriented;
     }
 
-    /** sets the heading of the robot */
-    public void setHeading(Rotation2d heading) {
-        mPigeon.setFusedHeading(heading.getDegrees());
-    }
-
-    public void toggleFieldOriented() {
-        mFieldOriented = !mFieldOriented;
+    /** Resets the gyro to zero. */
+    public void resetGyro() {
+        mPigeon.reset();
+        mDesiredHeading = getHeading();
     }
 
     /**
