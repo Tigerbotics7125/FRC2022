@@ -253,7 +253,7 @@ public class DrivetrainSubsys extends SubsystemBase {
 
         WheelSpeeds targetSpeeds =
                 MecanumDrive.driveCartesianIK(
-                        ySpeed, xSpeed, zSpeed, mFieldOriented ? getHeading().getDegrees() : 0.0);
+                        ySpeed, xSpeed, zSpeed, mFieldOriented ? -getHeading().getDegrees() : 0.0);
 
         mFlPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         mRlPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
@@ -293,9 +293,13 @@ public class DrivetrainSubsys extends SubsystemBase {
         return mKinematics;
     }
 
-    /** @return the current heading of the robot */
+    /**
+     * Returns the heading; CCW+.
+     *
+     * @return the current heading of the robot
+     */
     public Rotation2d getHeading() {
-        return new Rotation2d(Units.degreesToRadians(-mPigeon.getFusedHeading()));
+        return mPigeon.getRotation2d();
     }
 
     /** @return the current desired heading of the robot */
