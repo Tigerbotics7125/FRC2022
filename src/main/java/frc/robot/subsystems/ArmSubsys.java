@@ -25,62 +25,82 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class ArmSubsys extends SubsystemBase {
 
+    // Motor controller for arm.
     final WPI_TalonSRX mArm = new WPI_TalonSRX(kId);
+
+    // LEDs to display arm positions.
     final AddressableLED mLeds = new AddressableLED(0);
     int mLedIndex = 0;
 
     public ArmSubsys() {
+        // Setup encoder.
         mArm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
+        // Set brake mode to help arm hold positions.
         mArm.setNeutralMode(NeutralMode.Brake);
+        // Invert arm so that positive motor voltage results in arm moving up.
         mArm.setInverted(true);
 
+        // Setup LEDs.
         mLeds.setLength(kLedLength);
         mLeds.start();
     }
 
+    /** Disables motor output. */
     public void disable() {
         mArm.stopMotor();
     }
 
+    /** Raises the arm up. */
     public void raise() {
         mArm.set(1 * kSpeed);
     }
 
+    /** Lowers the arm down. */
     public void lower() {
         mArm.set(-1 * kSpeed);
     }
 
+    /** Applies a small amount of power to the arm, but enough to keep it up. */
     public void holdUp() {
         mArm.set(.1);
     }
 
-    public boolean getFwdLimitSwitch() {
+    /** Gets the forward (up) limit switch's (normally open) state. */
+    public Boolean getFwdLimitSwitch() {
         return mArm.getSensorCollection().isFwdLimitSwitchClosed();
     }
 
-    public boolean getRevLimitSwitch() {
+    /** Gets the reverse (down) limit switch's (normally closed) state. */
+    public Boolean getRevLimitSwitch() {
         return mArm.getSensorCollection().isRevLimitSwitchClosed();
     }
 
+    /** @return if the arm is up. */
     public Boolean isUp() {
         return getFwdLimitSwitch();
     }
 
+    /** @return if the arm is not up. */
     public Boolean isNotUp() {
         return !getFwdLimitSwitch();
     }
 
+    /** @return if the arm is down. */
     public Boolean isDown() {
         return getRevLimitSwitch();
     }
 
+    /** @return if the arm is not down. */
     public Boolean isNotDown() {
         return !getRevLimitSwitch();
     }
 
     @Override
     public void periodic() {
+        // Create a new data packet for the LEDs.
         AddressableLEDBuffer b = new AddressableLEDBuffer(kLedLength);
+
+        // When disabled make a fancy wave with alliance color.
         if (RobotState.isDisabled()) {
             // make alliance color and black gradient that winds through the leds when disabled
             for (int i = 0; i < kLedLength; i++) {

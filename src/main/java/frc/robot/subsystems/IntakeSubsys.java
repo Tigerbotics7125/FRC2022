@@ -18,18 +18,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class IntakeSubsys extends SubsystemBase {
 
+    // Motor controller for intake.
     final CANSparkMax mIntake = new CANSparkMax(kId, kMotorType);
 
     public IntakeSubsys() {}
 
+    /** Stops all motor output. */
     public void disable() {
         mIntake.stopMotor();
     }
 
+    /** Set the motor to intake. */
     public void intake() {
         mIntake.set(1 * kSpeed);
     }
 
+    /** Set the motor to eject. */
     public void eject() {
         mIntake.set(-1 * kSpeed);
     }

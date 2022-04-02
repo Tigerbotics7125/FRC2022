@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.auto.ExitTarmacCmd;
-import frc.robot.commands.auto.NoOpCmd;
 import frc.robot.subsystems.ArmSubsys;
 import frc.robot.subsystems.ClimberSubsys;
 import frc.robot.subsystems.DrivetrainSubsys;
@@ -26,32 +25,37 @@ import frc.robot.subsystems.IntakeSubsys;
 import frc.tigerlib.XboxController;
 
 /**
- * Contains and manages subsystems of the robot.
+ * Contains and manages all aspects of the robot, and computer.
  *
  * @author Jeffrey Morris | Tigerbotics 7125
  */
 public class RobotContainer {
 
+    // A Chooser, which lets us select between different auto modes, rather than
+    // lock one in in code.
     private SendableChooser<Command> mAutoChooser = new SendableChooser<>();
-    // private GExtreme3DProJoystick mFliJoy = new GExtreme3DProJoystick(0);
+    // Controllers used for driving.
     private XboxController mDriver = new XboxController(0);
     private XboxController mOperator = new XboxController(1);
+    // Camera for seeing, duh.
     private UsbCamera mCamera1;
-    // public final PowerDistribution mPdp = new PowerDistribution(0,
-    // ModuleType.kCTRE);
+    // Subsystems.
     private DrivetrainSubsys mDrivetrain = new DrivetrainSubsys();
     private ArmSubsys mArm = new ArmSubsys();
     private IntakeSubsys mIntake = new IntakeSubsys();
     private ClimberSubsys mClimber = new ClimberSubsys();
 
     public RobotContainer() {
+        // Add options to the chooser.
         configureAutoChooser();
-        // configureButtonBindings();
+        // Configure buttons to do things.
         configureDriverButtons();
         configureOperatorButtons();
+        // Set up camera; comment out for sim to work.
         configureCameras();
 
-        // set default commands
+        // Set default subsystem commands.
+        // Takes in driver inputs and gives it to the drivetrain so it can go beep boop.
         mDrivetrain.setDefaultCommand(
                 new RunCommand(
                                 () ->
@@ -59,11 +63,13 @@ public class RobotContainer {
                                                 mDriver.leftX(), mDriver.leftY(), mDriver.rightX()),
                                 mDrivetrain)
                         .withName("Default Drive"));
+        // Just disable by default.
         mArm.setDefaultCommand(new RunCommand(mArm::disable, mArm).withName("Disable"));
         mIntake.setDefaultCommand(new RunCommand(mIntake::disable, mIntake).withName("Disable"));
         mClimber.setDefaultCommand(new RunCommand(mClimber::disable, mClimber).withName("Disable"));
     }
 
+    /** Update Dashboard values. */
     public void updateValues() {
 
         // Auto
@@ -96,6 +102,7 @@ public class RobotContainer {
     }
 
     public void configureAutoChooser() {
+        // A no operation command, fancy for sit still and think about what you did.
         mAutoChooser.setDefaultOption(
                 "No-op", new InstantCommand(() -> {}).withName("Auto: No Operation"));
         // shoot ball, exit tarmac.
@@ -103,10 +110,12 @@ public class RobotContainer {
                 "Reverse Out Of Tarmac", new ExitTarmacCmd(mDrivetrain, mArm, mIntake));
     }
 
+    /** @return The currently selected auto command. */
     public Command getSelectedAuto() {
         return mAutoChooser.getSelected();
     }
 
+    /** Configure buttons for the driver. */
     public void configureDriverButtons() {
         /**
          * Fix any gyro drift, or well technically just tells the gyro what the angle it should
@@ -135,6 +144,7 @@ public class RobotContainer {
                                                 !mDrivetrain.getHeadingProtection())));
     }
 
+    /** Configure buttons for the operator. */
     public void configureOperatorButtons() {
 
         mOperator

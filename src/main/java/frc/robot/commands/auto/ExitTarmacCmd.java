@@ -21,18 +21,24 @@ import frc.robot.subsystems.IntakeSubsys;
  */
 public class ExitTarmacCmd extends SequentialCommandGroup {
 
+    // Subsystems used in command.
     private DrivetrainSubsys mDrivetrain;
     private ArmSubsys mArm;
     private IntakeSubsys mIntake;
 
     public ExitTarmacCmd(DrivetrainSubsys drivetrain, ArmSubsys arm, IntakeSubsys intake) {
-        // super(drivetrain, arm, intake);
         mDrivetrain = drivetrain;
         mArm = arm;
         mIntake = intake;
         addRequirements(mDrivetrain, mArm, mIntake);
 
+        // Set name for so we can tell what auto we selected on dashboard.
         setName("Auto: Exit Tarmac");
+
+        /**
+         * Takes 1 second ejecting the ball. Drives backwards at half speed for 5 1/2 seconds.
+         * Lowers the arm.
+         */
         addCommands(
                 new RunCommand(mIntake::eject).withTimeout(1),
                 new InstantCommand(mIntake::disable),

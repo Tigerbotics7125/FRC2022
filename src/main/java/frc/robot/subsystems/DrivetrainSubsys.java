@@ -17,7 +17,10 @@ import static frc.robot.Constants.Drivetrain.kRearLeftOffset;
 import static frc.robot.Constants.Drivetrain.kRearRightId;
 import static frc.robot.Constants.Drivetrain.kRearRightOffset;
 import static frc.robot.Constants.Drivetrain.kSensitivity;
+import static frc.robot.Constants.Drivetrain.kXSlewRate;
+import static frc.robot.Constants.Drivetrain.kYSlewRate;
 import static frc.robot.Constants.Drivetrain.kZPID;
+import static frc.robot.Constants.Drivetrain.kZSlewRate;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -26,14 +29,13 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
@@ -49,7 +51,10 @@ import frc.robot.Robot;
 import frc.tigerlib.Util;
 
 /**
- * Controls the mecanum drivetrain of the robot
+ * Controls the mecanum drivetrain of the robot.
+ *
+ * <p>This is the most advanded subsystem of the robot; comprising PID control, odometry, heading
+ * protection, rate limiters, and field oriented driving strategies.
  *
  * @author 7125 Tigerbotics - Jeffrey Morris
  */
@@ -75,66 +80,79 @@ public class DrivetrainSubsys extends SubsystemBase {
     final SlewRateLimiter mYSlew = new SlewRateLimiter(kYSlewRate);
     final SlewRateLimiter mZSlew = new SlewRateLimiter(kZSlewRate);
 
+    // Pigeon gyroscope.
     final WPI_PigeonIMU mPigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
+    // Drivetrain math, allows for finding speeds of chassis from wheels and vise
+    // versa.
     final MecanumDriveKinematics mKinematics =
             new MecanumDriveKinematics(
                     kFrontLeftOffset, kFrontRightOffset, kRearLeftOffset, kRearRightOffset);
 
+    // Tracks the position of the robot, based on encoder values.
     final MecanumDriveOdometry mOdometry = new MecanumDriveOdometry(mKinematics, new Rotation2d());
 
     // Variables used for different driving techniques
     boolean mHeadingProtect =
             true; // whether or not the robot should be maintaining its desired heading.
     boolean mFieldOriented = true; // whether or not the robot should drive field-oriented
-    boolean mCapturedHeading = false;
+    boolean mCapturedHeading =
+            false; // whether or not the robot has captured its desired heading yet.
     Rotation2d mDesiredHeading = getHeading(); // the angle to keep the robot facing
+    // The command to capture the desired heading, basically just waits a little bit
+    // after moving so it doesnt freak out.
     Command mCaptureHeadingCmd =
             new SequentialCommandGroup(
-                    new WaitCommand(.75),
+                    new WaitCommand(.4),
                     new InstantCommand(() -> mDesiredHeading = getHeading()),
                     new InstantCommand(() -> mCapturedHeading = true));
     IdleMode mCurrMode = IdleMode.kBrake; // the current idle mode of the drivetrain
 
     public DrivetrainSubsys() {
-        // set default driving options
-        setFieldOriented(true);
 
-        // invert right side because motors backwards.
+        // Set up safe amperage limits.
+        mFl.setSmartCurrentLimit(50);
+        mFr.setSmartCurrentLimit(50);
+        mRl.setSmartCurrentLimit(50);
+        mRr.setSmartCurrentLimit(50);
+
+        // Invert right side because motors backwards.
         mFl.setInverted(false);
         mRl.setInverted(false);
         mFr.setInverted(true);
         mRr.setInverted(true);
 
+        // Setup PID controllers.
         mFlPID.setP(5e-5);
         mRlPID.setP(5e-5);
         mFrPID.setP(5e-5);
         mRrPID.setP(5e-5);
 
-        // changes encoder distance from encoder ticks to meters
+        // Changes encoder distance from encoder ticks to meters.
         mFlEncoder.setPositionConversionFactor(kDistancePerPulse);
         mRlEncoder.setPositionConversionFactor(kDistancePerPulse);
         mFrEncoder.setPositionConversionFactor(kDistancePerPulse);
         mRrEncoder.setPositionConversionFactor(kDistancePerPulse);
 
-        // changes encoder velocity from rotations per minute to meters per second
+        // Changes encoder velocity from rotations per minute to meters per second.
         mFlEncoder.setVelocityConversionFactor(kRPMtoMPSConversionFactor);
         mRlEncoder.setVelocityConversionFactor(kRPMtoMPSConversionFactor);
         mFrEncoder.setVelocityConversionFactor(kRPMtoMPSConversionFactor);
         mRrEncoder.setVelocityConversionFactor(kRPMtoMPSConversionFactor);
 
-        // make sure stuff starts on 0
+        // Make sure stuff starts on 0.
         mFlEncoder.setPosition(0.0);
         mRlEncoder.setPosition(0.0);
         mFrEncoder.setPosition(0.0);
         mRrEncoder.setPosition(0.0);
         mPigeon.setFusedHeading(0.0);
 
+        // In sim add motors to physics sim.
         if (Robot.isSimulation()) {
-            REVPhysicsSim.getInstance().addSparkMax(mFl, DCMotor.getBanebotsRs775(1));
-            REVPhysicsSim.getInstance().addSparkMax(mRl, DCMotor.getBanebotsRs775(1));
-            REVPhysicsSim.getInstance().addSparkMax(mFr, DCMotor.getBanebotsRs775(1));
-            REVPhysicsSim.getInstance().addSparkMax(mRr, DCMotor.getBanebotsRs775(1));
+            REVPhysicsSim.getInstance().addSparkMax(mFl, DCMotor.getNEO(1));
+            REVPhysicsSim.getInstance().addSparkMax(mRl, DCMotor.getNEO(1));
+            REVPhysicsSim.getInstance().addSparkMax(mFr, DCMotor.getNEO(1));
+            REVPhysicsSim.getInstance().addSparkMax(mRr, DCMotor.getNEO(1));
         }
     }
 
@@ -147,6 +165,7 @@ public class DrivetrainSubsys extends SubsystemBase {
             resetGyro();
         }
 
+        // Set desired heading so if we move robot while disabled it wont kill us.
         if (RobotState.isDisabled()) {
             // dont have an anurism trying to go back to whatever heading it was at before
             // disabling.
@@ -169,11 +188,10 @@ public class DrivetrainSubsys extends SubsystemBase {
             mCurrMode = IdleMode.kBrake;
         }
 
-        // setSimHeading(HolonomicTestPath.getInstance().m_thetaPID.getSetpoint().position);
         if (RobotState.isAutonomous()) {
+            // only tract robot during auto as its fairly computationally expensive.
             mOdometry.update(getHeading(), getSpeeds());
         }
-        // m_odometry.update(getHeading(), getSpeeds());
 
         if (Robot.isSimulation()) {
             REVPhysicsSim.getInstance().run();
@@ -185,12 +203,12 @@ public class DrivetrainSubsys extends SubsystemBase {
         mOdometry.resetPosition(pose, getHeading());
     }
 
-    /** enables or disables turning */
-    public void setTurning(boolean turning) {
-        mHeadingProtect = turning;
+    /** Sets the heading protection status. */
+    public void setHeadingProtection(boolean headingProtection) {
+        mHeadingProtect = headingProtection;
     }
 
-    /** enables or disables field oriented driving */
+    /** Sets the field oriented status. */
     public void setFieldOriented(boolean fieldOriented) {
         mFieldOriented = fieldOriented;
     }
@@ -204,10 +222,11 @@ public class DrivetrainSubsys extends SubsystemBase {
     /**
      * Sets the drivetrain to move as per the given speeds.
      *
+     * <p>Use meters per second.
+     *
      * @param targetSpeeds The input speeds.
      */
     public void setSpeeds(MecanumDriveWheelSpeeds targetSpeeds) {
-
         mFlPID.setReference(targetSpeeds.frontLeftMetersPerSecond, ControlType.kVelocity);
         mRlPID.setReference(targetSpeeds.rearLeftMetersPerSecond, ControlType.kVelocity);
         mFrPID.setReference(targetSpeeds.frontRightMetersPerSecond, ControlType.kVelocity);
@@ -235,7 +254,7 @@ public class DrivetrainSubsys extends SubsystemBase {
             // negative to get us to go back to the desired orientation, not farther away;
             // that was a fun experience.
             double newSpeed =
-                    kZPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
+                    -kZPID.calculate(getHeading().getDegrees(), mDesiredHeading.getDegrees());
             zSpeed = Util.clamp(newSpeed, -.75, .75);
         } else if (shouldProtectHeading
                 && !CommandScheduler.getInstance().isScheduled(mCaptureHeadingCmd)) {
@@ -247,10 +266,13 @@ public class DrivetrainSubsys extends SubsystemBase {
             mDesiredHeading = getHeading();
         }
 
+        // Do some beep boop to get wheel speeds.
+        // Heading is negated as Drive classes are NED >:(, will be fixed 2023.
         WheelSpeeds targetSpeeds =
                 MecanumDrive.driveCartesianIK(
                         ySpeed, xSpeed, zSpeed, mFieldOriented ? -getHeading().getDegrees() : 0.0);
 
+        // Set the speeds, use PID controllers for consistency.
         mFlPID.setReference(targetSpeeds.frontLeft, ControlType.kDutyCycle);
         mRlPID.setReference(targetSpeeds.rearLeft, ControlType.kDutyCycle);
         mFrPID.setReference(targetSpeeds.frontRight, ControlType.kDutyCycle);
@@ -274,12 +296,12 @@ public class DrivetrainSubsys extends SubsystemBase {
                 mRrEncoder.getVelocity());
     }
 
-    /** @return If heading protection is enabled. */
+    /** @return Heading protections status. */
     public boolean getHeadingProtection() {
         return mHeadingProtect;
     }
 
-    /** @return If field oriented driving is enabled. */
+    /** @return Field oriented status. */
     public boolean getFieldOriented() {
         return mFieldOriented;
     }
