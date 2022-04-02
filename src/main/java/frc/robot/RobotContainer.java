@@ -105,7 +105,33 @@ public class RobotContainer {
         return mAutoChooser.getSelected();
     }
 
-    public void configureDriverButtons() {}
+    public void configureDriverButtons() {
+        /**
+         * Fix any gyro drift, or well technically just tells the gyro what the angle it should
+         * treat as forward is.
+         *
+         * <p>ie: if the robot's "front" was facing directly away from you, all would be correct,
+         * however if the "front" of the robot was facing another direction, it will now treat that
+         * direction as forward; skewing the controls.
+         */
+        mDriver.y().whenPressed(new InstantCommand(() -> mDrivetrain.resetGyro()));
+
+        // Toggle field oriented.
+        mDriver.rightBumper()
+                .whenPressed(
+                        new InstantCommand(
+                                () ->
+                                        mDrivetrain.setFieldOriented(
+                                                !mDrivetrain.getFieldOriented())));
+
+        // Toggle heading protection.
+        mDriver.leftBumper()
+                .whenPressed(
+                        new InstantCommand(
+                                () ->
+                                        mDrivetrain.setHeadingProtection(
+                                                !mDrivetrain.getHeadingProtection())));
+    }
 
     public void configureOperatorButtons() {
 
