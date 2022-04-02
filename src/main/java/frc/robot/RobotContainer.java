@@ -184,12 +184,12 @@ public class RobotContainer {
                         true);
 
         mOperator
-                .leftBumper()
+                .y()
                 .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
         mOperator
-                .rightBumper()
+                .a()
                 .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
