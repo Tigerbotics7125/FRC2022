@@ -96,7 +96,9 @@ public class RobotContainer {
     }
 
     public void configureAutoChooser() {
-        mAutoChooser.setDefaultOption("No-op", new NoOpCmd(mDrivetrain, mArm, mIntake));
+        mAutoChooser.setDefaultOption(
+                "No-op", new InstantCommand(() -> {}).withName("Auto: No Operation"));
+        // shoot ball, exit tarmac.
         mAutoChooser.addOption(
                 "Reverse Out Of Tarmac", new ExitTarmacCmd(mDrivetrain, mArm, mIntake));
     }
