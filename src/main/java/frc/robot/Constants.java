@@ -133,14 +133,22 @@ public class Constants {
     }
 
     public static class Climber {
-        // NEO 550 motor type
+        // AM Redline motor type
         public static final CANSparkMax.MotorType kMotorType = CANSparkMax.MotorType.kBrushed;
 
         // speed as %; 1.00 == 100%, 0.50 == 50%, 0.00 == 0%
-        public static final double kSpeed = 0.75;
-        // CANSparkMax CAN IDs
-        public static final int kLId = 6;
-        public static final int kRId = 7;
+        // default, otherwise get dashboard value.
+        public static final double kSpeed = 1.00;
+
+        // CAN Ids
+        public static final int kLId = 1;
+        public static final int kLFollowerId = 2;
+        public static final int kRId = 3;
+        public static final int kRFollowerId = 4;
+
+        // Current Limit in Amps
+        // JVM calculator
+        public static final int kCurrentLimit = 6;
     }
 
     public static class LEDMatrix {
