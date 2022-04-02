@@ -73,6 +73,11 @@ public class Constants {
         public static final double kDeadband = 0.2;
         public static final double kSensitivity = 2.8;
 
+        // Slew constants to allow for smoother control
+        public static final double kXSlewRate = 0.5;
+        public static final double kYSlewRate = 0.5;
+        public static final double kZSlewRate = 0.2;
+
         // CAN IDs
         public static final int kFrontLeftId = 1;
         public static final int kRearLeftId = 2;

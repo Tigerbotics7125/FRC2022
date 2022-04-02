@@ -71,7 +71,10 @@ public class DrivetrainSubsys extends SubsystemBase {
     final RelativeEncoder mFrEncoder = mFr.getEncoder();
     final RelativeEncoder mRrEncoder = mRr.getEncoder();
 
-    // IMU, kinematics, and odometry
+    final SlewRateLimiter mXSlew = new SlewRateLimiter(kXSlewRate);
+    final SlewRateLimiter mYSlew = new SlewRateLimiter(kYSlewRate);
+    final SlewRateLimiter mZSlew = new SlewRateLimiter(kZSlewRate);
+
     final WPI_PigeonIMU mPigeon = new WPI_PigeonIMU(Constants.kPigeonId);
 
     final MecanumDriveKinematics mKinematics =
@@ -224,9 +227,9 @@ public class DrivetrainSubsys extends SubsystemBase {
      * @param zSpeed Robot Z/Theta Speed, Clockwise is positive.
      */
     public void drive(double xSpeed, double ySpeed, double zSpeed) {
-        xSpeed = Util.scaledDeadbandClamp(xSpeed, kDeadband, kSensitivity, -1, 1);
-        ySpeed = Util.scaledDeadbandClamp(ySpeed, kDeadband, kSensitivity, -1, 1);
-        zSpeed = Util.scaledDeadbandClamp(zSpeed, kDeadband, kSensitivity, -1, 1);
+        xSpeed = Util.scaledDeadbandClamp(mXSlew.calculate(xSpeed), kDeadband, kSensitivity, -1, 1);
+        ySpeed = Util.scaledDeadbandClamp(mYSlew.calculate(ySpeed), kDeadband, kSensitivity, -1, 1);
+        zSpeed = Util.scaledDeadbandClamp(mZSlew.calculate(zSpeed), kDeadband, kSensitivity, -1, 1);
 
         // heading protection, keep us facing the same direction.
         boolean shouldProtectHeading = mHeadingProtect && zSpeed == 0.0;
