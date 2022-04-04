@@ -55,11 +55,10 @@ public class ClimberSubsys extends SubsystemBase {
         kRFollower.configContinuousCurrentLimit(kCurrentLimit);
 
         // The Right side needs to be defaultly inverted, as it is on the opposite side.
-        // Each motor needs to be inverted from its master as they are wired backwards.
         kL.setInverted(InvertType.None);
-        kLFollower.setInverted(InvertType.OpposeMaster);
-        kRFollower.setInverted(InvertType.OpposeMaster);
         kR.setInverted(InvertType.InvertMotorOutput);
+        kLFollower.setInverted(InvertType.FollowMaster);
+        kRFollower.setInverted(InvertType.FollowMaster);
 
         // Init the MCG.
         mClimber = new MotorControllerGroup(kL, kR);
@@ -73,7 +72,7 @@ public class ClimberSubsys extends SubsystemBase {
 
     /** Sets the climber to winch, rope winding under the spool. */
     public void winch() {
-        mClimber.set(1 * kSpeed);
+        mClimber.set(mRateLimiter.calculate(1 * kSpeed));
     }
 
     /**
@@ -82,6 +81,6 @@ public class ClimberSubsys extends SubsystemBase {
      * <p>Should not use this method to complete climb, only to extend the climbers.
      */
     public void rappel() {
-        mClimber.set(-1 * kSpeed);
+        mClimber.set(mRateLimiter.calculate(-1 * kSpeed));
     }
 }
