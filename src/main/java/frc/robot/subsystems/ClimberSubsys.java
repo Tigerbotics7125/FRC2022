@@ -9,11 +9,13 @@ import static frc.robot.Constants.Climber.kLFollowerId;
 import static frc.robot.Constants.Climber.kLId;
 import static frc.robot.Constants.Climber.kRFollowerId;
 import static frc.robot.Constants.Climber.kRId;
+import static frc.robot.Constants.Climber.kSlewRate;
 import static frc.robot.Constants.Climber.kSpeed;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -27,6 +29,7 @@ public class ClimberSubsys extends SubsystemBase {
 
     // A single Motor Controller that can control all the motors simultaneously.
     MotorControllerGroup mClimber;
+    SlewRateLimiter mRateLimiter = new SlewRateLimiter(kSlewRate);
 
     // The actual individual motors.
     final WPI_TalonSRX kL = new WPI_TalonSRX(kLId);
@@ -65,6 +68,7 @@ public class ClimberSubsys extends SubsystemBase {
     /** Disables motor output. */
     public void disable() {
         mClimber.stopMotor();
+        mRateLimiter.reset(0);
     }
 
     /** Sets the climber to winch, rope winding under the spool. */
