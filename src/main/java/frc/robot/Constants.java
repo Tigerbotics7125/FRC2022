@@ -118,6 +118,12 @@ public class Constants {
         // LED constants
         public static final int kLedLength = 60;
         public static final int kNumGradients = 4;
+
+        // Soft limit numbers
+        // up
+        public static final double kSoftLimitForward = -5;
+        // down
+        public static final double kSoftLimitReverse = 5;
     }
 
     public static class Intake {
