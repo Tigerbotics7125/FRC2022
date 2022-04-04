@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import frc.tigerlib.ledmatrix.Gif;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,9 +73,9 @@ public class Constants {
         public static final double kSensitivity = 2.8;
 
         // Slew constants to allow for smoother control
-        public static final double kXSlewRate = 0.5;
-        public static final double kYSlewRate = 0.5;
-        public static final double kZSlewRate = 0.2;
+        public static final double kXSlewRate = 2;
+        public static final double kYSlewRate = 2;
+        public static final double kZSlewRate = 1.2;
 
         // CAN IDs
         public static final int kFrontLeftId = 1;
@@ -149,13 +148,8 @@ public class Constants {
         // Current Limit in Amps
         // JVM calculator
         public static final int kCurrentLimit = 6;
-    }
 
-    public static class LEDMatrix {
-        public static final int kWidth = 15;
-        public static final int kHeight = 10;
-        public static final boolean kSerpentine = true;
-        public static final int kPWMPort = 0;
-        public static final Gif[] kGifs = new Gif[] {};
+        // Rate limit for SlewRateLimiter in dutyCycle/Second
+        public static final double kSlewRate = 2;
     }
 }
