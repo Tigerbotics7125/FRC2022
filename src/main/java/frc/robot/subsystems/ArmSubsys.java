@@ -16,7 +16,13 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 /**
  * Controls the arm of the robot. Forward motor direction results in arm moving up.
@@ -102,7 +108,8 @@ public class ArmSubsys extends SubsystemBase {
 
         // When disabled make a fancy wave with alliance color.
         if (RobotState.isDisabled()) {
-            // make alliance color and black gradient that winds through the leds when disabled
+            // make alliance color and black gradient that winds through the leds when
+            // disabled
             for (int i = 0; i < kLedLength; i++) {
                 int val =
                         (int)
@@ -150,5 +157,24 @@ public class ArmSubsys extends SubsystemBase {
             }
         }
         mLeds.setData(b);
+    }
+
+    /**
+     * preforms a self test on the arm, will go up, reset encoder to zero on limit switch, then go
+     * down and return the amount of encoder ticks it took to go down.
+     *
+     * <p>This should not be used on the field as it is only designed for testing and retrieving one
+     * time values.
+     */
+    public Command armSelftTest() {
+        return new SequentialCommandGroup(
+                new RunCommand(this::raise).deadlineWith(new WaitUntilCommand(() -> isUp())),
+                new InstantCommand(() -> mArm.setSelectedSensorPosition(0)),
+                new RunCommand(this::lower).deadlineWith(new WaitUntilCommand(() -> isDown())),
+                new InstantCommand(
+                        () ->
+                                SmartDashboard.putNumber(
+                                        "Arm Self Test Encoder Value",
+                                        mArm.getSelectedSensorPosition())));
     }
 }

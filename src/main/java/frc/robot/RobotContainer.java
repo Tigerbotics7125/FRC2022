@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -101,6 +102,9 @@ public class RobotContainer {
         SmartDashboard.putData("Arm", (SubsystemBase) mArm);
         SmartDashboard.putData("Intake", (SubsystemBase) mIntake);
         SmartDashboard.putData("Climber", (SubsystemBase) mClimber);
+
+        // Self test button
+        SmartDashboard.putData("Arm Self Test", (Sendable) mArm.armSelftTest());
 
         // Puts all sendable data to the dashboard.
         SmartDashboard.updateValues();
