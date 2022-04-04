@@ -54,7 +54,12 @@ public class RobotContainer {
         // Set up camera; comment out for sim to work.
         configureCameras();
 
-        // Set default subsystem commands.
+        // Set up Commands that arn't button based, or disable.
+        configureDefaultCommands();
+    }
+
+    /** Sets up the default commands for each subsystem. */
+    public void configureDefaultCommands() {
         // Takes in driver inputs and gives it to the drivetrain so it can go beep boop.
         mDrivetrain.setDefaultCommand(
                 new RunCommand(
@@ -184,13 +189,13 @@ public class RobotContainer {
                         true);
 
         mOperator
-                .y()
-                .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
+                .a()
+                .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
         mOperator
-                .a()
-                .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
+                .y()
+                .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
 
