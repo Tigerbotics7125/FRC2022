@@ -52,11 +52,10 @@ public class ClimberSubsys extends SubsystemBase {
         kRFollower.configContinuousCurrentLimit(kCurrentLimit);
 
         // The Right side needs to be defaultly inverted, as it is on the opposite side.
-        // Each motor needs to be inverted from its master as they are wired backwards.
         kL.setInverted(InvertType.None);
+        kR.setInverted(InvertType.None);
         kLFollower.setInverted(InvertType.OpposeMaster);
         kRFollower.setInverted(InvertType.OpposeMaster);
-        kR.setInverted(InvertType.InvertMotorOutput);
 
         // Init the MCG.
         mClimber = new MotorControllerGroup(kL, kR);
