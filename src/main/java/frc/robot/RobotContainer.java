@@ -22,7 +22,7 @@ import frc.robot.subsystems.ArmSubsys;
 import frc.robot.subsystems.ClimberSubsys;
 import frc.robot.subsystems.DrivetrainSubsys;
 import frc.robot.subsystems.IntakeSubsys;
-import frc.tigerlib.XboxController;
+import frc.tigerlib.input.controller.XboxController;
 
 /**
  * Contains and manages all aspects of the robot, and computer.
@@ -60,7 +60,9 @@ public class RobotContainer {
                 new RunCommand(
                                 () ->
                                         mDrivetrain.drive(
-                                                mDriver.leftX(), mDriver.leftY(), mDriver.rightX()),
+                                                mDriver.leftX().getVal(),
+                                                mDriver.leftY().getVal(),
+                                                mDriver.rightX().getVal()),
                                 mDrivetrain)
                         .withName("Default Drive"));
         // Just disable by default.
@@ -128,7 +130,7 @@ public class RobotContainer {
         mDriver.y().whenPressed(new InstantCommand(() -> mDrivetrain.resetGyro()));
 
         // Toggle field oriented.
-        mDriver.rightBumper()
+        mDriver.rb()
                 .whenPressed(
                         new InstantCommand(
                                 () ->
@@ -136,7 +138,7 @@ public class RobotContainer {
                                                 !mDrivetrain.getFieldOriented())));
 
         // Toggle heading protection.
-        mDriver.leftBumper()
+        mDriver.lb()
                 .whenPressed(
                         new InstantCommand(
                                 () ->
@@ -148,16 +150,17 @@ public class RobotContainer {
     public void configureOperatorButtons() {
 
         mOperator
-                .rightTrigger()
+                .rb()
                 .whenPressed(new RunCommand(mIntake::eject, mIntake).withName("Eject"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
         mOperator
-                .leftTrigger()
+                .lb()
                 .whenPressed(new RunCommand(mIntake::intake, mIntake).withName("Intake"))
                 .whenReleased(new InstantCommand(mIntake::disable, mIntake).withName("Disable"));
 
         mOperator
+                .pov
                 .down()
                 .whenPressed(
                         new SequentialCommandGroup(
@@ -170,6 +173,7 @@ public class RobotContainer {
                         true);
 
         mOperator
+                .pov
                 .up()
                 .whenPressed(
                         new SequentialCommandGroup(

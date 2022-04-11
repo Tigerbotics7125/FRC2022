@@ -242,9 +242,9 @@ public class DrivetrainSubsys extends SubsystemBase {
      * @param zSpeed Robot Z/Theta Speed, Clockwise is positive.
      */
     public void drive(double xSpeed, double ySpeed, double zSpeed) {
-        xSpeed = Util.scaledDeadbandClamp(mXSlew.calculate(xSpeed), kDeadband, kSensitivity, -1, 1);
-        ySpeed = Util.scaledDeadbandClamp(mYSlew.calculate(ySpeed), kDeadband, kSensitivity, -1, 1);
-        zSpeed = Util.scaledDeadbandClamp(mZSlew.calculate(zSpeed), kDeadband, kSensitivity, -1, 1);
+        xSpeed = Util.smoothWClamp(mXSlew.calculate(xSpeed), kDeadband, kSensitivity, -1, 1);
+        ySpeed = Util.smoothWClamp(mYSlew.calculate(ySpeed), kDeadband, kSensitivity, -1, 1);
+        zSpeed = Util.smoothWClamp(mZSlew.calculate(zSpeed), kDeadband, kSensitivity, -1, 1);
 
         // heading protection, keep us facing the same direction.
         boolean shouldProtectHeading = mHeadingProtect && zSpeed == 0.0;
