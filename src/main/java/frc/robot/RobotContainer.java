@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,7 +55,12 @@ public class RobotContainer {
         // Set up camera; comment out for sim to work.
         configureCameras();
 
-        // Set default subsystem commands.
+        // Set up Commands that arn't button based, or disable.
+        configureDefaultCommands();
+    }
+
+    /** Sets up the default commands for each subsystem. */
+    public void configureDefaultCommands() {
         // Takes in driver inputs and gives it to the drivetrain so it can go beep boop.
         mDrivetrain.setDefaultCommand(
                 new RunCommand(
@@ -98,6 +104,9 @@ public class RobotContainer {
         SmartDashboard.putData("Arm", (SubsystemBase) mArm);
         SmartDashboard.putData("Intake", (SubsystemBase) mIntake);
         SmartDashboard.putData("Climber", (SubsystemBase) mClimber);
+
+        // Self test button
+        SmartDashboard.putData("Arm Self Test", (Sendable) mArm.armSelftTest());
 
         // Puts all sendable data to the dashboard.
         SmartDashboard.updateValues();
@@ -188,13 +197,13 @@ public class RobotContainer {
                         true);
 
         mOperator
-                .y()
-                .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
+                .a()
+                .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
 
         mOperator
-                .a()
-                .whileHeld(new RunCommand(mClimber::winch).withTimeout(3).withName("Winch"), true)
+                .y()
+                .whileHeld(new RunCommand(mClimber::rappel).withTimeout(3).withName("Rappel"), true)
                 .whenReleased(new RunCommand(mClimber::disable).withName("Disable"), true);
     }
 

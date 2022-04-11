@@ -9,11 +9,13 @@ import static frc.robot.Constants.Climber.kLFollowerId;
 import static frc.robot.Constants.Climber.kLId;
 import static frc.robot.Constants.Climber.kRFollowerId;
 import static frc.robot.Constants.Climber.kRId;
+import static frc.robot.Constants.Climber.kSlewRate;
 import static frc.robot.Constants.Climber.kSpeed;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -27,6 +29,7 @@ public class ClimberSubsys extends SubsystemBase {
 
     // A single Motor Controller that can control all the motors simultaneously.
     MotorControllerGroup mClimber;
+    SlewRateLimiter mRateLimiter = new SlewRateLimiter(kSlewRate);
 
     // The actual individual motors.
     final WPI_TalonSRX kL = new WPI_TalonSRX(kLId);
@@ -53,9 +56,9 @@ public class ClimberSubsys extends SubsystemBase {
 
         // The Right side needs to be defaultly inverted, as it is on the opposite side.
         kL.setInverted(InvertType.None);
-        kR.setInverted(InvertType.None);
-        kLFollower.setInverted(InvertType.OpposeMaster);
-        kRFollower.setInverted(InvertType.OpposeMaster);
+        kR.setInverted(InvertType.InvertMotorOutput);
+        kLFollower.setInverted(InvertType.FollowMaster);
+        kRFollower.setInverted(InvertType.FollowMaster);
 
         // Init the MCG.
         mClimber = new MotorControllerGroup(kL, kR);
@@ -64,11 +67,12 @@ public class ClimberSubsys extends SubsystemBase {
     /** Disables motor output. */
     public void disable() {
         mClimber.stopMotor();
+        mRateLimiter.reset(0);
     }
 
     /** Sets the climber to winch, rope winding under the spool. */
     public void winch() {
-        mClimber.set(1 * kSpeed);
+        mClimber.set(mRateLimiter.calculate(1 * kSpeed));
     }
 
     /**
@@ -77,6 +81,6 @@ public class ClimberSubsys extends SubsystemBase {
      * <p>Should not use this method to complete climb, only to extend the climbers.
      */
     public void rappel() {
-        mClimber.set(-1 * kSpeed);
+        mClimber.set(mRateLimiter.calculate(-1 * kSpeed));
     }
 }
